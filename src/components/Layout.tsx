@@ -1,13 +1,15 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { motion, useScroll, useSpring } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
+import { pageOverlayVariants, pageVariants } from '../lib/motion';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const location = useLocation();
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -100,8 +102,29 @@ export default function Layout() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 pt-24 flex flex-col relative pb-10">
-        <Outlet />
+      <main className="flex-1 pt-24 flex flex-col relative pb-10 overflow-hidden">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={location.pathname}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit={reduceMotion ? undefined : 'exit'}
+            className="flex-1 relative"
+          >
+            {!reduceMotion && (
+              <motion.div
+                key={`${location.pathname}-overlay`}
+                variants={pageOverlayVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-blue-200/10 via-transparent to-purple-200/10"
+              />
+            )}
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Footer / Status Bar from Sleek Interface */}

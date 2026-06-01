@@ -67,4 +67,34 @@
   .bg-gradient-neon {
     background-image: linear-gradient(to right, #ff0844, #fce803, #0cf574, #00f2fe, #b100ff);
   }
+
+  .hero-title-shimmer {
+    position: relative;
+    background-size: 220% auto;
+    animation: heroShimmer 8s linear infinite;
+  }
+}
+
+@keyframes heroShimmer {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 220% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title-shimmer {
+    animation-duration: 12s;
+  }
 }

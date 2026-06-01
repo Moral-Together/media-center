@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Award, Target } from 'lucide-react';
+import { cardHover, cardVariants, containerStagger, sectionVariants, viewportOnce } from '../lib/motion';
 
 export default function AboutUs() {
   const stats = [
@@ -17,8 +18,9 @@ export default function AboutUs() {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
         <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
+          variants={sectionVariants}
+          initial="hidden"
+          animate="show"
           className="max-w-2xl"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm">
@@ -37,16 +39,16 @@ export default function AboutUs() {
         </motion.div>
         
         <motion.div 
-           initial={{ opacity: 0, x: -20 }}
-           animate={{ opacity: 1, x: 0 }}
-           transition={{ delay: 0.2 }}
+           variants={containerStagger}
+           initial="hidden"
+           animate="show"
            className="grid grid-cols-2 gap-4"
         >
            {stats.map((stat, idx) => (
-             <div key={idx} className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-slate-200 transition-all">
+             <motion.div key={idx} variants={cardVariants} whileHover={cardHover} className="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-slate-200 transition-all">
                <span className="text-4xl font-bold text-slate-900 mb-2">{stat.value}</span>
                <span className="text-sm font-medium text-slate-500">{stat.label}</span>
-             </div>
+             </motion.div>
            ))}
         </motion.div>
       </div>
@@ -58,10 +60,12 @@ export default function AboutUs() {
         ].map((item, i) => (
            <motion.div 
              key={i}
-             initial={{ opacity: 0, y: 20 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             viewport={{ once: true }}
-             transition={{ delay: i * 0.1 }}
+            variants={cardVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewportOnce}
+            transition={{ delay: i * 0.08 }}
+            whileHover={cardHover}
              className="bg-white border border-slate-100 shadow-sm rounded-2xl p-8 hover:shadow-lg hover:border-slate-200 transition-all cursor-default"
            >
               <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-6" style={{ backgroundColor: `${item.color}20` }}>

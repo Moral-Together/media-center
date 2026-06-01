@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink } from 'lucide-react';
+import { cardHover, cardVariants, sectionVariants, viewportOnce } from '../lib/motion';
 
 const projects = [
   {
@@ -55,15 +56,17 @@ export default function Portfolio() {
 
       <div className="text-center max-w-3xl mx-auto mb-16">
         <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          variants={sectionVariants}
+          initial="hidden"
+          animate="show"
           className="text-5xl md:text-6xl font-bold leading-[1.1] mb-6 text-slate-900"
         >
           תיק <span className="text-gradient-tech">העבודות</span> שלנו
         </motion.h1>
         <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          variants={sectionVariants}
+          initial="hidden"
+          animate="show"
           transition={{ delay: 0.1 }}
           className="text-lg text-slate-600"
         >
@@ -75,11 +78,12 @@ export default function Portfolio() {
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -5, scale: 1.02 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
+            variants={cardVariants}
+            initial="hidden"
+            whileInView="show"
+            whileHover={cardHover}
+            viewport={viewportOnce}
+            transition={{ delay: index * 0.08 }}
             className="group relative rounded-[2rem] overflow-hidden bg-white/60 backdrop-blur-xl border border-white max-w-full shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all cursor-pointer flex flex-col z-10"
           >
             {/* Project Image */}
