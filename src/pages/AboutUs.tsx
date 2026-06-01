@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Award, Target } from 'lucide-react';
+import { usePageEnter } from '../context/PageMotionContext';
 import { cardHover, cardVariants, containerStagger, sectionVariants, viewportOnce } from '../lib/motion';
 
 export default function AboutUs() {
+  const pageEnter = usePageEnter('hidden');
   const stats = [
     { label: 'לקוחות מרוצים', value: '+120' },
     { label: 'פרויקטים שהושלמו', value: '+300' },
@@ -19,7 +21,7 @@ export default function AboutUs() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
         <motion.div 
           variants={sectionVariants}
-          initial="hidden"
+          initial={pageEnter}
           animate="show"
           className="max-w-2xl"
         >
@@ -40,7 +42,7 @@ export default function AboutUs() {
         
         <motion.div 
            variants={containerStagger}
-           initial="hidden"
+           initial={pageEnter}
            animate="show"
            className="grid grid-cols-2 gap-4"
         >
@@ -61,7 +63,7 @@ export default function AboutUs() {
            <motion.div 
              key={i}
             variants={cardVariants}
-            initial="hidden"
+            initial={pageEnter}
             whileInView="show"
             viewport={viewportOnce}
             transition={{ delay: i * 0.08 }}

@@ -1,12 +1,15 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Mail, Phone } from 'lucide-react';
+import { usePageEnter } from '../context/PageMotionContext';
 import { cardHover, cardVariants, sectionVariants } from '../lib/motion';
 
 export default function Contact() {
+  const pageEnter = usePageEnter('hidden');
+
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col items-center justify-center text-center">
-      <motion.div variants={sectionVariants} initial="hidden" animate="show" className="max-w-2xl">
+      <motion.div variants={sectionVariants} initial={pageEnter} animate="show" className="max-w-2xl">
         <h1 className="text-5xl md:text-6xl font-bold leading-[1.1] mb-6 text-slate-900">מוכנים להתחיל <span className="text-gradient-tech">פרויקט</span>?</h1>
         <p className="text-slate-600 text-lg mb-12">השאירו פרטים ונחזור אליכם בהקדם האפשרי לתכנון והמשך תהליך.</p>
         

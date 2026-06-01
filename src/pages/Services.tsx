@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Code, Shield, Megaphone, Search, Video, PenTool } from 'lucide-react';
+import { usePageEnter } from '../context/PageMotionContext';
 import { cardHover, cardVariants, sectionVariants, viewportOnce } from '../lib/motion';
 
 const services = [
@@ -55,6 +56,8 @@ const services = [
 ];
 
 export default function Services() {
+  const pageEnter = usePageEnter('hidden');
+
   return (
     <div className="flex-1 w-full relative pt-12 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Background glow */}
@@ -63,7 +66,7 @@ export default function Services() {
       <div className="max-w-3xl mb-16">
         <motion.h1 
           variants={sectionVariants}
-          initial="hidden"
+          initial={pageEnter}
           animate="show"
           className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 text-slate-900"
         >
@@ -71,7 +74,7 @@ export default function Services() {
         </motion.h1>
         <motion.p 
           variants={sectionVariants}
-          initial="hidden"
+          initial={pageEnter}
           animate="show"
           transition={{ delay: 0.1 }}
           className="text-lg md:text-xl text-slate-600"
@@ -85,7 +88,7 @@ export default function Services() {
           <motion.div
             key={service.id}
             variants={cardVariants}
-            initial="hidden"
+            initial={pageEnter}
             whileInView="show"
             whileHover={cardHover}
             viewport={viewportOnce}

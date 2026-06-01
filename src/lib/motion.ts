@@ -36,24 +36,17 @@ export const cardHover = {
   transition: { type: 'spring', stiffness: 220, damping: 20, mass: 0.8 },
 };
 
+/** Single route transition layer — no blur (avoids stacking with section animations). */
 export const pageVariants = {
-  initial: { opacity: 0, y: 22, filter: 'blur(10px)' },
+  initial: { opacity: 0, y: 14 },
   animate: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
   },
   exit: {
     opacity: 0,
-    y: -16,
-    filter: 'blur(8px)',
-    transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] },
+    y: -10,
+    transition: { duration: 0.26, ease: [0.4, 0, 0.2, 1] },
   },
-};
-
-export const pageOverlayVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 0.18, transition: { duration: 0.28 } },
-  exit: { opacity: 0, transition: { duration: 0.32 } },
 };

@@ -10,11 +10,22 @@ import {
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Code, Shield, Megaphone } from 'lucide-react';
 import { Logo } from '../components/Logo';
+import { usePageMotion } from '../context/PageMotionContext';
 import { cardHover, cardVariants, containerStagger, viewportOnce } from '../lib/motion';
 
 export default function Home() {
   const heroRef = React.useRef<HTMLElement | null>(null);
+  const skipPageEnter = usePageMotion();
+  const [playHeroIntro] = React.useState(() => !sessionStorage.getItem('hero-intro-done'));
   const reduceMotion = useReducedMotion();
+
+  React.useEffect(() => {
+    if (playHeroIntro) {
+      sessionStorage.setItem('hero-intro-done', '1');
+    }
+  }, [playHeroIntro]);
+
+  const heroEnter = <T,>(value: T): false | T => (playHeroIntro ? value : false);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
@@ -119,13 +130,13 @@ export default function Home() {
       >
         
         <motion.div
-           initial={{ opacity: 0, scale: 0.8 }}
+           initial={heroEnter({ opacity: 0, scale: 0.8 })}
            animate={{ opacity: 1, scale: 1 }}
            transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
            className="flex flex-col items-center mb-8"
         >
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={heroEnter({ opacity: 0, y: -10 })}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.05 }}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm"
@@ -148,7 +159,7 @@ export default function Home() {
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={heroEnter({ opacity: 0, scale: 0.95 })}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight mb-6 max-w-5xl text-gradient-tech pb-2 hero-title-shimmer"
@@ -157,7 +168,7 @@ export default function Home() {
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={heroEnter({ opacity: 0 })}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-slate-600 text-lg leading-relaxed max-w-2xl text-center mb-10"
@@ -166,7 +177,7 @@ export default function Home() {
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={heroEnter({ opacity: 0, y: 20 })}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
@@ -202,7 +213,7 @@ export default function Home() {
 
         <motion.div 
           variants={containerStagger}
-          initial="hidden"
+          initial={skipPageEnter ? false : 'hidden'}
           whileInView="show"
           viewport={viewportOnce}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"

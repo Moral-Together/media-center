@@ -4,12 +4,18 @@ import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 
 import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
-import { pageOverlayVariants, pageVariants } from '../lib/motion';
+import { PageMotionContext } from '../context/PageMotionContext';
+import { pageVariants } from '../lib/motion';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [suppressChildEnter, setSuppressChildEnter] = React.useState(false);
   const location = useLocation();
   const reduceMotion = useReducedMotion();
+
+  React.useEffect(() => {
+    setSuppressChildEnter(true);
+  }, []);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -112,17 +118,10 @@ export default function Layout() {
             exit={reduceMotion ? undefined : 'exit'}
             className="flex-1 relative"
           >
-            {!reduceMotion && (
-              <motion.div
-                key={`${location.pathname}-overlay`}
-                variants={pageOverlayVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-blue-200/10 via-transparent to-purple-200/10"
-              />
-            )}
-            <Outlet />
+            <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-blue-200/10 via-transparent to-purple-200/10" />
+            <PageMotionContext.Provider value={suppressChildEnter && !reduceMotion}>
+              <Outlet />
+            </PageMotionContext.Provider>
           </motion.div>
         </AnimatePresence>
       </main>
