@@ -1,6 +1,8 @@
+import type { Variants } from 'motion/react';
+
 export const viewportOnce = { once: true, margin: '-80px' };
 
-export const sectionVariants = {
+export const sectionVariants: Variants = {
   hidden: { opacity: 0, y: 24, filter: 'blur(8px)' },
   show: {
     opacity: 1,
@@ -10,7 +12,7 @@ export const sectionVariants = {
   },
 };
 
-export const containerStagger = {
+export const containerStagger: Variants = {
   hidden: {},
   show: {
     transition: {
@@ -20,7 +22,7 @@ export const containerStagger = {
   },
 };
 
-export const cardVariants = {
+export const cardVariants: Variants = {
   hidden: { opacity: 0, y: 28, scale: 0.985 },
   show: {
     opacity: 1,
@@ -36,17 +38,49 @@ export const cardHover = {
   transition: { type: 'spring', stiffness: 220, damping: 20, mass: 0.8 },
 };
 
-/** Single route transition layer — no blur (avoids stacking with section animations). */
-export const pageVariants = {
-  initial: { opacity: 0, y: 14 },
+export const pageVariants: Variants = {
+  initial: { opacity: 0, y: 22, filter: 'blur(10px)' },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+    filter: 'blur(0px)',
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
   },
   exit: {
     opacity: 0,
-    y: -10,
-    transition: { duration: 0.26, ease: [0.4, 0, 0.2, 1] },
+    y: -12,
+    filter: 'blur(6px)',
+    transition: { duration: 0.28, ease: [0.4, 0, 0.2, 1] },
   },
 };
+
+export const pageOverlayVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 0.18, transition: { duration: 0.35 } },
+  exit: { opacity: 0, transition: { duration: 0.25 } },
+};
+
+/** Section/header entrance — only on first paint, not after client navigation. */
+export function sectionRevealProps(skipRouteEnter: boolean) {
+  if (skipRouteEnter) {
+    return { initial: false as const };
+  }
+  return {
+    variants: sectionVariants,
+    initial: 'hidden' as const,
+    animate: 'show' as const,
+  };
+}
+
+/** Card scroll reveal — disabled on route nav so cards don't "load" twice with the page. */
+export function scrollRevealProps(skipRouteEnter: boolean) {
+  if (skipRouteEnter) {
+    return { initial: false as const };
+  }
+  return {
+    variants: cardVariants,
+    initial: 'hidden' as const,
+    whileInView: 'show' as const,
+    viewport: viewportOnce,
+  };
+}

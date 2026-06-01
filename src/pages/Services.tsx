@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Code, Shield, Megaphone, Search, Video, PenTool } from 'lucide-react';
-import { usePageEnter } from '../context/PageMotionContext';
-import { cardHover, cardVariants, sectionVariants, viewportOnce } from '../lib/motion';
+import { useSkipRouteEnter } from '../context/PageMotionContext';
+import { cardHover, scrollRevealProps, sectionRevealProps } from '../lib/motion';
 
 const services = [
   {
@@ -56,7 +56,7 @@ const services = [
 ];
 
 export default function Services() {
-  const pageEnter = usePageEnter('hidden');
+  const skipRouteEnter = useSkipRouteEnter();
 
   return (
     <div className="flex-1 w-full relative pt-12 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -64,19 +64,15 @@ export default function Services() {
       <div className="absolute top-[10%] right-[10%] w-96 h-96 bg-blue-500/10 rounded-full blur-[128px] -z-10 mix-blend-multiply pointer-events-none"></div>
 
       <div className="max-w-3xl mb-16">
-        <motion.h1 
-          variants={sectionVariants}
-          initial={pageEnter}
-          animate="show"
+        <motion.h1
+          {...sectionRevealProps(skipRouteEnter)}
           className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 text-slate-900"
         >
           כל השירותים <br />ב<span className="text-gradient-tech">מקום אחד</span>
         </motion.h1>
-        <motion.p 
-          variants={sectionVariants}
-          initial={pageEnter}
-          animate="show"
-          transition={{ delay: 0.1 }}
+        <motion.p
+          {...sectionRevealProps(skipRouteEnter)}
+          transition={skipRouteEnter ? undefined : { delay: 0.1 }}
           className="text-lg md:text-xl text-slate-600"
         >
           אנחנו לא סתם חברת קבלן, אנחנו השותף הטכנולוגי שיעזור לעסק שלך לצמוח ולממש את כל פוטנציאל המדיה הדיגיטלי שלו.
@@ -87,12 +83,9 @@ export default function Services() {
         {services.map((service, index) => (
           <motion.div
             key={service.id}
-            variants={cardVariants}
-            initial={pageEnter}
-            whileInView="show"
+            {...scrollRevealProps(skipRouteEnter)}
             whileHover={cardHover}
-            viewport={viewportOnce}
-            transition={{ delay: index * 0.08 }}
+            transition={skipRouteEnter ? undefined : { delay: index * 0.08 }}
             className="group relative rounded-[2rem] bg-white/60 backdrop-blur-xl border border-white max-w-full shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all overflow-hidden flex flex-col cursor-pointer z-10"
           >
             {/* Subtle glow on hover */}

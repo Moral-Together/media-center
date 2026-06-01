@@ -10,12 +10,12 @@ import {
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Code, Shield, Megaphone } from 'lucide-react';
 import { Logo } from '../components/Logo';
-import { usePageMotion } from '../context/PageMotionContext';
+import { useSkipRouteEnter } from '../context/PageMotionContext';
 import { cardHover, cardVariants, containerStagger, viewportOnce } from '../lib/motion';
 
 export default function Home() {
   const heroRef = React.useRef<HTMLElement | null>(null);
-  const skipPageEnter = usePageMotion();
+  const skipRouteEnter = useSkipRouteEnter();
   const [playHeroIntro] = React.useState(() => !sessionStorage.getItem('hero-intro-done'));
   const reduceMotion = useReducedMotion();
 
@@ -211,11 +211,15 @@ export default function Home() {
           </Link>
         </div>
 
-        <motion.div 
-          variants={containerStagger}
-          initial={skipPageEnter ? false : 'hidden'}
-          whileInView="show"
-          viewport={viewportOnce}
+        <motion.div
+          {...(skipRouteEnter
+            ? { initial: false as const }
+            : {
+                variants: containerStagger,
+                initial: 'hidden' as const,
+                whileInView: 'show' as const,
+                viewport: viewportOnce,
+              })}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {[
@@ -223,9 +227,9 @@ export default function Home() {
             { icon: Shield, title: "אבטחת מידע", desc: "ביקורת אבטחת מידע, יצירת חומות אש ובדיקות חדירות לאתרים ומערכות.", colorClass: "text-purple-600", bgClass: "bg-gradient-to-br from-purple-50 to-purple-100/50" },
             { icon: Megaphone, title: "פרסום דיגיטלי", desc: "שיווק איכותי מבוסס ביצועים וקמפיינים עם תוצאות מהירות ואפקטיביות.", colorClass: "text-pink-600", bgClass: "bg-gradient-to-br from-pink-50 to-pink-100/50" },
           ].map((srv, i) => (
-            <motion.div 
-              key={i} 
-              variants={cardVariants}
+            <motion.div
+              key={i}
+              {...(skipRouteEnter ? { initial: false as const } : { variants: cardVariants })}
               whileHover={cardHover}
               className="group relative bg-white/60 backdrop-blur-xl border border-white max-w-full shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] p-8 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 cursor-pointer flex flex-col z-10"
             >

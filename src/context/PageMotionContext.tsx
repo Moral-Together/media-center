@@ -1,13 +1,11 @@
 import { createContext, useContext } from 'react';
 
-/** True inside Layout route transition — child pages should skip their own mount entrance. */
+/**
+ * True after the user navigates between routes (not on the very first page load).
+ * Child pages skip mount/whileInView entrances so only the Layout crossfade runs.
+ */
 export const PageMotionContext = createContext(false);
 
-export function usePageMotion() {
+export function useSkipRouteEnter() {
   return useContext(PageMotionContext);
-}
-
-export function usePageEnter<T>(enter: T): false | T {
-  const insideRouteTransition = usePageMotion();
-  return insideRouteTransition ? false : enter;
 }

@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink } from 'lucide-react';
-import { usePageEnter } from '../context/PageMotionContext';
-import { cardHover, cardVariants, sectionVariants, viewportOnce } from '../lib/motion';
+import { useSkipRouteEnter } from '../context/PageMotionContext';
+import { cardHover, scrollRevealProps, sectionRevealProps } from '../lib/motion';
 
 const projects = [
   {
@@ -50,7 +50,7 @@ const projects = [
 ];
 
 export default function Portfolio() {
-  const pageEnter = usePageEnter('hidden');
+  const skipRouteEnter = useSkipRouteEnter();
 
   return (
     <div className="flex-1 w-full relative pt-12 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -58,19 +58,15 @@ export default function Portfolio() {
       <div className="absolute top-[20%] right-[20%] w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] -z-10 mix-blend-multiply pointer-events-none"></div>
 
       <div className="text-center max-w-3xl mx-auto mb-16">
-        <motion.h1 
-          variants={sectionVariants}
-          initial={pageEnter}
-          animate="show"
+        <motion.h1
+          {...sectionRevealProps(skipRouteEnter)}
           className="text-5xl md:text-6xl font-bold leading-[1.1] mb-6 text-slate-900"
         >
           תיק <span className="text-gradient-tech">העבודות</span> שלנו
         </motion.h1>
-        <motion.p 
-          variants={sectionVariants}
-          initial={pageEnter}
-          animate="show"
-          transition={{ delay: 0.1 }}
+        <motion.p
+          {...sectionRevealProps(skipRouteEnter)}
+          transition={skipRouteEnter ? undefined : { delay: 0.1 }}
           className="text-lg text-slate-600"
         >
           הצצה לפרויקטים הנבחרים שהובלנו. מפתרונות תוכנה מורכבים ועד לקמפיינים שיווקיים יצירתיים.
@@ -81,12 +77,9 @@ export default function Portfolio() {
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
-            variants={cardVariants}
-            initial={pageEnter}
-            whileInView="show"
+            {...scrollRevealProps(skipRouteEnter)}
             whileHover={cardHover}
-            viewport={viewportOnce}
-            transition={{ delay: index * 0.08 }}
+            transition={skipRouteEnter ? undefined : { delay: index * 0.08 }}
             className="group relative rounded-[2rem] overflow-hidden bg-white/60 backdrop-blur-xl border border-white max-w-full shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all cursor-pointer flex flex-col z-10"
           >
             {/* Project Image */}
