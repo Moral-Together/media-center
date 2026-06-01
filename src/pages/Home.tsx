@@ -91,7 +91,7 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-24 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col items-center text-center">
+      <section className="relative z-10 pt-4 md:pt-6 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col items-center text-center">
         
         <motion.div
            initial={{ opacity: 0, scale: 0.8 }}
