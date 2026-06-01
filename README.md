@@ -2,6 +2,8 @@
 
 Сайт медиа-агентства: React, Vite, Tailwind CSS.
 
+**Сайт:** https://media.moraltogether.com/
+
 ## Локальная разработка
 
 ```bash
@@ -9,15 +11,9 @@ npm install
 npm run dev
 ```
 
-## GitHub Pages
+## Деплой (GitHub Pages)
 
-Сайт: **https://moral-together.github.io/media-center/**
+1. **Settings → Pages → Source** → **GitHub Actions**.
+2. Push в `main` — запускается workflow **Deploy to GitHub Pages**.
 
-1. В репозитории: **Settings → Pages → Source** → **GitHub Actions**.
-2. Push в `main` или ручной запуск workflow **Deploy to GitHub Pages**.
-
-Проверка production-сборки локально:
-
-```bash
-npm run preview:pages
-```
+Проверка production-сборки локально: `npm run preview`
