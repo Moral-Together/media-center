@@ -1,26 +1,31 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 'motion/react';
+import { motion, useReducedMotion, useScroll, useSpring } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
-import { PageMotionContext } from '../context/PageMotionContext';
-import { pageOverlayVariants, pageVariants } from '../lib/motion';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const location = useLocation();
   const reduceMotion = useReducedMotion();
   const prevPathRef = React.useRef<string | null>(null);
-  const [hasNavigated, setHasNavigated] = React.useState(false);
+  const hasNavigatedRef = React.useRef(false);
 
-  React.useEffect(() => {
-    if (prevPathRef.current !== null && prevPathRef.current !== location.pathname) {
-      setHasNavigated(true);
-      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  const pathname = location.pathname;
+
+  if (prevPathRef.current !== null && prevPathRef.current !== pathname) {
+    hasNavigatedRef.current = true;
+  }
+
+  React.useLayoutEffect(() => {
+    if (hasNavigatedRef.current) {
+      window.scrollTo(0, 0);
     }
-    prevPathRef.current = location.pathname;
-  }, [location.pathname, reduceMotion]);
+    prevPathRef.current = pathname;
+  }, [pathname]);
+
+  const routeFadeIn = hasNavigatedRef.current && !reduceMotion;
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -28,8 +33,6 @@ export default function Layout() {
     damping: 30,
     restDelta: 0.001,
   });
-
-  const skipChildMotion = hasNavigated && !reduceMotion;
 
   const links = [
     { href: '/', label: 'ראשי' },
@@ -40,7 +43,7 @@ export default function Layout() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans">
       <header className="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 transform origin-left z-50"
@@ -61,8 +64,8 @@ export default function Layout() {
                   key={link.href}
                   to={link.href}
                   className={cn(
-                    'transition-all hover:text-slate-900 relative pb-1 hover:drop-shadow-sm',
-                    location.pathname === link.href
+                    'transition-colors hover:text-slate-900 relative pb-1',
+                    pathname === link.href
                       ? 'text-slate-900 border-b-2 border-[#00f2fe]'
                       : 'border-b-2 border-transparent',
                   )}
@@ -96,7 +99,6 @@ export default function Layout() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
           className="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl pt-24 px-6 flex flex-col gap-6 md:hidden text-slate-900"
         >
           {links.map((link) => (
@@ -112,28 +114,17 @@ export default function Layout() {
         </motion.div>
       )}
 
-      <main className="flex-1 pt-24 flex flex-col relative pb-10 overflow-hidden">
-        {/* sync = crossfade (no blank gap between exit + enter like mode="wait") */}
-        <AnimatePresence mode="sync" initial={false}>
-          <motion.div
-            key={location.pathname}
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit={reduceMotion ? undefined : 'exit'}
-            className="flex-1 relative w-full"
-          >
-            {!reduceMotion && (
-              <motion.div
-                variants={pageOverlayVariants}
-                className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-blue-200/10 via-transparent to-purple-200/10"
-              />
-            )}
-            <PageMotionContext.Provider value={skipChildMotion}>
-              <Outlet />
-            </PageMotionContext.Provider>
-          </motion.div>
-        </AnimatePresence>
+      <main className="flex-1 pt-24 flex flex-col relative pb-10">
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-blue-200/10 via-transparent to-purple-200/10" />
+        <motion.div
+          key={pathname}
+          initial={routeFadeIn ? { opacity: 0, y: 12 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          className="flex-1 relative w-full"
+        >
+          <Outlet />
+        </motion.div>
       </main>
 
       <footer className="px-6 lg:px-10 py-4 bg-slate-100/50 border-t border-slate-200 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-slate-500 relative z-10 w-full mt-auto">
