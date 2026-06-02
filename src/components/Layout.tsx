@@ -225,7 +225,8 @@ export default function Layout() {
       </AnimatePresence>
 
       <main id="main-content" className="flex-1 pt-24 flex flex-col relative pb-10">
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-blue-200/10 via-transparent to-purple-200/10" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-cyan-100/15 via-white to-violet-100/12" />
+        <div className="pointer-events-none absolute inset-0 -z-10 section-dot-grid opacity-30" />
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}

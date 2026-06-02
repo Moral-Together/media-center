@@ -286,55 +286,139 @@ export default function Home() {
           </motion.div>
         </motion.section>
 
-        {/* Fade to light section below */}
-        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
+        {/* Soft glow above wave — no heavy blur into white */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-32 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, rgba(15, 23, 42, 0.4) 45%, transparent 100%)',
+          }}
+        />
+      </div>
+
+      {/* Wave bridge: dark hero → light content */}
+      <div className="relative z-10 -mt-px leading-[0] text-slate-50" aria-hidden>
+        <svg
+          className="block w-full h-14 sm:h-20 md:h-24"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="currentColor"
+            d="M0,48 C360,88 720,8 1080,52 C1260,72 1380,64 1440,56 L1440,80 L0,80 Z"
+          />
+        </svg>
       </div>
 
       {/* ═══════════════════ SERVICES PREVIEW (light) ═══════════════════ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative bg-transparent">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-neon opacity-50" />
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100/80 section-light-mesh">
+        <div className="absolute inset-0 section-dot-grid opacity-60 pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-neon opacity-40" />
+        <div className="absolute top-24 -left-32 w-72 h-72 rounded-full bg-cyan-400/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-40 -right-24 w-80 h-80 rounded-full bg-violet-400/10 blur-3xl pointer-events-none" />
 
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">ההתמחויות שלנו</h2>
-            <p className="text-slate-600 max-w-xl">
-              אנחנו משלבים טכנולוגיה וקריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
-            </p>
-          </div>
-          <Link to="/services" className="text-slate-500 hover:text-slate-900 flex items-center gap-2 font-bold">
-            צפה בכל השירותים <ArrowLeft className="w-4 h-4" />
-          </Link>
+        <div className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6"
+          >
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-l from-cyan-600 via-violet-600 to-pink-600 mb-3">
+                מה אנחנו עושים
+              </p>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900">
+                ההתמחויות שלנו
+              </h2>
+              <p className="text-slate-600 max-w-xl text-lg leading-relaxed">
+                אנחנו משלבים טכנולוגיה וקריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
+              </p>
+            </div>
+            <Link
+              to="/services"
+              className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200/80 bg-white/80 text-slate-700 font-bold text-sm shadow-sm hover:border-violet-200 hover:text-violet-700 hover:shadow-md transition-all"
+            >
+              צפה בכל השירותים
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+          </motion.div>
+
+          <motion.div
+            variants={containerStagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewportOnce}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+          >
+            {[
+              {
+                icon: Code,
+                title: 'פיתוח',
+                desc: 'שירותי פיתוח וארכיטקטורה, אתרים מתקדמים ואפליקציות מובייל.',
+                colorClass: 'text-blue-600',
+                bgClass: 'bg-gradient-to-br from-blue-50 to-cyan-50',
+                accent: 'from-blue-500 via-cyan-500 to-blue-600',
+                glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(37,99,235,0.22)]',
+              },
+              {
+                icon: Shield,
+                title: 'אבטחת מידע',
+                desc: 'ביקורת אבטחת מידע, יצירת חומות אש ובדיקות חדירות לאתרים ומערכות.',
+                colorClass: 'text-purple-600',
+                bgClass: 'bg-gradient-to-br from-purple-50 to-violet-50',
+                accent: 'from-violet-500 via-purple-500 to-fuchsia-600',
+                glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(124,58,237,0.22)]',
+              },
+              {
+                icon: Megaphone,
+                title: 'פרסום דיגיטלי',
+                desc: 'שיווק איכותי מבוסס ביצועים וקמפיינים עם תוצאות מהירות ואפקטивיות.',
+                colorClass: 'text-pink-600',
+                bgClass: 'bg-gradient-to-br from-pink-50 to-rose-50',
+                accent: 'from-pink-500 via-rose-500 to-orange-500',
+                glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(219,39,119,0.2)]',
+              },
+            ].map((srv, i) => (
+              <motion.div key={i} variants={cardVariants} whileHover={cardHover}>
+                <Link
+                  to="/services"
+                  className={`group relative flex flex-col h-full rounded-[2rem] p-8 bg-white/90 backdrop-blur-sm border border-slate-200/70 overflow-hidden transition-all duration-300 ${srv.glow} hover:-translate-y-1 hover:border-slate-300/80`}
+                >
+                  <div
+                    className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-l ${srv.accent} opacity-80`}
+                  />
+                  <div
+                    className={`absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${srv.accent} opacity-[0.07] blur-2xl pointer-events-none group-hover:opacity-[0.12] transition-opacity`}
+                  />
+                  <span className="absolute top-6 end-6 text-[10px] font-bold tabular-nums text-slate-300 group-hover:text-slate-400 transition-colors">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div
+                    className={`relative w-14 h-14 ${srv.bgClass} border border-slate-200/50 rounded-2xl flex items-center justify-center mb-6 shadow-sm ring-1 ring-white group-hover:scale-105 transition-transform duration-300`}
+                  >
+                    <srv.icon strokeWidth={2} className={`w-6 h-6 ${srv.colorClass}`} />
+                  </div>
+                  <h3 className="relative text-2xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
+                    {srv.title}
+                  </h3>
+                  <p className="relative text-slate-600 text-base flex-1 leading-relaxed mb-6">
+                    {srv.desc}
+                  </p>
+                  <span className="relative inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 group-hover:text-violet-600 transition-colors">
+                    קרא עוד
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                  </span>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
 
-        <motion.div
-          variants={containerStagger}
-          initial="hidden"
-          whileInView="show"
-          viewport={viewportOnce}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {[
-            { icon: Code,      title: 'פיתוח',           desc: 'שירותי פיתוח וארכיטקטורה, אתרים מתקדמים ואפליקציות מובייל.',                          colorClass: 'text-blue-600',   bgClass: 'bg-gradient-to-br from-blue-50 to-blue-100/50'   },
-            { icon: Shield,    title: 'אבטחת מידע',      desc: 'ביקורת אבטחת מידע, יצירת חומות אש ובדיקות חדירות לאתרים ומערכות.',                    colorClass: 'text-purple-600', bgClass: 'bg-gradient-to-br from-purple-50 to-purple-100/50' },
-            { icon: Megaphone, title: 'פרסום דיגיטלי',   desc: 'שיווק איכותי מבוסס ביצועים וקמפיינים עם תוצאות מהירות ואפקטיביות.',                  colorClass: 'text-pink-600',   bgClass: 'bg-gradient-to-br from-pink-50 to-pink-100/50'   },
-          ].map((srv, i) => (
-            <motion.div
-              key={i}
-              variants={cardVariants}
-              whileHover={cardHover}
-              className="group relative bg-white/60 backdrop-blur-xl border border-white max-w-full shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] p-8 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 cursor-pointer flex flex-col z-10"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-white/10 rounded-[2rem] pointer-events-none" />
-              <div className={`relative w-14 h-14 ${srv.bgClass} border border-slate-200/60 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                <srv.icon strokeWidth={2} className={`w-6 h-6 ${srv.colorClass}`} />
-              </div>
-              <h3 className="relative text-2xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
-                {srv.title}
-              </h3>
-              <p className="relative text-slate-600 text-base flex-1 leading-relaxed">{srv.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Bottom fade into page background */}
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
       </section>
     </div>
   );
