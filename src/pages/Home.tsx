@@ -143,7 +143,7 @@ export default function Home() {
              נוסד בשנת 5785
           </motion.div>
           <motion.div
-            animate={reduceMotion ? undefined : { y: [0, -7, 0], rotate: [0, 1.2, 0, -1.2, 0] }}
+            animate={reduceMotion ? undefined : { y: [0, -7, 0] }}
             transition={reduceMotion ? undefined : { duration: 7, repeat: Infinity, ease: 'easeInOut' }}
             className="relative"
           >

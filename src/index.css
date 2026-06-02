@@ -73,6 +73,20 @@
     background-size: 220% auto;
     animation: heroShimmer 8s linear infinite;
   }
+
+  .logo-spin {
+    animation: logoSpin 15s linear infinite;
+  }
+
+  .group:hover .logo-spin {
+    animation-duration: 4s;
+  }
+}
+
+@keyframes logoSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes heroShimmer {
@@ -90,6 +104,10 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .logo-spin {
+    animation: none !important;
   }
 }
 
