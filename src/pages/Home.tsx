@@ -172,17 +172,6 @@ export default function Home() {
           className="relative z-10 pt-8 md:pt-12 pb-28 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col items-center text-center"
         >
 
-          {/* Badge */}
-          <motion.div
-            initial={heroEnter({ opacity: 0, y: -14 })}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.05 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-cyan-300 text-xs font-bold uppercase tracking-widest mb-8 backdrop-blur-sm"
-          >
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0" />
-            סוכנות דיגיטל מלאה · פעיל 24/7
-          </motion.div>
-
           {/* Logo */}
           <motion.div
             initial={heroEnter({ opacity: 0, scale: 0.62 })}
