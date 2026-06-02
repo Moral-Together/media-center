@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { Code, Shield, Megaphone, Search, Video, PenTool } from 'lucide-react';
+import { PageMeta } from '../components/PageMeta';
 import { cardVariants, containerStagger, sectionVariants, scaleIn, viewportOnce } from '../lib/motion';
 
 const services = [
@@ -137,6 +138,10 @@ function ServiceCard({ service }: { service: Service }) {
 export default function Services() {
   return (
     <div className="flex-1 w-full relative pt-12 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <PageMeta
+        title="שירותים"
+        description="פיתוח אתרים, אבטחת מידע, SEO, פרסום דיגיטלי, הפקת וידאו ויצירת תוכן – כל השירותים הדיגיטליים במקום אחד."
+      />
       <div className="absolute top-[10%] right-[10%] w-72 h-72 bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       <motion.div

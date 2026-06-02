@@ -1,10 +1,13 @@
+import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import Home from './pages/Home';
-import AboutUs from './pages/AboutUs';
-import Services from './pages/Services';
-import Contact from './pages/Contact';
-import Portfolio from './pages/Portfolio';
+
+const Home      = lazy(() => import('./pages/Home'));
+const AboutUs   = lazy(() => import('./pages/AboutUs'));
+const Services  = lazy(() => import('./pages/Services'));
+const Portfolio = lazy(() => import('./pages/Portfolio'));
+const Contact   = lazy(() => import('./pages/Contact'));
+const NotFound  = lazy(() => import('./pages/NotFound'));
 
 export default function App() {
   return (
@@ -15,6 +18,7 @@ export default function App() {
         <Route path="services" element={<Services />} />
         <Route path="portfolio" element={<Portfolio />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

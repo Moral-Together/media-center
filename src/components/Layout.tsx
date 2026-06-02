@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 'motion/react';
 import { Menu, X } from 'lucide-react';
@@ -73,6 +73,7 @@ export default function Layout() {
                 >
                   <Link
                     to={link.href}
+                    aria-current={pathname === link.href ? 'page' : undefined}
                     className={cn(
                       'transition-colors hover:text-slate-900 relative pb-1',
                       pathname === link.href
@@ -154,6 +155,7 @@ export default function Layout() {
                 <Link
                   to={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
+                  aria-current={pathname === link.href ? 'page' : undefined}
                   className="text-2xl font-bold text-slate-600 hover:text-slate-900 transition-colors"
                 >
                   {link.label}
@@ -175,7 +177,13 @@ export default function Layout() {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="flex-1 relative w-full"
           >
-            <Outlet />
+            <Suspense fallback={
+              <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+                <div className="w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+              </div>
+            }>
+              <Outlet />
+            </Suspense>
           </motion.div>
         </AnimatePresence>
       </main>

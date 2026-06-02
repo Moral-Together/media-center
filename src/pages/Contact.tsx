@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { Mail, Phone } from 'lucide-react';
+import { PageMeta } from '../components/PageMeta';
 import {
   containerStagger,
   scaleIn,
@@ -12,6 +13,10 @@ import {
 export default function Contact() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col items-center justify-center text-center">
+      <PageMeta
+        title="צור קשר"
+        description="צרו קשר עם מרכז המדיה של ישראל. נשמח לשמוע על הפרויקט שלכם ולתכנן יחד את הצעד הבא."
+      />
       <motion.div
         className="max-w-2xl w-full"
         variants={containerStagger}

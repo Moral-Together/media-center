@@ -10,7 +10,8 @@ import {
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Code, Shield, Megaphone } from 'lucide-react';
 import { Logo } from '../components/Logo';
-import { cardHover, cardVariants, containerStagger, scrollRevealMotion, viewportOnce } from '../lib/motion';
+import { PageMeta } from '../components/PageMeta';
+import { cardHover, cardVariants, containerStagger, viewportOnce } from '../lib/motion';
 
 export default function Home() {
   const heroRef = React.useRef<HTMLElement | null>(null);
@@ -59,6 +60,10 @@ export default function Home() {
 
   return (
     <div className="flex-1 w-full relative overflow-hidden">
+      <PageMeta
+        title="ראשי"
+        description="מרכז המדיה של ישראל – פיתוח אתרים, אבטחת מידע, פרסום דיגיטלי ועוד. הפתרון הדיגיטלי המלא לעסק שלך."
+      />
       {/* Background glow effects & Animated Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         {/* Subtle dot grid */}

@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { motion, useInView } from 'motion/react';
 import { Award, Target } from 'lucide-react';
+import { PageMeta } from '../components/PageMeta';
 import {
   cardHover,
   cardVariants,
@@ -63,6 +64,10 @@ const values = [
 export default function AboutUs() {
   return (
     <div className="flex-1 w-full relative pt-12 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <PageMeta
+        title="מי אנחנו"
+        description="הכירו את הצוות מאחורי מרכז המדיה של ישראל – מפתחים, מעצבים ואנשי שיווק עם ניסיון של יותר מ-10 שנים בדיגיטל."
+      />
       <div className="absolute top-[10%] left-[10%] w-72 h-72 bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">

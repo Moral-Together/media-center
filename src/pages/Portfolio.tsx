@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ExternalLink } from 'lucide-react';
+import { PageMeta } from '../components/PageMeta';
 import { cardVariants, containerStagger, sectionVariants, scaleIn, viewportOnce } from '../lib/motion';
 
 const projects = [
@@ -72,6 +73,7 @@ function ProjectCard({ project }: { project: Project }) {
           animate={{ scale: hovered ? 1.1 : 1 }}
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           className="w-full h-full object-cover"
+          loading="lazy"
           referrerPolicy="no-referrer"
           onError={(e) => {
             e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' fill='%23f1f5f9'%3E%3Crect width='800' height='600'/%3E%3C/svg%3E";
@@ -128,6 +130,10 @@ function ProjectCard({ project }: { project: Project }) {
 export default function Portfolio() {
   return (
     <div className="flex-1 w-full relative pt-12 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <PageMeta
+        title="תיק עבודות"
+        description="פרויקטים נבחרים של מרכז המדיה של ישראל – מפתרונות תוכנה מורכבים ועד קמפיינים שיווקיים יצירתיים."
+      />
       <div className="absolute top-[20%] right-[20%] w-72 h-72 bg-purple-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       <motion.div
