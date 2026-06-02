@@ -68,6 +68,22 @@
     background-image: linear-gradient(to right, #ff0844, #fce803, #0cf574, #00f2fe, #b100ff);
   }
 
+  /* Vibrant gradient for the dark hero title */
+  .text-gradient-vibrant {
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(to right, #22d3ee, #818cf8, #e879f9);
+  }
+
+  /* Animated gradient for the cycling service label */
+  .text-gradient-cycling {
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(to right, #06b6d4, #818cf8, #a855f7);
+    background-size: 200% auto;
+    animation: gradientShift 4s linear infinite;
+  }
+
   .hero-title-shimmer {
     position: relative;
     background-size: 220% auto;
@@ -80,6 +96,37 @@
 
   .group:hover .logo-spin {
     animation-duration: 4s;
+  }
+
+  /* Floating element utility */
+  .animate-float {
+    animation: floatY 3.2s ease-in-out infinite;
+  }
+
+  /* Pulsing glow border */
+  .animate-glow-border {
+    animation: glowBorder 3s ease-in-out infinite;
+  }
+
+  /* Shimmer shine on hover — add ::after pseudo-element */
+  .btn-shimmer {
+    isolation: isolate;
+  }
+  .btn-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.22) 50%,
+      transparent 100%
+    );
+    transform: translateX(-120%) skewX(-15deg);
+    pointer-events: none;
+  }
+  .btn-shimmer:hover::after {
+    animation: shimmerSlide 0.55s ease-out forwards;
   }
 }
 
@@ -96,6 +143,27 @@
   100% {
     background-position: 220% center;
   }
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes glowBorder {
+  0%, 100% { box-shadow: 0 0 6px 0px rgba(37, 99, 235, 0.25); }
+  33%       { box-shadow: 0 0 18px 2px rgba(124, 58, 237, 0.35); }
+  66%       { box-shadow: 0 0 14px 2px rgba(219, 39, 119, 0.30); }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0%   center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes shimmerSlide {
+  0%   { transform: translateX(-120%) skewX(-15deg); }
+  100% { transform: translateX(220%) skewX(-15deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
