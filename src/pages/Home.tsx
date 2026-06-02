@@ -313,20 +313,20 @@ export default function Home() {
             initial={heroEnter({ opacity: 0, y: 20 })}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.35 }}
-            className="flex flex-col sm:flex-row items-center gap-4 mb-14"
+            className="flex flex-row items-center justify-center gap-2 sm:gap-4 mb-14 w-full max-w-lg sm:max-w-none mx-auto"
           >
             {/* Primary CTA */}
-            <motion.div style={{ x: ctaSX, y: ctaSY }}>
+            <motion.div style={{ x: ctaSX, y: ctaSY }} className="flex-1 sm:flex-initial min-w-0">
               <Link
                 to="/services"
-                className="px-8 py-3.5 bg-white text-slate-950 rounded-full font-bold text-lg relative overflow-hidden group flex items-center gap-2 shadow-[0_0_40px_rgba(255,255,255,0.18)] hover:shadow-[0_0_60px_rgba(255,255,255,0.28)] transition-shadow"
+                className="w-full sm:w-auto px-3 py-2.5 sm:px-8 sm:py-3.5 bg-white text-slate-950 rounded-full font-bold text-sm sm:text-lg relative overflow-hidden group flex items-center justify-center gap-1.5 sm:gap-2 shadow-[0_0_40px_rgba(255,255,255,0.18)] hover:shadow-[0_0_60px_rgba(255,255,255,0.28)] transition-shadow whitespace-nowrap"
                 onMouseMove={onCtaMove}
                 onMouseLeave={onCtaLeave}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <span className="relative z-10 group-hover:text-white transition-colors flex items-center gap-2">
+                <span className="relative z-10 group-hover:text-white transition-colors flex items-center gap-1.5 sm:gap-2">
                   גלה את השירותים
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 </span>
               </Link>
             </motion.div>
@@ -334,7 +334,7 @@ export default function Home() {
             {/* Ghost CTA */}
             <Link
               to="/contact"
-              className="px-8 py-3.5 rounded-full font-bold text-lg border border-white/15 text-white/75 hover:text-white hover:border-white/30 hover:bg-white/6 transition-all"
+              className="flex-1 sm:flex-initial min-w-0 px-3 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-bold text-sm sm:text-lg border border-white/15 text-white/75 hover:text-white hover:border-white/30 hover:bg-white/6 transition-all text-center whitespace-nowrap"
             >
               צור קשר
             </Link>
