@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 interface PageMetaProps {
   title: string;
@@ -18,8 +19,20 @@ function setMeta(attr: 'name' | 'property', key: string, content: string) {
   el.setAttribute('content', content);
 }
 
+function setCanonical(href: string) {
+  let el = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!el) {
+    el = document.createElement('link');
+    el.setAttribute('rel', 'canonical');
+    document.head.appendChild(el);
+  }
+  el.setAttribute('href', href);
+}
+
 export function PageMeta({ title, description }: PageMetaProps) {
+  const { pathname } = useLocation();
   const fullTitle = `${title} | ${SITE_NAME}`;
+  const canonical = `${SITE_URL}${pathname}`;
 
   useEffect(() => {
     document.title = fullTitle;
@@ -30,16 +43,18 @@ export function PageMeta({ title, description }: PageMetaProps) {
     setMeta('property', 'og:description', description);
     setMeta('property', 'og:site_name', SITE_NAME);
     setMeta('property', 'og:type', 'website');
-    setMeta('property', 'og:url', SITE_URL);
+    setMeta('property', 'og:url', canonical);
 
     setMeta('name', 'twitter:card', 'summary');
     setMeta('name', 'twitter:title', fullTitle);
     setMeta('name', 'twitter:description', description);
 
+    setCanonical(canonical);
+
     return () => {
       document.title = SITE_NAME;
     };
-  }, [fullTitle, description]);
+  }, [fullTitle, description, canonical]);
 
   return null;
 }

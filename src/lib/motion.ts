@@ -62,7 +62,7 @@ export const scaleIn: Variants = {
 export const cardHover = {
   y: -6,
   scale: 1.02,
-  transition: { type: 'spring', stiffness: 260, damping: 22 },
+  transition: { type: 'spring' as const, stiffness: 260, damping: 22 },
 };
 
 /** Scroll-triggered reveal only (safe with route changes). */

@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 
 import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
+import { ErrorBoundary } from './ErrorBoundary';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -11,6 +12,7 @@ export default function Layout() {
   const reduceMotion = useReducedMotion();
   const prevPathRef = React.useRef<string | null>(null);
   const hasNavigatedRef = React.useRef(false);
+  const mobileMenuRef = React.useRef<HTMLDivElement>(null);
 
   const pathname = location.pathname;
 
@@ -24,6 +26,49 @@ export default function Layout() {
     }
     prevPathRef.current = pathname;
   }, [pathname]);
+
+  // Close mobile menu on navigation
+  React.useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Focus first item when menu opens
+  React.useEffect(() => {
+    if (isMobileMenuOpen && mobileMenuRef.current) {
+      const first = mobileMenuRef.current.querySelector<HTMLElement>('a, button');
+      first?.focus();
+    }
+  }, [isMobileMenuOpen]);
+
+  // Focus trap + Escape key for mobile menu
+  React.useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab' || !mobileMenuRef.current) return;
+
+      const focusable = Array.from(
+        mobileMenuRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
 
   const routeFadeIn = hasNavigatedRef.current && !reduceMotion;
 
@@ -44,6 +89,14 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans">
+      {/* Skip to main content — visible only on focus for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:right-4 focus:z-[200] focus:px-5 focus:py-2 focus:bg-slate-900 focus:text-white focus:rounded-full focus:font-bold focus:shadow-lg"
+      >
+        דלג לתוכן הראשי
+      </a>
+
       <motion.header
         initial={reduceMotion ? false : { y: -72, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -107,6 +160,7 @@ export default function Layout() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'סגור תפריט' : 'פתח תפריט'}
               aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               <AnimatePresence mode="wait" initial={false}>
                 {isMobileMenuOpen ? (
@@ -139,6 +193,11 @@ export default function Layout() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            id="mobile-menu"
+            ref={mobileMenuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="תפריט ניווט"
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
@@ -154,7 +213,6 @@ export default function Layout() {
               >
                 <Link
                   to={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
                   aria-current={pathname === link.href ? 'page' : undefined}
                   className="text-2xl font-bold text-slate-600 hover:text-slate-900 transition-colors"
                 >
@@ -166,7 +224,7 @@ export default function Layout() {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 pt-24 flex flex-col relative pb-10">
+      <main id="main-content" className="flex-1 pt-24 flex flex-col relative pb-10">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-blue-200/10 via-transparent to-purple-200/10" />
         <AnimatePresence mode="wait">
           <motion.div
@@ -177,13 +235,15 @@ export default function Layout() {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="flex-1 relative w-full"
           >
-            <Suspense fallback={
-              <div className="flex-1 flex items-center justify-center min-h-[60vh]">
-                <div className="w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
-              </div>
-            }>
-              <Outlet />
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense fallback={
+                <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+                  <div className="w-8 h-8 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+                </div>
+              }>
+                <Outlet />
+              </Suspense>
+            </ErrorBoundary>
           </motion.div>
         </AnimatePresence>
       </main>
