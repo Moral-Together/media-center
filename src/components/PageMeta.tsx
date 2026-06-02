@@ -1,13 +1,20 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import {
+  DEFAULT_OG_IMAGE,
+  OG_IMAGE_ALT,
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_WIDTH,
+  SITE_NAME,
+  SITE_URL,
+} from '../lib/seo';
 
 interface PageMetaProps {
   title: string;
   description: string;
+  image?: string;
+  noIndex?: boolean;
 }
-
-const SITE_NAME = 'מרכז המדיה של ישראל';
-const SITE_URL = 'https://media.moraltogether.com';
 
 function setMeta(attr: 'name' | 'property', key: string, content: string) {
   let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
@@ -29,32 +36,38 @@ function setCanonical(href: string) {
   el.setAttribute('href', href);
 }
 
-export function PageMeta({ title, description }: PageMetaProps) {
+export function PageMeta({ title, description, image, noIndex = false }: PageMetaProps) {
   const { pathname } = useLocation();
   const fullTitle = `${title} | ${SITE_NAME}`;
-  const canonical = `${SITE_URL}${pathname}`;
+  const canonical = `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
+  const ogImage = image ?? DEFAULT_OG_IMAGE;
+  const robots = noIndex ? 'noindex, follow' : 'index, follow';
 
   useEffect(() => {
     document.title = fullTitle;
 
     setMeta('name', 'description', description);
+    setMeta('name', 'robots', robots);
 
     setMeta('property', 'og:title', fullTitle);
     setMeta('property', 'og:description', description);
     setMeta('property', 'og:site_name', SITE_NAME);
     setMeta('property', 'og:type', 'website');
     setMeta('property', 'og:url', canonical);
+    setMeta('property', 'og:locale', 'he_IL');
+    setMeta('property', 'og:image', ogImage);
+    setMeta('property', 'og:image:secure_url', ogImage);
+    setMeta('property', 'og:image:alt', OG_IMAGE_ALT);
+    setMeta('property', 'og:image:width', String(OG_IMAGE_WIDTH));
+    setMeta('property', 'og:image:height', String(OG_IMAGE_HEIGHT));
 
-    setMeta('name', 'twitter:card', 'summary');
+    setMeta('name', 'twitter:card', 'summary_large_image');
     setMeta('name', 'twitter:title', fullTitle);
     setMeta('name', 'twitter:description', description);
+    setMeta('name', 'twitter:image', ogImage);
 
     setCanonical(canonical);
-
-    return () => {
-      document.title = SITE_NAME;
-    };
-  }, [fullTitle, description, canonical]);
+  }, [fullTitle, description, canonical, ogImage, robots]);
 
   return null;
 }

@@ -7,7 +7,7 @@ import { sectionVariants } from '../lib/motion';
 export default function NotFound() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center justify-center text-center">
-      <PageMeta title="404" description="הדף שחיפשת לא נמצא." />
+      <PageMeta title="404" description="הדף שחיפשת לא נמצא." noIndex />
 
       <motion.div
         variants={sectionVariants}
