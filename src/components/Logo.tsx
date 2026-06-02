@@ -7,7 +7,7 @@ export function Logo({ className = "w-12 h-12" }: { className?: string }) {
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-700 rounded-full"></div>
       
       {/* Abstract film strip ring */}
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full animate-[spin_15s_linear_infinite] group-hover:animate-[spin_4s_linear_infinite]">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="absolute inset-0 w-full h-full animate-[spin_15s_linear_infinite] group-hover:animate-[spin_4s_linear_infinite]">
         
         {/* Blue Segment */}
         <path d="M50 15 A35 35 0 0 1 85 50" stroke="#2563eb" strokeWidth="8" strokeLinecap="round" strokeDasharray="15 5" />

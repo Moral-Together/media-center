@@ -73,6 +73,9 @@ function ProjectCard({ project }: { project: Project }) {
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' fill='%23f1f5f9'%3E%3Crect width='800' height='600'/%3E%3C/svg%3E";
+          }}
         />
 
         {/* Hover overlay via AnimatePresence */}

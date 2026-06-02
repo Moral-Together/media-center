@@ -104,6 +104,8 @@ export default function Layout() {
             <button
               className="md:hidden p-2 text-slate-400 hover:text-slate-900"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? 'סגור תפריט' : 'פתח תפריט'}
+              aria-expanded={isMobileMenuOpen}
             >
               <AnimatePresence mode="wait" initial={false}>
                 {isMobileMenuOpen ? (
@@ -182,7 +184,7 @@ export default function Layout() {
         <div className="flex items-center gap-3">
           <span>&copy; {new Date().getFullYear()} מרכז המדיה של ישראל</span>
         </div>
-        <div className="flex gap-4 md:gap-8 hidden md:flex">
+        <div className="hidden md:flex gap-4 md:gap-8">
           <span>
             סטטוס: <span className="text-emerald-500">פעיל</span>
           </span>

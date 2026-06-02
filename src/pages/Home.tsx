@@ -14,12 +14,14 @@ import { cardHover, cardVariants, containerStagger, scrollRevealMotion, viewport
 
 export default function Home() {
   const heroRef = React.useRef<HTMLElement | null>(null);
-  const [playHeroIntro] = React.useState(() => !sessionStorage.getItem('hero-intro-done'));
+  const [playHeroIntro] = React.useState(() => {
+    try { return !sessionStorage.getItem('hero-intro-done'); } catch { return true; }
+  });
   const reduceMotion = useReducedMotion();
 
   React.useEffect(() => {
     if (playHeroIntro) {
-      sessionStorage.setItem('hero-intro-done', '1');
+      try { sessionStorage.setItem('hero-intro-done', '1'); } catch { /* storage unavailable */ }
     }
   }, [playHeroIntro]);
 
