@@ -2,6 +2,7 @@ import React from 'react';
 import {
   AnimatePresence,
   motion,
+  useInView,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -12,7 +13,13 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Code, Shield, Megaphone } from 'lucide-react';
 import { Logo } from '../components/Logo';
 import { PageMeta } from '../components/PageMeta';
-import { cardHover, cardVariants, containerStagger, viewportOnce } from '../lib/motion';
+import {
+  cardHover,
+  cardVariants,
+  containerStagger,
+  useAnimatedCounter,
+  viewportOnce,
+} from '../lib/motion';
 
 const CYCLING_SERVICES = [
   'פיתוח אתרים ואפליקציות',
@@ -22,11 +29,77 @@ const CYCLING_SERVICES = [
 ];
 
 const STATS = [
-  { value: '+120', label: 'לקוחות מרוצים' },
-  { value: '+300', label: 'פרויקטים' },
-  { value: '25',   label: 'מומחים'       },
-  { value: '10',   label: 'שנות ניסיון'  },
-];
+  {
+    numeric: 120,
+    prefix: '+',
+    label: 'לקוחות מרוצים',
+    accent: 'from-cyan-300 to-blue-400',
+    glow: 'group-hover:shadow-cyan-500/25',
+  },
+  {
+    numeric: 300,
+    prefix: '+',
+    label: 'פרויקטים',
+    accent: 'from-violet-300 to-purple-400',
+    glow: 'group-hover:shadow-violet-500/25',
+  },
+  {
+    numeric: 25,
+    prefix: '',
+    label: 'מומחים',
+    accent: 'from-fuchsia-300 to-pink-400',
+    glow: 'group-hover:shadow-fuchsia-500/25',
+  },
+  {
+    numeric: 10,
+    prefix: '',
+    label: 'שנות ניסיון',
+    accent: 'from-emerald-300 to-teal-400',
+    glow: 'group-hover:shadow-emerald-500/25',
+  },
+] as const;
+
+type HeroStatItem = (typeof STATS)[number];
+
+function HeroStat({
+  stat,
+  index,
+  playIntro,
+  reduceMotion,
+}: {
+  stat: HeroStatItem;
+  index: number;
+  playIntro: boolean;
+  reduceMotion: boolean | null;
+}) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const animated = useAnimatedCounter(stat.numeric, inView && !reduceMotion);
+  const display = reduceMotion ? stat.numeric : animated;
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={playIntro ? { opacity: 0, y: 14 } : false}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, delay: 0.48 + index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+      className={`group relative flex flex-col items-center justify-center py-5 px-3 sm:px-4 rounded-2xl bg-slate-900/60 border border-white/[0.08] backdrop-blur-sm hover:bg-white/[0.06] hover:border-white/15 transition-all duration-300 ${stat.glow} hover:shadow-lg`}
+    >
+      <div
+        className={`absolute inset-x-3 top-0 h-px bg-gradient-to-l ${stat.accent} opacity-60 group-hover:opacity-100 transition-opacity`}
+      />
+      <span
+        className={`text-3xl sm:text-4xl font-bold tabular-nums bg-gradient-to-b ${stat.accent} bg-clip-text text-transparent`}
+      >
+        {stat.prefix}
+        {display}
+      </span>
+      <span className="text-[11px] sm:text-xs text-slate-400 mt-2 font-medium tracking-wide text-center leading-snug group-hover:text-slate-300 transition-colors">
+        {stat.label}
+      </span>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const heroRef   = React.useRef<HTMLElement | null>(null);
@@ -267,22 +340,28 @@ export default function Home() {
             </Link>
           </motion.div>
 
-          {/* Stats strip */}
+          {/* Stats */}
           <motion.div
             initial={heroEnter({ opacity: 0, y: 16 })}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.45 }}
-            className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/8 rounded-2xl overflow-hidden border border-white/8 w-full max-w-xl"
+            transition={{ duration: 0.55, delay: 0.42 }}
+            className="relative w-full max-w-2xl"
           >
-            {STATS.map((stat) => (
-              <div
-                key={stat.label}
-                className="flex flex-col items-center py-4 px-3 bg-slate-950 hover:bg-white/[0.04] transition-colors cursor-default"
-              >
-                <span className="text-2xl font-bold text-white tabular-nums">{stat.value}</span>
-                <span className="text-xs text-slate-500 mt-0.5">{stat.label}</span>
-              </div>
-            ))}
+            <div
+              className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-r from-cyan-500/20 via-violet-500/15 to-fuchsia-500/20 blur-lg opacity-70 pointer-events-none"
+              aria-hidden
+            />
+            <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-2 sm:p-3 rounded-[1.5rem] bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
+              {STATS.map((stat, i) => (
+                <HeroStat
+                  key={stat.label}
+                  stat={stat}
+                  index={i}
+                  playIntro={playHeroIntro}
+                  reduceMotion={reduceMotion}
+                />
+              ))}
+            </div>
           </motion.div>
         </motion.section>
 
