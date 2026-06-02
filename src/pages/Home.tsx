@@ -212,10 +212,14 @@ export default function Home() {
             initial={heroEnter({ opacity: 0, y: 26 })}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="font-bold leading-[1.05] tracking-tight mb-6 text-5xl sm:text-6xl md:text-7xl lg:text-8xl"
+            className="mb-6"
           >
-            <span className="text-white block">מרכז המדיה</span>
-            <span className="text-gradient-vibrant block mt-1">של ישראל</span>
+            <img
+              src="/logo_text.png"
+              alt="מרכז המדיה של ישראל"
+              draggable={false}
+              className="w-full max-w-2xl sm:max-w-3xl md:max-w-4xl h-auto mx-auto object-contain select-none"
+            />
           </motion.h1>
 
           {/* Cycling service label */}
