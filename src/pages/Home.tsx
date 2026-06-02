@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  AnimatePresence,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -13,11 +14,26 @@ import { Logo } from '../components/Logo';
 import { PageMeta } from '../components/PageMeta';
 import { cardHover, cardVariants, containerStagger, viewportOnce } from '../lib/motion';
 
+const CYCLING_SERVICES = [
+  'פיתוח אתרים ואפליקציות',
+  'אבטחת מידע וסייבר',
+  'פרסום דיגיטלי ו-SEO',
+  'הפקת וידאו ותוכן',
+];
+
+const STATS = [
+  { value: '+120', label: 'לקוחות מרוצים' },
+  { value: '+300', label: 'פרויקטים' },
+  { value: '25',   label: 'מומחים'       },
+  { value: '10',   label: 'שנות ניסיון'  },
+];
+
 export default function Home() {
-  const heroRef = React.useRef<HTMLElement | null>(null);
+  const heroRef   = React.useRef<HTMLElement | null>(null);
   const [playHeroIntro] = React.useState(() => {
     try { return !sessionStorage.getItem('hero-intro-done'); } catch { return true; }
   });
+  const [activeService, setActiveService] = React.useState(0);
   const reduceMotion = useReducedMotion();
 
   React.useEffect(() => {
@@ -26,184 +42,268 @@ export default function Home() {
     }
   }, [playHeroIntro]);
 
+  // Cycle through services every 2.8 s
+  React.useEffect(() => {
+    if (reduceMotion) return;
+    const id = setInterval(
+      () => setActiveService(p => (p + 1) % CYCLING_SERVICES.length),
+      2800,
+    );
+    return () => clearInterval(id);
+  }, [reduceMotion]);
+
   const heroEnter = <T,>(value: T): false | T => (playHeroIntro ? value : false);
+
+  // Scroll: content gently fades + scales back as user scrolls away
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const heroScale   = useTransform(scrollYProgress, [0, 1],    [1, 0.94]);
 
-  const auroraY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -90]);
-  const shapeY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -50]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.86]);
-  const auroraYMid = useTransform(auroraY, (value) => value * 0.65);
-  const auroraYRear = useTransform(auroraY, (value) => value * -0.4);
-  const shapeYMid = useTransform(shapeY, (value) => value * 0.6);
+  // Mouse-driven parallax for aurora orbs
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const smX = useSpring(mouseX, { stiffness: 45, damping: 28 });
+  const smY = useSpring(mouseY, { stiffness: 45, damping: 28 });
 
+  const o1x = useTransform(smX, [-1, 1], [-55, 55]);
+  const o1y = useTransform(smY, [-1, 1], [-35, 35]);
+  const o2x = useTransform(smX, [-1, 1], [ 40,-40]);
+  const o2y = useTransform(smY, [-1, 1], [ 28,-28]);
+  const o3x = useTransform(smX, [-1, 1], [-28, 28]);
+  const o4x = useTransform(smX, [-1, 1], [ 22,-22]);
+  const o4y = useTransform(smY, [-1, 1], [-18, 18]);
+
+  const onHeroMouseMove = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (reduceMotion) return;
+      const r = e.currentTarget.getBoundingClientRect();
+      mouseX.set((e.clientX - r.left)  / r.width  * 2 - 1);
+      mouseY.set((e.clientY - r.top)   / r.height * 2 - 1);
+    },
+    [reduceMotion, mouseX, mouseY],
+  );
+  const onHeroMouseLeave = React.useCallback(() => {
+    mouseX.set(0); mouseY.set(0);
+  }, [mouseX, mouseY]);
+
+  // CTA magnetic
   const ctaX = useMotionValue(0);
   const ctaY = useMotionValue(0);
-  const ctaSpringX = useSpring(ctaX, { stiffness: 260, damping: 22, mass: 0.8 });
-  const ctaSpringY = useSpring(ctaY, { stiffness: 260, damping: 22, mass: 0.8 });
+  const ctaSX = useSpring(ctaX, { stiffness: 260, damping: 22, mass: 0.8 });
+  const ctaSY = useSpring(ctaY, { stiffness: 260, damping: 22, mass: 0.8 });
 
-  const onCtaMove = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const onCtaMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (reduceMotion) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const offsetX = event.clientX - (rect.left + rect.width / 2);
-    const offsetY = event.clientY - (rect.top + rect.height / 2);
-    ctaX.set(offsetX * 0.08);
-    ctaY.set(offsetY * 0.12);
+    const r = e.currentTarget.getBoundingClientRect();
+    ctaX.set((e.clientX - (r.left + r.width  / 2)) * 0.08);
+    ctaY.set((e.clientY - (r.top  + r.height / 2)) * 0.12);
   };
-
-  const onCtaLeave = () => {
-    ctaX.set(0);
-    ctaY.set(0);
-  };
+  const onCtaLeave = () => { ctaX.set(0); ctaY.set(0); };
 
   return (
-    <div className="flex-1 w-full relative overflow-hidden">
+    <div className="flex-1 w-full">
       <PageMeta
         title="ראשי"
         description="מרכז המדיה של ישראל – פיתוח אתרים, אבטחת מידע, פרסום דיגיטלי ועוד. הפתרון הדיגיטלי המלא לעסק שלך."
       />
-      {/* Background glow effects & Animated Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Subtle dot grid */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]" 
-          style={{ backgroundImage: 'radial-gradient(#0f172a 1.5px, transparent 1.5px)', backgroundSize: '40px 40px' }}
-        ></div>
-        
-        {/* Animated Aurora Orbs */}
-        <motion.div
-          animate={reduceMotion ? undefined : { x: [0, 100, -50, 0], scale: [1, 1.2, 0.8, 1] }}
-          transition={reduceMotion ? undefined : { duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ y: auroraY }}
-          className="absolute top-[-10%] right-[10%] w-[500px] h-[500px] bg-cyan-400/20 rounded-full blur-[120px] mix-blend-multiply"
-        />
-        
-        <motion.div
-          animate={reduceMotion ? undefined : { x: [0, -100, 50, 0], scale: [1, 0.9, 1.2, 1] }}
-          transition={reduceMotion ? undefined : { duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ y: auroraYMid }}
-          className="absolute top-[20%] left-[5%] w-[450px] h-[450px] bg-fuchsia-400/20 rounded-full blur-[120px] mix-blend-multiply"
-        />
-        
-        <motion.div
-          animate={reduceMotion ? undefined : { x: [0, 50, -100, 0], scale: [1, 1.1, 0.9, 1] }}
-          transition={reduceMotion ? undefined : { duration: 30, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ y: auroraYRear }}
-          className="absolute bottom-[-10%] right-[20%] w-[600px] h-[600px] bg-indigo-400/20 rounded-full blur-[120px] mix-blend-multiply"
-        />
 
-        {/* Floating Glassmorphism Abstract Shapes */}
-        <motion.div
-          animate={reduceMotion ? undefined : { y: [-20, 20, -20], rotate: [0, 90, 180, 0] }}
-          transition={reduceMotion ? undefined : { duration: 25, repeat: Infinity, ease: 'linear' }}
-          style={{ y: shapeY }}
-          className="hidden md:flex absolute top-[15%] left-[15%] w-28 h-28 rounded-[2rem] bg-white/40 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.05)] items-center justify-center p-3 opacity-80"
-        >
-           <div className="w-full h-full rounded-2xl border border-slate-200/50 border-dashed" />
-        </motion.div>
-
-        <motion.div
-          animate={reduceMotion ? undefined : { y: [30, -30, 30], rotate: [0, -180, -360] }}
-          transition={reduceMotion ? undefined : { duration: 30, repeat: Infinity, ease: 'linear' }}
-          style={{ y: shapeYMid }}
-          className="hidden md:block absolute top-[55%] right-[12%] w-36 h-36 rounded-full border border-white/60 bg-gradient-to-tr from-white/20 to-white/70 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] opacity-80"
-        >
-           <div className="absolute inset-2 rounded-full border border-white/40" />
-        </motion.div>
-
-        <motion.div
-           animate={reduceMotion ? undefined : { y: [0, -40, 0], x: [0, 20, 0], rotate: [15, -15, 15] }}
-           transition={reduceMotion ? undefined : { duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-           className="hidden lg:block absolute bottom-[20%] left-[20%] w-24 h-24 bg-white/50 backdrop-blur-md border border-white/60 shadow-xl opacity-70"
-           style={{ borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%' }}
-        />
-        
-        <motion.div
-          animate={reduceMotion ? undefined : { y: [-15, 15, -15], x: [-15, 15, -15] }}
-          transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-[30%] right-[30%] w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400/20 to-transparent border border-blue-200/50 backdrop-blur-sm rotate-45"
-        />
-      </div>
-
-      {/* Hero Section */}
-      <motion.section
-        ref={heroRef}
-        style={{ opacity: heroOpacity }}
-        className="relative z-10 pt-4 md:pt-6 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col items-center text-center"
+      {/* ═══════════════════════ DARK HERO ═══════════════════════ */}
+      <div
+        className="relative bg-slate-950 overflow-hidden"
+        onMouseMove={onHeroMouseMove}
+        onMouseLeave={onHeroMouseLeave}
       >
-        
+        {/* Fine grid */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),' +
+              'linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px)',
+            backgroundSize: '72px 72px',
+          }}
+        />
+        {/* Centre radial vignette — kills the grid in the middle */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(ellipse 70% 70% at 50% 40%, transparent 30%, #020617 100%)',
+          }}
+        />
+
+        {/* ── Aurora orbs ── */}
+        {/* Cyan — top-right */}
         <motion.div
-           initial={heroEnter({ opacity: 0, scale: 0.8 })}
-           animate={{ opacity: 1, scale: 1 }}
-           transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
-           className="flex flex-col items-center mb-8"
+          style={{ x: o1x, y: o1y }}
+          animate={reduceMotion ? undefined : { scale: [1, 1.22, 0.88, 1] }}
+          transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-48 -right-24 w-[680px] h-[680px] rounded-full bg-cyan-500/30 blur-[110px] pointer-events-none"
+        />
+        {/* Violet — left */}
+        <motion.div
+          style={{ x: o2x, y: o2y }}
+          animate={reduceMotion ? undefined : { scale: [1, 0.83, 1.28, 1] }}
+          transition={reduceMotion ? undefined : { duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/4 -left-36 w-[560px] h-[560px] rounded-full bg-violet-600/28 blur-[100px] pointer-events-none"
+        />
+        {/* Fuchsia — bottom-center */}
+        <motion.div
+          style={{ x: o3x }}
+          animate={reduceMotion ? undefined : { scale: [1, 1.18, 0.88, 1], y: [0, 40, -25, 0] }}
+          transition={reduceMotion ? undefined : { duration: 26, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -bottom-48 left-1/3 w-[640px] h-[640px] rounded-full bg-fuchsia-600/25 blur-[115px] pointer-events-none"
+        />
+        {/* Blue — centre */}
+        <motion.div
+          style={{ x: o4x, y: o4y }}
+          animate={reduceMotion ? undefined : { scale: [1, 1.12, 0.9, 1] }}
+          transition={reduceMotion ? undefined : { duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-16 left-1/2 -translate-x-1/2 w-[480px] h-[480px] rounded-full bg-blue-600/20 blur-[95px] pointer-events-none"
+        />
+
+        {/* ── Hero content ── */}
+        <motion.section
+          ref={heroRef}
+          style={{ opacity: heroOpacity, scale: heroScale }}
+          className="relative z-10 pt-8 md:pt-12 pb-28 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col items-center text-center"
         >
+
+          {/* Badge */}
           <motion.div
-            initial={heroEnter({ opacity: 0, y: -10 })}
+            initial={heroEnter({ opacity: 0, y: -14 })}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.05 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-cyan-300 text-xs font-bold uppercase tracking-widest mb-8 backdrop-blur-sm"
           >
-             <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-             נוסד בשנת 5785
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+            סוכנות דיגיטל מלאה · פעיל 24/7
           </motion.div>
+
+          {/* Logo */}
           <motion.div
-            animate={reduceMotion ? undefined : { y: [0, -7, 0], rotate: [0, 1.2, 0, -1.2, 0] }}
-            transition={reduceMotion ? undefined : { duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-            className="relative"
+            initial={heroEnter({ opacity: 0, scale: 0.62 })}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, type: 'spring', bounce: 0.32, delay: 0.1 }}
+            className="relative mb-8"
           >
+            {/* Pulsing halo */}
             <motion.div
-              animate={reduceMotion ? undefined : { opacity: [0.35, 0.62, 0.35], scale: [0.95, 1.04, 0.95] }}
-              transition={reduceMotion ? undefined : { duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute inset-0 rounded-full blur-xl bg-gradient-to-r from-blue-500/25 via-purple-500/30 to-pink-500/25"
+              animate={reduceMotion ? undefined : {
+                opacity: [0.3, 0.7, 0.3],
+                scale:   [0.85, 1.15, 0.85],
+              }}
+              transition={reduceMotion ? undefined : { duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-0 rounded-full blur-3xl bg-gradient-to-r from-cyan-500/50 via-violet-500/50 to-fuchsia-500/50"
             />
-            <Logo className="relative w-40 h-40 md:w-56 md:h-56 drop-shadow-xl" />
-          </motion.div>
-        </motion.div>
-
-        <motion.h1
-          initial={heroEnter({ opacity: 0, scale: 0.95 })}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight mb-6 max-w-5xl text-gradient-tech pb-2 hero-title-shimmer"
-        >
-          מרכז המדיה של ישראל
-        </motion.h1>
-
-        <motion.p
-          initial={heroEnter({ opacity: 0 })}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-slate-600 text-lg leading-relaxed max-w-2xl text-center mb-10"
-        >
-          פרסום וקידום • מכירות • ייעוץ והכוונה • פיתוח
-        </motion.p>
-
-        <motion.div
-          initial={heroEnter({ opacity: 0, y: 20 })}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <motion.div style={{ x: ctaSpringX, y: ctaSpringY }}>
-            <Link
-            to="/services"
-            className="px-8 py-3 bg-slate-900 text-white rounded-full font-bold hover:text-white transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 text-lg relative overflow-hidden group"
-            onMouseMove={onCtaMove}
-            onMouseLeave={onCtaLeave}
+            <motion.div
+              animate={reduceMotion ? undefined : {
+                y:      [0, -8, 0],
+                rotate: [0, 1.5, 0, -1.5, 0],
+              }}
+              transition={reduceMotion ? undefined : { duration: 6, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <span className="absolute inset-0 bg-gradient-neon opacity-0 group-hover:opacity-100 transition-opacity"></span>
-              <span className="relative z-10 flex items-center gap-2">גלה את השירותים שלנו <ArrowLeft className="w-5 h-5" /></span>
+              <Logo className="relative w-32 h-32 md:w-44 md:h-44 drop-shadow-2xl" />
+            </motion.div>
+          </motion.div>
+
+          {/* H1 */}
+          <motion.h1
+            initial={heroEnter({ opacity: 0, y: 26 })}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="font-bold leading-[1.05] tracking-tight mb-6 text-5xl sm:text-6xl md:text-7xl lg:text-8xl"
+          >
+            <span className="text-white block">מרכז המדיה</span>
+            <span className="text-gradient-vibrant block mt-1">של ישראל</span>
+          </motion.h1>
+
+          {/* Cycling service label */}
+          <motion.div
+            initial={heroEnter({ opacity: 0 })}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="flex flex-col items-center mb-10 gap-1"
+          >
+            <p className="text-slate-400 text-base">אנחנו מתמחים ב</p>
+            <div className="h-10 flex items-center justify-center overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={activeService}
+                  initial={{ opacity: 0, y: 24, filter: 'blur(6px)' }}
+                  animate={{ opacity: 1, y: 0,  filter: 'blur(0px)' }}
+                  exit={   { opacity: 0, y: -24, filter: 'blur(6px)' }}
+                  transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                  className="text-2xl md:text-3xl font-bold text-gradient-cycling block"
+                >
+                  {CYCLING_SERVICES[activeService]}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* CTAs */}
+          <motion.div
+            initial={heroEnter({ opacity: 0, y: 20 })}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="flex flex-col sm:flex-row items-center gap-4 mb-14"
+          >
+            {/* Primary CTA */}
+            <motion.div style={{ x: ctaSX, y: ctaSY }}>
+              <Link
+                to="/services"
+                className="px-8 py-3.5 bg-white text-slate-950 rounded-full font-bold text-lg relative overflow-hidden group flex items-center gap-2 shadow-[0_0_40px_rgba(255,255,255,0.18)] hover:shadow-[0_0_60px_rgba(255,255,255,0.28)] transition-shadow"
+                onMouseMove={onCtaMove}
+                onMouseLeave={onCtaLeave}
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative z-10 group-hover:text-white transition-colors flex items-center gap-2">
+                  גלה את השירותים
+                  <ArrowLeft className="w-5 h-5" />
+                </span>
+              </Link>
+            </motion.div>
+
+            {/* Ghost CTA */}
+            <Link
+              to="/contact"
+              className="px-8 py-3.5 rounded-full font-bold text-lg border border-white/15 text-white/75 hover:text-white hover:border-white/30 hover:bg-white/6 transition-all"
+            >
+              צור קשר
             </Link>
           </motion.div>
-        </motion.div>
-      </motion.section>
 
-      {/* Featured Services Preview */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200 relative bg-transparent">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-neon opacity-50"></div>
-        
+          {/* Stats strip */}
+          <motion.div
+            initial={heroEnter({ opacity: 0, y: 16 })}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.45 }}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/8 rounded-2xl overflow-hidden border border-white/8 w-full max-w-xl"
+          >
+            {STATS.map((stat) => (
+              <div
+                key={stat.label}
+                className="flex flex-col items-center py-4 px-3 bg-slate-950 hover:bg-white/[0.04] transition-colors cursor-default"
+              >
+                <span className="text-2xl font-bold text-white tabular-nums">{stat.value}</span>
+                <span className="text-xs text-slate-500 mt-0.5">{stat.label}</span>
+              </div>
+            ))}
+          </motion.div>
+        </motion.section>
+
+        {/* Fade to light section below */}
+        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
+      </div>
+
+      {/* ═══════════════════ SERVICES PREVIEW (light) ═══════════════════ */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative bg-transparent">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-neon opacity-50" />
+
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">ההתמחויות שלנו</h2>
@@ -224,9 +324,9 @@ export default function Home() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {[
-            { icon: Code, title: "פיתוח", desc: "שירותי פיתוח וארכיטקטורה, אתרים מתקדמים ואפליקציות מובייל.", colorClass: "text-blue-600", bgClass: "bg-gradient-to-br from-blue-50 to-blue-100/50" },
-            { icon: Shield, title: "אבטחת מידע", desc: "ביקורת אבטחת מידע, יצירת חומות אש ובדיקות חדירות לאתרים ומערכות.", colorClass: "text-purple-600", bgClass: "bg-gradient-to-br from-purple-50 to-purple-100/50" },
-            { icon: Megaphone, title: "פרסום דיגיטלי", desc: "שיווק איכותי מבוסס ביצועים וקמפיינים עם תוצאות מהירות ואפקטивיות.", colorClass: "text-pink-600", bgClass: "bg-gradient-to-br from-pink-50 to-pink-100/50" },
+            { icon: Code,      title: 'פיתוח',           desc: 'שירותי פיתוח וארכיטקטורה, אתרים מתקדמים ואפליקציות מובייל.',                          colorClass: 'text-blue-600',   bgClass: 'bg-gradient-to-br from-blue-50 to-blue-100/50'   },
+            { icon: Shield,    title: 'אבטחת מידע',      desc: 'ביקורת אבטחת מידע, יצירת חומות אש ובדיקות חדירות לאתרים ומערכות.',                    colorClass: 'text-purple-600', bgClass: 'bg-gradient-to-br from-purple-50 to-purple-100/50' },
+            { icon: Megaphone, title: 'פרסום דיגיטלי',   desc: 'שיווק איכותי מבוסס ביצועים וקמפיינים עם תוצאות מהירות ואפקטיביות.',                  colorClass: 'text-pink-600',   bgClass: 'bg-gradient-to-br from-pink-50 to-pink-100/50'   },
           ].map((srv, i) => (
             <motion.div
               key={i}
@@ -234,12 +334,14 @@ export default function Home() {
               whileHover={cardHover}
               className="group relative bg-white/60 backdrop-blur-xl border border-white max-w-full shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] p-8 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 cursor-pointer flex flex-col z-10"
             >
-               <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-white/10 rounded-[2rem] pointer-events-none" />
-               <div className={`relative w-14 h-14 ${srv.bgClass} border border-slate-200/60 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                 <srv.icon strokeWidth={2} className={`w-6 h-6 ${srv.colorClass}`} />
-               </div>
-               <h3 className="relative text-2xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all">{srv.title}</h3>
-               <p className="relative text-slate-600 text-base flex-1 leading-relaxed">{srv.desc}</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-white/10 rounded-[2rem] pointer-events-none" />
+              <div className={`relative w-14 h-14 ${srv.bgClass} border border-slate-200/60 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                <srv.icon strokeWidth={2} className={`w-6 h-6 ${srv.colorClass}`} />
+              </div>
+              <h3 className="relative text-2xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
+                {srv.title}
+              </h3>
+              <p className="relative text-slate-600 text-base flex-1 leading-relaxed">{srv.desc}</p>
             </motion.div>
           ))}
         </motion.div>
