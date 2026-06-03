@@ -211,28 +211,28 @@ export default function Home() {
         {/* ── Aurora orbs ── */}
         {/* Cyan — top-right */}
         <motion.div
-          style={{ x: o1x, y: o1y }}
+          style={{ x: o1x, y: o1y, willChange: 'transform' }}
           animate={reduceMotion ? undefined : { scale: [1, 1.22, 0.88, 1] }}
           transition={reduceMotion ? undefined : { duration: 18, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute -top-48 -right-24 w-[680px] h-[680px] rounded-full bg-cyan-500/30 blur-[110px] pointer-events-none"
         />
         {/* Violet — left */}
         <motion.div
-          style={{ x: o2x, y: o2y }}
+          style={{ x: o2x, y: o2y, willChange: 'transform' }}
           animate={reduceMotion ? undefined : { scale: [1, 0.83, 1.28, 1] }}
           transition={reduceMotion ? undefined : { duration: 22, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute top-1/4 -left-36 w-[560px] h-[560px] rounded-full bg-violet-600/28 blur-[100px] pointer-events-none"
         />
         {/* Fuchsia — bottom-center */}
         <motion.div
-          style={{ x: o3x }}
+          style={{ x: o3x, willChange: 'transform' }}
           animate={reduceMotion ? undefined : { scale: [1, 1.18, 0.88, 1], y: [0, 40, -25, 0] }}
           transition={reduceMotion ? undefined : { duration: 26, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute -bottom-48 left-1/3 w-[640px] h-[640px] rounded-full bg-fuchsia-600/25 blur-[115px] pointer-events-none"
         />
         {/* Blue — centre */}
         <motion.div
-          style={{ x: o4x, y: o4y }}
+          style={{ x: o4x, y: o4y, willChange: 'transform' }}
           animate={reduceMotion ? undefined : { scale: [1, 1.12, 0.9, 1] }}
           transition={reduceMotion ? undefined : { duration: 14, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute -top-16 left-1/2 -translate-x-1/2 w-[480px] h-[480px] rounded-full bg-blue-600/20 blur-[95px] pointer-events-none"
@@ -280,6 +280,9 @@ export default function Home() {
               src="/logo_text.png"
               alt="מרכז המדיה של ישראל"
               draggable={false}
+              width={800}
+              height={160}
+              fetchPriority="high"
               className="w-full max-w-2xl sm:max-w-3xl md:max-w-4xl h-auto mx-auto object-contain select-none"
             />
           </motion.h1>

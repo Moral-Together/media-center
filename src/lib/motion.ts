@@ -91,7 +91,7 @@ export function useAnimatedCounter(target: number, inView: boolean): number {
       duration: 1.8,
       ease: [0.22, 1, 0.36, 1],
     });
-    return controls.stop;
+    return () => controls.stop();
   }, [inView, target, count]);
 
   return display;

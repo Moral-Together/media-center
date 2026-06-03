@@ -36,6 +36,29 @@ function setCanonical(href: string) {
   el.setAttribute('href', href);
 }
 
+function setHreflang(lang: string, href: string) {
+  const selector = `link[rel="alternate"][hreflang="${lang}"]`;
+  let el = document.querySelector<HTMLLinkElement>(selector);
+  if (!el) {
+    el = document.createElement('link');
+    el.setAttribute('rel', 'alternate');
+    el.setAttribute('hreflang', lang);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('href', href);
+}
+
+function setJsonLd(id: string, data: object) {
+  let el = document.querySelector<HTMLScriptElement>(`script[data-ld="${id}"]`);
+  if (!el) {
+    el = document.createElement('script');
+    el.setAttribute('type', 'application/ld+json');
+    el.setAttribute('data-ld', id);
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(data);
+}
+
 export function PageMeta({ title, description, image, noIndex = false }: PageMetaProps) {
   const { pathname } = useLocation();
   const fullTitle = `${title} | ${SITE_NAME}`;
@@ -67,7 +90,28 @@ export function PageMeta({ title, description, image, noIndex = false }: PageMet
     setMeta('name', 'twitter:image', ogImage);
 
     setCanonical(canonical);
-  }, [fullTitle, description, canonical, ogImage, robots]);
+
+    // hreflang for Hebrew and x-default
+    setHreflang('he', canonical);
+    setHreflang('x-default', `${SITE_URL}/`);
+
+    // WebPage structured data
+    if (!noIndex) {
+      setJsonLd('webpage', {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: fullTitle,
+        description,
+        url: canonical,
+        inLanguage: 'he',
+        isPartOf: {
+          '@type': 'WebSite',
+          name: SITE_NAME,
+          url: SITE_URL,
+        },
+      });
+    }
+  }, [fullTitle, description, canonical, ogImage, robots, noIndex]);
 
   return null;
 }

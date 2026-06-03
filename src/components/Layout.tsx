@@ -40,6 +40,12 @@ export default function Layout() {
     }
   }, [isMobileMenuOpen]);
 
+  // Lock body scroll when mobile menu is open
+  React.useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
+
   // Focus trap + Escape key for mobile menu
   React.useEffect(() => {
     if (!isMobileMenuOpen) return;
