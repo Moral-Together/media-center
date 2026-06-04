@@ -362,17 +362,19 @@ export default function Home() {
           >
             {/* ── Primary CTA ── */}
             <motion.div style={{ x: ctaSX, y: ctaSY }} className="flex-1 sm:flex-initial min-w-0">
-              {/* Breathing outer glow */}
+              {/* Color-cycling outer glow */}
               <motion.div
                 className="rounded-full"
                 animate={reduceMotion ? undefined : {
                   boxShadow: [
-                    '0 0 14px 2px rgba(255,255,255,0.08)',
-                    '0 0 38px 10px rgba(255,255,255,0.20)',
-                    '0 0 14px 2px rgba(255,255,255,0.08)',
+                    '0 0 20px 4px rgba(0,242,254,0.40),  0 0 50px 10px rgba(0,242,254,0.12)',
+                    '0 0 20px 4px rgba(177,0,255,0.40),  0 0 50px 10px rgba(177,0,255,0.12)',
+                    '0 0 20px 4px rgba(255,8,68,0.40),   0 0 50px 10px rgba(255,8,68,0.12)',
+                    '0 0 20px 4px rgba(12,245,116,0.40), 0 0 50px 10px rgba(12,245,116,0.12)',
+                    '0 0 20px 4px rgba(0,242,254,0.40),  0 0 50px 10px rgba(0,242,254,0.12)',
                   ],
                 }}
-                transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
               >
                 <Link
                   to="/services"
@@ -380,8 +382,21 @@ export default function Home() {
                   onMouseMove={onCtaMove}
                   onMouseLeave={onCtaLeave}
                 >
-                  {/* Gradient fill */}
+                  {/* Gradient fill on hover */}
                   <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Periodic iridescent sheen — sweeps even without hover */}
+                  {!reduceMotion && (
+                    <motion.span
+                      className="absolute inset-y-0 w-[55%] pointer-events-none z-[1]"
+                      style={{
+                        background:
+                          'linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0.40) 50%, rgba(255,255,255,0) 75%, transparent 100%)',
+                      }}
+                      initial={{ x: '-110%' }}
+                      animate={{ x: '290%' }}
+                      transition={{ duration: 2.0, repeat: Infinity, ease: 'easeInOut', repeatDelay: 3.0 }}
+                    />
+                  )}
                   {/* Radial bloom from centre on hover */}
                   <span
                     className="absolute inset-0 rounded-full opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300"
