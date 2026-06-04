@@ -6,6 +6,10 @@ vi.mock('../App', () => ({
   default: () => <div data-testid="app-root">app</div>,
 }));
 
+vi.mock('../lib/preloadLogo', () => ({
+  preloadLogoPlay: () => Promise.resolve(),
+}));
+
 vi.mock('../components/AppSplash', () => ({
   AppSplash: ({
     visible,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, useMotionValue, useReducedMotion } from 'motion/react';
+import { logoPlayUrl } from '../lib/assets';
 
 const SLOW   = 360 / 15_000; // deg/ms — 15 s/rotation
 const FAST   = 360 /  4_000; // deg/ms —  4 s/rotation on hover
@@ -84,9 +85,11 @@ export function Logo({
         }}
       />
       <motion.img
-        src="/logo_play.png"
+        src={logoPlayUrl()}
         alt=""
         draggable={false}
+        fetchPriority="high"
+        decoding="async"
         style={{ rotate }}
         className="relative z-10 w-full h-full object-contain mix-blend-screen select-none"
       />
