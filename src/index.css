@@ -89,14 +89,6 @@
     animation: heroShimmer 8s linear infinite;
   }
 
-  .logo-spin {
-    animation: logoSpin 15s linear infinite;
-  }
-
-  .group:hover .logo-spin {
-    animation-duration: 4s;
-  }
-
   /* Floating element utility */
   .animate-float {
     animation: floatY 3.2s ease-in-out infinite;
@@ -141,12 +133,6 @@
   }
 }
 
-@keyframes logoSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @keyframes heroShimmer {
   0% {
     background-position: 0% center;
@@ -185,9 +171,6 @@
     scroll-behavior: auto !important;
   }
 
-  .logo-spin {
-    animation: none !important;
-  }
 }
 
 @media (max-width: 768px) {
