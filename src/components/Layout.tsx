@@ -1,6 +1,13 @@
 import React, { Suspense } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 'motion/react';
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+} from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
@@ -10,9 +17,9 @@ export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const location = useLocation();
   const reduceMotion = useReducedMotion();
-  const prevPathRef = React.useRef<string | null>(null);
+  const prevPathRef    = React.useRef<string | null>(null);
   const hasNavigatedRef = React.useRef(false);
-  const mobileMenuRef = React.useRef<HTMLDivElement>(null);
+  const mobileMenuRef  = React.useRef<HTMLDivElement>(null);
 
   const pathname = location.pathname;
 
@@ -21,81 +28,63 @@ export default function Layout() {
   }
 
   React.useLayoutEffect(() => {
-    if (hasNavigatedRef.current) {
-      window.scrollTo(0, 0);
-    }
+    if (hasNavigatedRef.current) window.scrollTo(0, 0);
     prevPathRef.current = pathname;
   }, [pathname]);
 
-  // Close mobile menu on navigation
-  React.useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  React.useEffect(() => { setIsMobileMenuOpen(false); }, [pathname]);
 
-  // Focus first item when menu opens
   React.useEffect(() => {
     if (isMobileMenuOpen && mobileMenuRef.current) {
-      const first = mobileMenuRef.current.querySelector<HTMLElement>('a, button');
-      first?.focus();
+      mobileMenuRef.current.querySelector<HTMLElement>('a, button')?.focus();
     }
   }, [isMobileMenuOpen]);
 
-  // Lock body scroll when mobile menu is open
   React.useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isMobileMenuOpen]);
 
-  // Focus trap + Escape key for mobile menu
   React.useEffect(() => {
     if (!isMobileMenuOpen) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsMobileMenuOpen(false);
-        return;
-      }
+      if (e.key === 'Escape') { setIsMobileMenuOpen(false); return; }
       if (e.key !== 'Tab' || !mobileMenuRef.current) return;
-
       const focusable = Array.from(
         mobileMenuRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
       );
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last?.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first?.focus();
-      }
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isMobileMenuOpen]);
 
   const routeFadeIn = hasNavigatedRef.current && !reduceMotion;
 
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
+  const { scrollY, scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
+  // Track whether we're still over the dark hero section
+  const [isTop, setIsTop] = React.useState(() =>
+    typeof window !== 'undefined' ? window.scrollY < 60 : true
+  );
+  useMotionValueEvent(scrollY, 'change', (y) => setIsTop(y < 60));
+
+  // Which nav link is currently hovered (for sliding pill)
+  const [hoveredNav, setHoveredNav] = React.useState<string | null>(null);
 
   const links = [
-    { href: '/', label: 'ראשי' },
-    { href: '/about', label: 'מי אנחנו' },
-    { href: '/services', label: 'שירותים' },
+    { href: '/',          label: 'ראשי' },
+    { href: '/about',     label: 'מי אנחנו' },
+    { href: '/services',  label: 'שירותים' },
     { href: '/portfolio', label: 'תיק עבודות' },
-    { href: '/contact', label: 'צור קשר' },
+    { href: '/contact',   label: 'צור קשר' },
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans">
-      {/* Skip to main content — visible only on focus for keyboard users */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:right-4 focus:z-[200] focus:px-5 focus:py-2 focus:bg-slate-900 focus:text-white focus:rounded-full focus:font-bold focus:shadow-lg"
@@ -103,49 +92,97 @@ export default function Layout() {
         דלג לתוכן הראשי
       </a>
 
+      {/* ── Header ── */}
       <motion.header
         initial={reduceMotion ? false : { y: -72, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50"
+        className={cn(
+          'fixed top-0 inset-x-0 z-50 backdrop-blur-md transition-[background-color,border-color] duration-500',
+          isTop
+            ? 'bg-slate-950/25 border-b border-white/[0.07]'
+            : 'bg-white/85 border-b border-slate-200/60',
+        )}
       >
+        {/* Scroll progress bar */}
         <motion.div
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 transform origin-left z-50"
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 origin-left z-50"
           style={{ scaleX }}
         />
+
         <div className="px-6 lg:px-10">
-          <div className="flex justify-between items-center py-6">
-            <Link to="/" className="flex items-center gap-3">
+          <div className="flex justify-between items-center py-5">
+
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3 group/logo">
               <Logo className="w-8 h-8" />
-              <span className="font-bold text-xl tracking-tight uppercase">
+              <span className={cn(
+                'font-bold text-xl tracking-tight uppercase transition-colors duration-500',
+                isTop ? 'text-white' : 'text-slate-900',
+              )}>
                 מרכז ה<span className="text-gradient">מדיה</span>
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-10 text-base font-semibold text-slate-600">
-              {links.map((link, i) => (
-                <motion.div
-                  key={link.href}
-                  initial={reduceMotion ? false : { opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.08 + i * 0.06 }}
-                >
-                  <Link
-                    to={link.href}
-                    aria-current={pathname === link.href ? 'page' : undefined}
-                    className={cn(
-                      'transition-colors hover:text-slate-900 relative pb-1',
-                      pathname === link.href
-                        ? 'text-slate-900 border-b-2 border-[#00f2fe]'
-                        : 'border-b-2 border-transparent',
-                    )}
+            {/* Desktop nav */}
+            <nav
+              className="hidden md:flex items-center gap-0.5 text-base font-semibold"
+              onMouseLeave={() => setHoveredNav(null)}
+            >
+              {links.map((link, i) => {
+                const isActive   = pathname === link.href;
+                const showPill   = hoveredNav === link.href || (hoveredNav === null && isActive);
+                return (
+                  <motion.div
+                    key={link.href}
+                    className="relative"
+                    initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.08 + i * 0.06 }}
+                    onMouseEnter={() => setHoveredNav(link.href)}
                   >
-                    {link.label}
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      to={link.href}
+                      aria-current={isActive ? 'page' : undefined}
+                      className={cn(
+                        'relative block px-3.5 py-1.5 rounded-full transition-colors duration-200 select-none',
+                        isTop
+                          ? (isActive || hoveredNav === link.href ? 'text-white' : 'text-white/55')
+                          : (isActive || hoveredNav === link.href ? 'text-slate-900' : 'text-slate-500'),
+                      )}
+                    >
+                      {/* Sliding pill background */}
+                      {showPill && (
+                        <motion.span
+                          layoutId="nav-pill"
+                          className={cn(
+                            'absolute inset-0 rounded-full',
+                            isTop
+                              ? 'bg-white/12 border border-white/16'
+                              : 'bg-slate-100 border border-slate-200/80',
+                          )}
+                          transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                        />
+                      )}
+                      {/* Active glow dot */}
+                      {isActive && (
+                        <span
+                          className={cn(
+                            'absolute bottom-[3px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full transition-colors duration-500',
+                            isTop
+                              ? 'bg-cyan-400 shadow-[0_0_6px_2px_rgba(0,242,254,0.7)]'
+                              : 'bg-violet-500 shadow-[0_0_5px_1px_rgba(139,92,246,0.55)]',
+                          )}
+                        />
+                      )}
+                      <span className="relative z-10">{link.label}</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </nav>
 
+            {/* CTA button */}
             <motion.div
               className="hidden md:block"
               initial={reduceMotion ? false : { opacity: 0, scale: 0.85 }}
@@ -154,15 +191,26 @@ export default function Layout() {
             >
               <Link
                 to="/contact"
-                className="px-5 py-2 inline-block bg-slate-900 text-white rounded-full font-bold transition-all relative overflow-hidden group"
+                className={cn(
+                  'px-5 py-2 inline-block rounded-full font-bold transition-all duration-300 relative overflow-hidden group',
+                  isTop
+                    ? 'border border-white/22 text-white/80 hover:text-white hover:border-white/38 hover:bg-white/10'
+                    : 'bg-slate-900 text-white',
+                )}
               >
-                <span className="absolute inset-0 bg-gradient-neon opacity-0 group-hover:opacity-100 transition-opacity" />
+                {!isTop && (
+                  <span className="absolute inset-0 bg-gradient-neon opacity-0 group-hover:opacity-100 transition-opacity" />
+                )}
                 <span className="relative z-10 group-hover:text-white transition-colors">צור קשר</span>
               </Link>
             </motion.div>
 
+            {/* Mobile hamburger */}
             <button
-              className="md:hidden p-2 text-slate-400 hover:text-slate-900"
+              className={cn(
+                'md:hidden p-2 transition-colors duration-300',
+                isTop ? 'text-white/60 hover:text-white' : 'text-slate-400 hover:text-slate-900',
+              )}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'סגור תפריט' : 'פתח תפריט'}
               aria-expanded={isMobileMenuOpen}
@@ -192,10 +240,12 @@ export default function Layout() {
                 )}
               </AnimatePresence>
             </button>
+
           </div>
         </div>
       </motion.header>
 
+      {/* Mobile menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -220,7 +270,12 @@ export default function Layout() {
                 <Link
                   to={link.href}
                   aria-current={pathname === link.href ? 'page' : undefined}
-                  className="text-2xl font-bold text-slate-600 hover:text-slate-900 transition-colors"
+                  className={cn(
+                    'text-2xl font-bold transition-colors',
+                    pathname === link.href
+                      ? 'text-slate-900'
+                      : 'text-slate-500 hover:text-slate-900',
+                  )}
                 >
                   {link.label}
                 </Link>
@@ -260,20 +315,12 @@ export default function Layout() {
           <span>&copy; {new Date().getFullYear()} מרכז המדיה של ישראל</span>
         </div>
         <div className="hidden md:flex gap-4 md:gap-8">
-          <span>
-            סטטוס: <span className="text-emerald-500">פעיל</span>
-          </span>
-          <span>
-            שרת: <span className="text-slate-900">Central-01</span>
-          </span>
-          <span>
-            זמינות: <span className="text-slate-900">99.99%</span>
-          </span>
+          <span>סטטוס: <span className="text-emerald-500">פעיל</span></span>
+          <span>שרת: <span className="text-slate-900">Central-01</span></span>
+          <span>זמינות: <span className="text-slate-900">99.99%</span></span>
         </div>
         <div className="flex items-center gap-4">
-          <span>
-            v2.0.4 <span className="hidden sm:inline">- אנטרפרייז</span>
-          </span>
+          <span>v2.0.4 <span className="hidden sm:inline">- אנטרפרייז</span></span>
           <div className="flex gap-[2px]">
             <div className="w-[3px] h-3 bg-slate-300" />
             <div className="w-[3px] h-3 bg-[#0cf574]" />
