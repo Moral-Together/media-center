@@ -5,7 +5,13 @@ const SLOW   = 360 / 15_000; // deg/ms — 15 s/rotation
 const FAST   = 360 /  4_000; // deg/ms —  4 s/rotation on hover
 const SMOOTH = 0.009;         // speed interpolation factor per ms
 
-export function Logo({ className = 'w-12 h-12' }: { className?: string }) {
+export function Logo({
+  className = 'w-12 h-12',
+  interactive = true,
+}: {
+  className?: string;
+  interactive?: boolean;
+}) {
   const rotate       = useMotionValue(0);
   const reduceMotion = useReducedMotion();
   const targetSpeed  = React.useRef(SLOW);
@@ -39,28 +45,36 @@ export function Logo({ className = 'w-12 h-12' }: { className?: string }) {
   return (
     <div
       className={`relative flex items-center justify-center ${className}`}
-      onMouseEnter={() => { setHovered(true);  targetSpeed.current = FAST; }}
-      onMouseLeave={() => { setHovered(false); targetSpeed.current = SLOW; }}
+      onMouseEnter={
+        interactive
+          ? () => { setHovered(true);  targetSpeed.current = FAST; }
+          : undefined
+      }
+      onMouseLeave={
+        interactive
+          ? () => { setHovered(false); targetSpeed.current = SLOW; }
+          : undefined
+      }
     >
       {/* Base glow — expands and brightens on hover */}
       <div
         className="absolute inset-0 rounded-full blur-xl transition-[opacity,transform] duration-500"
         style={{
           background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
-          opacity:   hovered ? 0.65 : 0.2,
-          transform: hovered ? 'scale(1.4)' : 'scale(1)',
+          opacity:   interactive && hovered ? 0.65 : 0.2,
+          transform: interactive && hovered ? 'scale(1.4)' : 'scale(1)',
         }}
       />
-      {/* Pulsing corona ring — appears only on hover */}
+      {/* Pulsing corona ring — appears only on hover (interactive mode) */}
       <motion.div
         className="absolute inset-0 rounded-full pointer-events-none"
         animate={
-          hovered
+          interactive && hovered
             ? { scale: [1.35, 1.65, 1.35], opacity: [0.3, 0.55, 0.3] }
             : { scale: 1, opacity: 0 }
         }
         transition={
-          hovered
+          interactive && hovered
             ? { duration: 1.6, repeat: Infinity, ease: 'easeInOut' }
             : { duration: 0.35, ease: 'easeOut' }
         }
