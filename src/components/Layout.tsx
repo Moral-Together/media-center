@@ -17,16 +17,15 @@ import { ErrorBoundary } from './ErrorBoundary';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const location  = useLocation();
+  const location     = useLocation();
   const reduceMotion = useReducedMotion();
-  const prevPathRef    = React.useRef<string | null>(null);
+  const prevPathRef     = React.useRef<string | null>(null);
   const hasNavigatedRef = React.useRef(false);
-  const mobileMenuRef  = React.useRef<HTMLDivElement>(null);
+  const mobileMenuRef   = React.useRef<HTMLDivElement>(null);
   const pathname = location.pathname;
 
-  if (prevPathRef.current !== null && prevPathRef.current !== pathname) {
+  if (prevPathRef.current !== null && prevPathRef.current !== pathname)
     hasNavigatedRef.current = true;
-  }
 
   React.useLayoutEffect(() => {
     if (hasNavigatedRef.current) window.scrollTo(0, 0);
@@ -63,27 +62,18 @@ export default function Layout() {
 
   const routeFadeIn = hasNavigatedRef.current && !reduceMotion;
 
-  const { scrollY, scrollYProgress } = useScroll();
+  const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
-  // Dark transparent mode — ONLY on home page before scroll
-  const [isTop, setIsTop] = React.useState(() =>
-    pathname === '/' && (typeof window !== 'undefined' ? window.scrollY < 60 : true)
-  );
-  React.useEffect(() => {
-    setIsTop(pathname === '/' && window.scrollY < 60);
-  }, [pathname]);
-  useMotionValueEvent(scrollY, 'change', (y) => setIsTop(pathname === '/' && y < 60));
-
-  // Sliding underline tracker
+  // Hovered nav item for sliding underline
   const [hoveredNav, setHoveredNav] = React.useState<string | null>(null);
 
-  // Cursor spotlight drifting inside the header — premium micro-interaction
-  const glowX = useMotionValue(-600);
-  const glowY = useMotionValue(-600);
-  const sgX   = useSpring(glowX, { stiffness: 140, damping: 20 });
-  const sgY   = useSpring(glowY, { stiffness: 140, damping: 20 });
-  const glowBg = useMotionTemplate`radial-gradient(280px circle at ${sgX}px ${sgY}px, rgba(0,242,254,0.05), transparent 80%)`;
+  // Subtle cursor glow inside the header
+  const glowX  = useMotionValue(-600);
+  const glowY  = useMotionValue(-600);
+  const sgX    = useSpring(glowX, { stiffness: 140, damping: 20 });
+  const sgY    = useSpring(glowY, { stiffness: 140, damping: 20 });
+  const glowBg = useMotionTemplate`radial-gradient(320px circle at ${sgX}px ${sgY}px, rgba(99,102,241,0.07), transparent 75%)`;
 
   const links = [
     { href: '/',          label: 'ראשי' },
@@ -102,17 +92,12 @@ export default function Layout() {
         דלג לתוכן הראשי
       </a>
 
-      {/* ═══════════════ HEADER ═══════════════ */}
+      {/* ════════════════════ HEADER ════════════════════ */}
       <motion.header
         initial={reduceMotion ? false : { y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={cn(
-          'fixed top-0 inset-x-0 z-50 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500',
-          isTop
-            ? 'bg-slate-950/15 border-b border-white/[0.06]'
-            : 'bg-white/90 border-b border-slate-200/60 shadow-[0_1px_0_0_rgba(0,0,0,0.04),0_4px_24px_rgba(0,0,0,0.05)]',
-        )}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200/70 shadow-[0_1px_0_rgba(0,0,0,0.04),0_2px_16px_rgba(0,0,0,0.06)]"
         onMouseMove={!reduceMotion ? (e) => {
           const r = e.currentTarget.getBoundingClientRect();
           glowX.set(e.clientX - r.left);
@@ -120,14 +105,14 @@ export default function Layout() {
         } : undefined}
         onMouseLeave={!reduceMotion ? () => { glowX.set(-600); glowY.set(-600); } : undefined}
       >
-        {/* Cursor glow — barely visible, creates a sense of life */}
+        {/* Cursor glow — barely perceptible, makes the header feel alive */}
         {!reduceMotion && (
-          <motion.div className="absolute inset-0 pointer-events-none z-0" style={{ background: glowBg }} />
+          <motion.div className="absolute inset-0 pointer-events-none" style={{ background: glowBg }} />
         )}
 
-        {/* Scroll progress line */}
+        {/* Scroll-progress bar */}
         <motion.div
-          className="absolute bottom-0 left-0 right-0 h-[1.5px] origin-left"
+          className="absolute bottom-0 left-0 right-0 h-[2px] origin-left"
           style={{
             scaleX,
             background: 'linear-gradient(to right, #00f2fe, #818cf8, #e879f9)',
@@ -135,22 +120,25 @@ export default function Layout() {
         />
 
         <div className="relative z-10 px-6 lg:px-10">
-          <div className="flex items-center justify-between h-[68px]">
+          <div className="flex items-center justify-between h-[72px]">
 
             {/* ── Logo ── */}
-            <Link to="/" className="flex items-center gap-2.5 shrink-0">
-              <Logo className="w-[30px] h-[30px]" />
-              <span className={cn(
-                'font-bold text-[17px] tracking-tight uppercase transition-colors duration-500',
-                isTop ? 'text-white' : 'text-slate-900',
-              )}>
-                מרכז ה<span className="text-gradient">מדיה</span>
-              </span>
-            </Link>
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Link to="/" className="flex items-center gap-3">
+                <Logo className="w-9 h-9" />
+                <span className="font-bold text-xl tracking-tight uppercase text-slate-900">
+                  מרכז ה<span className="text-gradient">מדיה</span>
+                </span>
+              </Link>
+            </motion.div>
 
             {/* ── Desktop nav ── */}
             <nav
-              className="hidden md:flex items-center"
+              className="hidden md:flex items-center gap-1"
               onMouseLeave={() => setHoveredNav(null)}
             >
               {links.map((link, i) => {
@@ -162,45 +150,46 @@ export default function Layout() {
                   <motion.div
                     key={link.href}
                     className="relative"
-                    initial={reduceMotion ? false : { opacity: 0, y: -5 }}
+                    initial={reduceMotion ? false : { opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1], delay: 0.06 + i * 0.05 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.08 + i * 0.06 }}
                     onMouseEnter={() => setHoveredNav(link.href)}
                   >
                     <Link
                       to={link.href}
                       aria-current={isActive ? 'page' : undefined}
                       className={cn(
-                        'relative flex items-center px-4 py-2 text-[13px] font-semibold tracking-wide rounded-md select-none transition-colors duration-150',
-                        isTop
-                          ? isActive ? 'text-white' : isHov ? 'text-white/88' : 'text-white/42'
-                          : isActive ? 'text-slate-900' : isHov ? 'text-slate-700' : 'text-slate-400',
+                        'relative flex items-center px-4 py-2 text-base font-semibold rounded-lg select-none transition-colors duration-150',
+                        isActive || isHov ? 'text-slate-900' : 'text-slate-500',
                       )}
                     >
-                      {/* Text micro-lift on hover */}
+                      {/* Hover background pill */}
+                      {isHov && !isActive && (
+                        <motion.span
+                          layoutId="nav-bg"
+                          className="absolute inset-0 rounded-lg bg-slate-100/80 border border-slate-200/60"
+                          transition={{ type: 'spring', stiffness: 400, damping: 34 }}
+                        />
+                      )}
+
+                      {/* Text — micro-lift on hover */}
                       <motion.span
-                        className="block"
-                        animate={isHov && !reduceMotion ? { y: -1.5 } : { y: 0 }}
-                        transition={{ type: 'spring', stiffness: 600, damping: 32 }}
+                        className="relative z-10 block"
+                        animate={isHov && !reduceMotion ? { y: -1 } : { y: 0 }}
+                        transition={{ type: 'spring', stiffness: 600, damping: 35 }}
                       >
                         {link.label}
                       </motion.span>
 
-                      {/* Shared sliding underline — spring-animated between links */}
+                      {/* Sliding gradient underline for active + hovered */}
                       {showLine && (
                         <motion.span
                           layoutId="nav-line"
-                          className={cn(
-                            'absolute bottom-[3px] inset-x-3.5 h-[1.5px] rounded-full',
-                            isTop
-                              ? 'bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400'
-                              : 'bg-gradient-to-r from-blue-500 via-violet-500 to-pink-500',
-                          )}
-                          style={isTop && !reduceMotion
-                            ? { boxShadow: '0 0 7px 1.5px rgba(0,242,254,0.65)' }
-                            : undefined
-                          }
-                          transition={{ type: 'spring', stiffness: 520, damping: 42 }}
+                          className="absolute bottom-[1px] inset-x-3 h-[2px] rounded-full bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500"
+                          style={!reduceMotion ? {
+                            boxShadow: '0 0 8px 1px rgba(139,92,246,0.5)',
+                          } : undefined}
+                          transition={{ type: 'spring', stiffness: 500, damping: 42 }}
                         />
                       )}
                     </Link>
@@ -209,34 +198,23 @@ export default function Layout() {
               })}
             </nav>
 
-            {/* ── CTA button ── */}
+            {/* ── CTA — gradient-border pill ── */}
             <motion.div
-              className="hidden md:flex shrink-0"
+              className="hidden md:flex"
               initial={reduceMotion ? false : { opacity: 0, scale: 0.88 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.38 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.42 }}
             >
               <Link
                 to="/contact"
-                className={cn(
-                  'relative px-5 py-[7px] rounded-full text-[13px] font-semibold overflow-hidden group transition-all duration-300',
-                  isTop
-                    ? 'text-white/80 hover:text-white'
-                    : 'bg-slate-900 text-white hover:scale-[1.03]',
-                )}
+                className="relative px-6 py-2 rounded-full font-bold text-base overflow-hidden group"
               >
-                {/* Dark header: outline with inner glow on hover */}
-                {isTop && (
-                  <>
-                    <span className="absolute inset-0 rounded-full border border-white/22 group-hover:border-white/40 transition-[border-color] duration-300" />
-                    <span className="absolute inset-0 rounded-full bg-white/0 group-hover:bg-white/[0.08] transition-colors duration-300" />
-                  </>
-                )}
-                {/* Light header: dark pill + neon gradient on hover */}
-                {!isTop && (
-                  <span className="absolute inset-0 bg-gradient-neon opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                )}
-                <span className="relative z-10 group-hover:text-white transition-colors duration-200">
+                {/* Gradient border — always visible */}
+                <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" />
+                {/* Inner white fill — disappears on hover to reveal gradient */}
+                <span className="absolute inset-[1.5px] rounded-full bg-white group-hover:bg-transparent transition-colors duration-300" />
+                {/* Text — gradient when resting, white on hover */}
+                <span className="relative z-10 font-bold text-base bg-gradient-to-r from-cyan-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent group-hover:text-white transition-colors duration-300">
                   צור קשר
                 </span>
               </Link>
@@ -244,10 +222,7 @@ export default function Layout() {
 
             {/* ── Mobile hamburger ── */}
             <button
-              className={cn(
-                'md:hidden p-2 rounded-lg transition-colors duration-300',
-                isTop ? 'text-white/55 hover:text-white' : 'text-slate-400 hover:text-slate-900',
-              )}
+              className="md:hidden p-2 text-slate-500 hover:text-slate-900 transition-colors"
               onClick={() => setIsMobileMenuOpen(v => !v)}
               aria-label={isMobileMenuOpen ? 'סגור תפריט' : 'פתח תפריט'}
               aria-expanded={isMobileMenuOpen}
@@ -257,12 +232,12 @@ export default function Layout() {
                 {isMobileMenuOpen
                   ? <motion.span key="x"
                       initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.16 }}
-                    ><X size={20} /></motion.span>
+                      exit={{ rotate: 90, opacity: 0 }}    transition={{ duration: 0.18 }}
+                    ><X size={22} /></motion.span>
                   : <motion.span key="m"
                       initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.16 }}
-                    ><Menu size={20} /></motion.span>
+                      exit={{ rotate: -90, opacity: 0 }}   transition={{ duration: 0.18 }}
+                    ><Menu size={22} /></motion.span>
                 }
               </AnimatePresence>
             </button>
@@ -271,7 +246,7 @@ export default function Layout() {
         </div>
       </motion.header>
 
-      {/* ═══════════════ MOBILE MENU ═══════════════ */}
+      {/* ════════════════════ MOBILE MENU ════════════════════ */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -281,12 +256,11 @@ export default function Layout() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-            className="fixed inset-0 z-40 bg-white/96 backdrop-blur-2xl flex flex-col pt-[88px] pb-10 px-5 md:hidden"
+            className="fixed inset-0 z-40 bg-white/96 backdrop-blur-2xl flex flex-col pt-[80px] pb-10 px-5 md:hidden"
           >
-            {/* Subtle top gradient line */}
-            <div className="absolute top-[68px] inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+            <div className="absolute top-[72px] inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
-            <nav className="flex flex-col gap-1 mt-2">
+            <nav className="flex flex-col gap-1 mt-4">
               {links.map((link, i) => {
                 const isActive = pathname === link.href;
                 return (
@@ -300,15 +274,15 @@ export default function Layout() {
                       to={link.href}
                       aria-current={isActive ? 'page' : undefined}
                       className={cn(
-                        'flex items-center justify-between px-4 py-3.5 rounded-2xl text-[19px] font-bold transition-colors',
+                        'flex items-center justify-between px-4 py-3.5 rounded-2xl text-xl font-bold transition-colors',
                         isActive
                           ? 'text-slate-900 bg-slate-50 border border-slate-100'
-                          : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50',
+                          : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50/80',
                       )}
                     >
                       <span>{link.label}</span>
                       {isActive && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#00f2fe] shadow-[0_0_6px_2px_rgba(0,242,254,0.5)]" />
+                        <span className="w-2 h-2 rounded-full bg-[#00f2fe] shadow-[0_0_8px_2px_rgba(0,242,254,0.55)]" />
                       )}
                     </Link>
                   </motion.div>
@@ -316,27 +290,26 @@ export default function Layout() {
               })}
             </nav>
 
-            {/* CTA in mobile menu */}
             <motion.div
               className="mt-auto"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.32, duration: 0.3 }}
+              transition={{ delay: 0.35, duration: 0.28 }}
             >
               <Link
                 to="/contact"
-                className="block w-full text-center px-6 py-3.5 bg-slate-900 text-white rounded-2xl font-bold text-base relative overflow-hidden group"
+                className="block w-full text-center px-6 py-4 rounded-2xl font-bold text-lg relative overflow-hidden group"
               >
-                <span className="absolute inset-0 bg-gradient-neon opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="relative z-10">צור קשר</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" />
+                <span className="relative z-10 text-white">צור קשר</span>
               </Link>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ═══════════════ MAIN ═══════════════ */}
-      <main id="main-content" className="flex-1 pt-[68px] flex flex-col relative pb-10">
+      {/* ════════════════════ MAIN ════════════════════ */}
+      <main id="main-content" className="flex-1 pt-[72px] flex flex-col relative pb-10">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-cyan-100/15 via-white to-violet-100/12" />
         <div className="pointer-events-none absolute inset-0 -z-10 section-dot-grid opacity-30" />
         <AnimatePresence mode="wait">
@@ -361,7 +334,7 @@ export default function Layout() {
         </AnimatePresence>
       </main>
 
-      {/* ═══════════════ FOOTER ═══════════════ */}
+      {/* ════════════════════ FOOTER ════════════════════ */}
       <footer className="px-6 lg:px-10 py-4 bg-slate-100/50 border-t border-slate-200 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-slate-500 relative z-10 w-full mt-auto">
         <span>&copy; {new Date().getFullYear()} מרכז המדיה של ישראל</span>
         <div className="hidden md:flex gap-6">
