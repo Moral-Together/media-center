@@ -3,6 +3,8 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   AnimatePresence,
   motion,
+  useMotionTemplate,
+  useMotionValue,
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
@@ -15,12 +17,11 @@ import { ErrorBoundary } from './ErrorBoundary';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const location = useLocation();
+  const location  = useLocation();
   const reduceMotion = useReducedMotion();
   const prevPathRef    = React.useRef<string | null>(null);
   const hasNavigatedRef = React.useRef(false);
   const mobileMenuRef  = React.useRef<HTMLDivElement>(null);
-
   const pathname = location.pathname;
 
   if (prevPathRef.current !== null && prevPathRef.current !== pathname) {
@@ -35,9 +36,8 @@ export default function Layout() {
   React.useEffect(() => { setIsMobileMenuOpen(false); }, [pathname]);
 
   React.useEffect(() => {
-    if (isMobileMenuOpen && mobileMenuRef.current) {
+    if (isMobileMenuOpen && mobileMenuRef.current)
       mobileMenuRef.current.querySelector<HTMLElement>('a, button')?.focus();
-    }
   }, [isMobileMenuOpen]);
 
   React.useEffect(() => {
@@ -47,18 +47,18 @@ export default function Layout() {
 
   React.useEffect(() => {
     if (!isMobileMenuOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { setIsMobileMenuOpen(false); return; }
       if (e.key !== 'Tab' || !mobileMenuRef.current) return;
-      const focusable = Array.from(
+      const els = Array.from(
         mobileMenuRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
       );
-      const first = focusable[0], last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+      const first = els[0], last = els[els.length - 1];
+      if (e.shiftKey && document.activeElement === first)      { e.preventDefault(); last?.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
     };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [isMobileMenuOpen]);
 
   const routeFadeIn = hasNavigatedRef.current && !reduceMotion;
@@ -66,14 +66,24 @@ export default function Layout() {
   const { scrollY, scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
-  // Track whether we're still over the dark hero section
+  // Dark transparent mode — ONLY on home page before scroll
   const [isTop, setIsTop] = React.useState(() =>
-    typeof window !== 'undefined' ? window.scrollY < 60 : true
+    pathname === '/' && (typeof window !== 'undefined' ? window.scrollY < 60 : true)
   );
-  useMotionValueEvent(scrollY, 'change', (y) => setIsTop(y < 60));
+  React.useEffect(() => {
+    setIsTop(pathname === '/' && window.scrollY < 60);
+  }, [pathname]);
+  useMotionValueEvent(scrollY, 'change', (y) => setIsTop(pathname === '/' && y < 60));
 
-  // Which nav link is currently hovered (for sliding pill)
+  // Sliding underline tracker
   const [hoveredNav, setHoveredNav] = React.useState<string | null>(null);
+
+  // Cursor spotlight drifting inside the header — premium micro-interaction
+  const glowX = useMotionValue(-600);
+  const glowY = useMotionValue(-600);
+  const sgX   = useSpring(glowX, { stiffness: 140, damping: 20 });
+  const sgY   = useSpring(glowY, { stiffness: 140, damping: 20 });
+  const glowBg = useMotionTemplate`radial-gradient(280px circle at ${sgX}px ${sgY}px, rgba(0,242,254,0.05), transparent 80%)`;
 
   const links = [
     { href: '/',          label: 'ראשי' },
@@ -92,152 +102,168 @@ export default function Layout() {
         דלג לתוכן הראשי
       </a>
 
-      {/* ── Header ── */}
+      {/* ═══════════════ HEADER ═══════════════ */}
       <motion.header
-        initial={reduceMotion ? false : { y: -72, opacity: 0 }}
+        initial={reduceMotion ? false : { y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          'fixed top-0 inset-x-0 z-50 backdrop-blur-md transition-[background-color,border-color] duration-500',
+          'fixed top-0 inset-x-0 z-50 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500',
           isTop
-            ? 'bg-slate-950/25 border-b border-white/[0.07]'
-            : 'bg-white/85 border-b border-slate-200/60',
+            ? 'bg-slate-950/15 border-b border-white/[0.06]'
+            : 'bg-white/90 border-b border-slate-200/60 shadow-[0_1px_0_0_rgba(0,0,0,0.04),0_4px_24px_rgba(0,0,0,0.05)]',
         )}
+        onMouseMove={!reduceMotion ? (e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          glowX.set(e.clientX - r.left);
+          glowY.set(e.clientY - r.top);
+        } : undefined}
+        onMouseLeave={!reduceMotion ? () => { glowX.set(-600); glowY.set(-600); } : undefined}
       >
-        {/* Scroll progress bar */}
+        {/* Cursor glow — barely visible, creates a sense of life */}
+        {!reduceMotion && (
+          <motion.div className="absolute inset-0 pointer-events-none z-0" style={{ background: glowBg }} />
+        )}
+
+        {/* Scroll progress line */}
         <motion.div
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 origin-left z-50"
-          style={{ scaleX }}
+          className="absolute bottom-0 left-0 right-0 h-[1.5px] origin-left"
+          style={{
+            scaleX,
+            background: 'linear-gradient(to right, #00f2fe, #818cf8, #e879f9)',
+          }}
         />
 
-        <div className="px-6 lg:px-10">
-          <div className="flex justify-between items-center py-5">
+        <div className="relative z-10 px-6 lg:px-10">
+          <div className="flex items-center justify-between h-[68px]">
 
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group/logo">
-              <Logo className="w-8 h-8" />
+            {/* ── Logo ── */}
+            <Link to="/" className="flex items-center gap-2.5 shrink-0">
+              <Logo className="w-[30px] h-[30px]" />
               <span className={cn(
-                'font-bold text-xl tracking-tight uppercase transition-colors duration-500',
+                'font-bold text-[17px] tracking-tight uppercase transition-colors duration-500',
                 isTop ? 'text-white' : 'text-slate-900',
               )}>
                 מרכז ה<span className="text-gradient">מדיה</span>
               </span>
             </Link>
 
-            {/* Desktop nav */}
+            {/* ── Desktop nav ── */}
             <nav
-              className="hidden md:flex items-center gap-0.5 text-base font-semibold"
+              className="hidden md:flex items-center"
               onMouseLeave={() => setHoveredNav(null)}
             >
               {links.map((link, i) => {
-                const isActive   = pathname === link.href;
-                const showPill   = hoveredNav === link.href || (hoveredNav === null && isActive);
+                const isActive = pathname === link.href;
+                const isHov    = hoveredNav === link.href;
+                const showLine = isHov || (!hoveredNav && isActive);
+
                 return (
                   <motion.div
                     key={link.href}
                     className="relative"
-                    initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+                    initial={reduceMotion ? false : { opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.08 + i * 0.06 }}
+                    transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1], delay: 0.06 + i * 0.05 }}
                     onMouseEnter={() => setHoveredNav(link.href)}
                   >
                     <Link
                       to={link.href}
                       aria-current={isActive ? 'page' : undefined}
                       className={cn(
-                        'relative block px-3.5 py-1.5 rounded-full transition-colors duration-200 select-none',
+                        'relative flex items-center px-4 py-2 text-[13px] font-semibold tracking-wide rounded-md select-none transition-colors duration-150',
                         isTop
-                          ? (isActive || hoveredNav === link.href ? 'text-white' : 'text-white/55')
-                          : (isActive || hoveredNav === link.href ? 'text-slate-900' : 'text-slate-500'),
+                          ? isActive ? 'text-white' : isHov ? 'text-white/88' : 'text-white/42'
+                          : isActive ? 'text-slate-900' : isHov ? 'text-slate-700' : 'text-slate-400',
                       )}
                     >
-                      {/* Sliding pill background */}
-                      {showPill && (
+                      {/* Text micro-lift on hover */}
+                      <motion.span
+                        className="block"
+                        animate={isHov && !reduceMotion ? { y: -1.5 } : { y: 0 }}
+                        transition={{ type: 'spring', stiffness: 600, damping: 32 }}
+                      >
+                        {link.label}
+                      </motion.span>
+
+                      {/* Shared sliding underline — spring-animated between links */}
+                      {showLine && (
                         <motion.span
-                          layoutId="nav-pill"
+                          layoutId="nav-line"
                           className={cn(
-                            'absolute inset-0 rounded-full',
+                            'absolute bottom-[3px] inset-x-3.5 h-[1.5px] rounded-full',
                             isTop
-                              ? 'bg-white/12 border border-white/16'
-                              : 'bg-slate-100 border border-slate-200/80',
+                              ? 'bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400'
+                              : 'bg-gradient-to-r from-blue-500 via-violet-500 to-pink-500',
                           )}
-                          transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                          style={isTop && !reduceMotion
+                            ? { boxShadow: '0 0 7px 1.5px rgba(0,242,254,0.65)' }
+                            : undefined
+                          }
+                          transition={{ type: 'spring', stiffness: 520, damping: 42 }}
                         />
                       )}
-                      {/* Active glow dot */}
-                      {isActive && (
-                        <span
-                          className={cn(
-                            'absolute bottom-[3px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full transition-colors duration-500',
-                            isTop
-                              ? 'bg-cyan-400 shadow-[0_0_6px_2px_rgba(0,242,254,0.7)]'
-                              : 'bg-violet-500 shadow-[0_0_5px_1px_rgba(139,92,246,0.55)]',
-                          )}
-                        />
-                      )}
-                      <span className="relative z-10">{link.label}</span>
                     </Link>
                   </motion.div>
                 );
               })}
             </nav>
 
-            {/* CTA button */}
+            {/* ── CTA button ── */}
             <motion.div
-              className="hidden md:block"
-              initial={reduceMotion ? false : { opacity: 0, scale: 0.85 }}
+              className="hidden md:flex shrink-0"
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.88 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.45 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.38 }}
             >
               <Link
                 to="/contact"
                 className={cn(
-                  'px-5 py-2 inline-block rounded-full font-bold transition-all duration-300 relative overflow-hidden group',
+                  'relative px-5 py-[7px] rounded-full text-[13px] font-semibold overflow-hidden group transition-all duration-300',
                   isTop
-                    ? 'border border-white/22 text-white/80 hover:text-white hover:border-white/38 hover:bg-white/10'
-                    : 'bg-slate-900 text-white',
+                    ? 'text-white/80 hover:text-white'
+                    : 'bg-slate-900 text-white hover:scale-[1.03]',
                 )}
               >
-                {!isTop && (
-                  <span className="absolute inset-0 bg-gradient-neon opacity-0 group-hover:opacity-100 transition-opacity" />
+                {/* Dark header: outline with inner glow on hover */}
+                {isTop && (
+                  <>
+                    <span className="absolute inset-0 rounded-full border border-white/22 group-hover:border-white/40 transition-[border-color] duration-300" />
+                    <span className="absolute inset-0 rounded-full bg-white/0 group-hover:bg-white/[0.08] transition-colors duration-300" />
+                  </>
                 )}
-                <span className="relative z-10 group-hover:text-white transition-colors">צור קשר</span>
+                {/* Light header: dark pill + neon gradient on hover */}
+                {!isTop && (
+                  <span className="absolute inset-0 bg-gradient-neon opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                )}
+                <span className="relative z-10 group-hover:text-white transition-colors duration-200">
+                  צור קשר
+                </span>
               </Link>
             </motion.div>
 
-            {/* Mobile hamburger */}
+            {/* ── Mobile hamburger ── */}
             <button
               className={cn(
-                'md:hidden p-2 transition-colors duration-300',
-                isTop ? 'text-white/60 hover:text-white' : 'text-slate-400 hover:text-slate-900',
+                'md:hidden p-2 rounded-lg transition-colors duration-300',
+                isTop ? 'text-white/55 hover:text-white' : 'text-slate-400 hover:text-slate-900',
               )}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsMobileMenuOpen(v => !v)}
               aria-label={isMobileMenuOpen ? 'סגור תפריט' : 'פתח תפריט'}
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
             >
               <AnimatePresence mode="wait" initial={false}>
-                {isMobileMenuOpen ? (
-                  <motion.span
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <X />
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Menu />
-                  </motion.span>
-                )}
+                {isMobileMenuOpen
+                  ? <motion.span key="x"
+                      initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.16 }}
+                    ><X size={20} /></motion.span>
+                  : <motion.span key="m"
+                      initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.16 }}
+                    ><Menu size={20} /></motion.span>
+                }
               </AnimatePresence>
             </button>
 
@@ -245,47 +271,72 @@ export default function Layout() {
         </div>
       </motion.header>
 
-      {/* Mobile menu */}
+      {/* ═══════════════ MOBILE MENU ═══════════════ */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            id="mobile-menu"
-            ref={mobileMenuRef}
-            role="dialog"
-            aria-modal="true"
-            aria-label="תפריט ניווט"
+            id="mobile-menu" ref={mobileMenuRef}
+            role="dialog" aria-modal="true" aria-label="תפריט ניווט"
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl pt-24 px-6 flex flex-col gap-6 md:hidden text-slate-900"
+            transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+            className="fixed inset-0 z-40 bg-white/96 backdrop-blur-2xl flex flex-col pt-[88px] pb-10 px-5 md:hidden"
           >
-            {links.map((link, i) => (
-              <motion.div
-                key={link.href}
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 + i * 0.07, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            {/* Subtle top gradient line */}
+            <div className="absolute top-[68px] inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+
+            <nav className="flex flex-col gap-1 mt-2">
+              {links.map((link, i) => {
+                const isActive = pathname === link.href;
+                return (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, x: 18 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.04 + i * 0.055, duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Link
+                      to={link.href}
+                      aria-current={isActive ? 'page' : undefined}
+                      className={cn(
+                        'flex items-center justify-between px-4 py-3.5 rounded-2xl text-[19px] font-bold transition-colors',
+                        isActive
+                          ? 'text-slate-900 bg-slate-50 border border-slate-100'
+                          : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50',
+                      )}
+                    >
+                      <span>{link.label}</span>
+                      {isActive && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#00f2fe] shadow-[0_0_6px_2px_rgba(0,242,254,0.5)]" />
+                      )}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </nav>
+
+            {/* CTA in mobile menu */}
+            <motion.div
+              className="mt-auto"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.32, duration: 0.3 }}
+            >
+              <Link
+                to="/contact"
+                className="block w-full text-center px-6 py-3.5 bg-slate-900 text-white rounded-2xl font-bold text-base relative overflow-hidden group"
               >
-                <Link
-                  to={link.href}
-                  aria-current={pathname === link.href ? 'page' : undefined}
-                  className={cn(
-                    'text-2xl font-bold transition-colors',
-                    pathname === link.href
-                      ? 'text-slate-900'
-                      : 'text-slate-500 hover:text-slate-900',
-                  )}
-                >
-                  {link.label}
-                </Link>
-              </motion.div>
-            ))}
+                <span className="absolute inset-0 bg-gradient-neon opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative z-10">צור קשר</span>
+              </Link>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <main id="main-content" className="flex-1 pt-24 flex flex-col relative pb-10">
+      {/* ═══════════════ MAIN ═══════════════ */}
+      <main id="main-content" className="flex-1 pt-[68px] flex flex-col relative pb-10">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-cyan-100/15 via-white to-violet-100/12" />
         <div className="pointer-events-none absolute inset-0 -z-10 section-dot-grid opacity-30" />
         <AnimatePresence mode="wait">
@@ -293,8 +344,8 @@ export default function Layout() {
             key={pathname}
             initial={routeFadeIn ? { opacity: 0, y: 16 } : false}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: -10, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
             className="flex-1 relative w-full"
           >
             <ErrorBoundary>
@@ -310,11 +361,10 @@ export default function Layout() {
         </AnimatePresence>
       </main>
 
+      {/* ═══════════════ FOOTER ═══════════════ */}
       <footer className="px-6 lg:px-10 py-4 bg-slate-100/50 border-t border-slate-200 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-slate-500 relative z-10 w-full mt-auto">
-        <div className="flex items-center gap-3">
-          <span>&copy; {new Date().getFullYear()} מרכז המדיה של ישראל</span>
-        </div>
-        <div className="hidden md:flex gap-4 md:gap-8">
+        <span>&copy; {new Date().getFullYear()} מרכז המדיה של ישראל</span>
+        <div className="hidden md:flex gap-6">
           <span>סטטוס: <span className="text-emerald-500">פעיל</span></span>
           <span>שרת: <span className="text-slate-900">Central-01</span></span>
           <span>זמינות: <span className="text-slate-900">99.99%</span></span>
