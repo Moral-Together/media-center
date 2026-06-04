@@ -7,6 +7,7 @@ import {
   useReducedMotion,
   useScroll,
   useSpring,
+  useMotionTemplate,
   useTransform,
 } from 'motion/react';
 import { Link } from 'react-router-dom';
@@ -58,6 +59,10 @@ const STATS = [
     glow: 'group-hover:shadow-emerald-500/25',
   },
 ] as const;
+
+const SPARKLE_COLORS = ['#00f2fe', '#818cf8', '#e879f9', '#0cf574', '#fce803'];
+
+interface Sparkle { id: number; x: number; y: number; size: number; color: string; }
 
 type HeroStatItem = (typeof STATS)[number];
 
@@ -149,18 +154,49 @@ export default function Home() {
   const o4x = useTransform(smX, [-1, 1], [ 22,-22]);
   const o4y = useTransform(smY, [-1, 1], [-18, 18]);
 
+  // Cursor spotlight & sparkles
+  const spotX = useMotionValue(-600);
+  const spotY = useMotionValue(-600);
+  const spotSX = useSpring(spotX, { stiffness: 85, damping: 20 });
+  const spotSY = useSpring(spotY, { stiffness: 85, damping: 20 });
+  const spotBg = useMotionTemplate`radial-gradient(580px circle at ${spotSX}px ${spotSY}px, rgba(6,182,212,0.13), rgba(99,102,241,0.08) 38%, transparent 65%)`;
+
+  const [sparkles, setSparkles] = React.useState<Sparkle[]>([]);
+  const sparkleIdRef = React.useRef(0);
+  const lastSparkleRef = React.useRef(0);
+
   const onHeroMouseMove = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (reduceMotion) return;
       const r = e.currentTarget.getBoundingClientRect();
-      mouseX.set((e.clientX - r.left)  / r.width  * 2 - 1);
-      mouseY.set((e.clientY - r.top)   / r.height * 2 - 1);
+      const px = e.clientX - r.left;
+      const py = e.clientY - r.top;
+      mouseX.set(px / r.width  * 2 - 1);
+      mouseY.set(py / r.height * 2 - 1);
+      spotX.set(px);
+      spotY.set(py);
+
+      const now = Date.now();
+      if (now - lastSparkleRef.current > 55) {
+        lastSparkleRef.current = now;
+        const color = SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)];
+        const size = 3 + Math.random() * 5;
+        const id = ++sparkleIdRef.current;
+        const sx = px + (Math.random() - 0.5) * 90;
+        const sy = py + (Math.random() - 0.5) * 90;
+        setSparkles(prev => [...prev.slice(-20), { id, x: sx, y: sy, size, color }]);
+        setTimeout(() => setSparkles(prev => prev.filter(s => s.id !== id)), 850);
+      }
     },
-    [reduceMotion, mouseX, mouseY],
+    [reduceMotion, mouseX, mouseY, spotX, spotY],
   );
   const onHeroMouseLeave = React.useCallback(() => {
-    mouseX.set(0); mouseY.set(0);
-  }, [mouseX, mouseY]);
+    mouseX.set(0);
+    mouseY.set(0);
+    spotX.set(-600);
+    spotY.set(-600);
+    setSparkles([]);
+  }, [mouseX, mouseY, spotX, spotY]);
 
   // CTA magnetic
   const ctaX = useMotionValue(0);
@@ -206,6 +242,12 @@ export default function Home() {
             background:
               'radial-gradient(ellipse 70% 70% at 50% 40%, transparent 30%, #020617 100%)',
           }}
+        />
+
+        {/* Cursor spotlight */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{ background: spotBg }}
         />
 
         {/* ── Aurora orbs ── */}
@@ -367,6 +409,26 @@ export default function Home() {
             </div>
           </motion.div>
         </motion.section>
+
+        {/* Sparkle particles */}
+        {!reduceMotion && sparkles.map((s) => (
+          <motion.div
+            key={s.id}
+            className="absolute pointer-events-none rounded-full z-[15]"
+            style={{
+              left: s.x,
+              top: s.y,
+              width: s.size,
+              height: s.size,
+              background: s.color,
+              boxShadow: `0 0 ${s.size * 2}px ${s.color}, 0 0 ${s.size * 5}px ${s.color}60`,
+              transform: 'translate(-50%, -50%)',
+            }}
+            initial={{ opacity: 0.9, scale: 0 }}
+            animate={{ opacity: 0, scale: 1.8, y: -28 }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+          />
+        ))}
 
         {/* Soft glow above wave — no heavy blur into white */}
         <div
