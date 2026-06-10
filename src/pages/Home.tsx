@@ -425,9 +425,12 @@ export default function Home() {
         description="מרכז המדיה של ישראל – פיתוח אתרים, אבטחת מידע, פרסום דיגיטלי ועוד. הפתרון הדיגיטלי המלא לעסק שלך."
       />
 
-      {/* ═══════════════════════ DARK HERO ═══════════════════════ */}
+      {/* ═══════════════════════ DARK HERO + SEAM ═══════════════════════ */}
+      {/* overflow-x:clip clips horizontal orb bleed without creating a scroll container,
+          leaving overflow-y:visible so aurora extends naturally down into the seam */}
+      <div style={{ overflowX: 'clip' }}>
       <div
-        className="relative bg-slate-950 overflow-hidden"
+        className="relative bg-slate-950"
         onMouseMove={onHeroMouseMove}
         onMouseLeave={onHeroMouseLeave}
       >
@@ -709,20 +712,7 @@ export default function Home() {
       </div>
 
       {/* ─── Diagonal seam: dark hero → services ─── */}
-      <div
-        className="relative z-10 -mt-px pointer-events-none"
-        aria-hidden
-        style={{
-          background:
-            /* fuchsia — mirrors hero's -bottom-48 left-1/3 orb (centre just above this div) */
-            'radial-gradient(ellipse 65% 160% at 34% -30%, rgba(192,38,211,0.38) 0%, transparent 58%),' +
-            /* violet — mirrors hero's left orb bleeding to bottom */
-            'radial-gradient(ellipse 42% 140% at 1% 5%, rgba(124,58,237,0.28) 0%, transparent 55%),' +
-            /* cyan — mirrors hero's top-right orb tail */
-            'radial-gradient(ellipse 45% 130% at 88% -8%, rgba(6,182,212,0.22) 0%, transparent 57%),' +
-            '#020617',
-        }}
-      >
+      <div className="relative z-10 -mt-px pointer-events-none" aria-hidden>
         <svg
           viewBox="0 0 1440 180"
           preserveAspectRatio="none"
@@ -772,6 +762,7 @@ export default function Home() {
             filter="url(#seam-crisp)" />
         </svg>
       </div>
+      </div>{/* end hero+seam wrapper */}
 
       {/* ═══════════════════ SERVICES ═══════════════════ */}
       <section className="relative -mt-px overflow-hidden bg-[#f5f6ff]">
