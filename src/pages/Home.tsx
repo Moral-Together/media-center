@@ -708,8 +708,65 @@ export default function Home() {
 
       </div>
 
-      {/* Dawn bridge — smooth gradient transition from dark hero to white services */}
-      <div className="h-32 bg-gradient-to-b from-[#020617] to-white relative z-10 -mt-px pointer-events-none" aria-hidden />
+      {/* Dawn bridge — multi-layered stacked rippling waves from dark hero to white services */}
+      <div className="relative h-28 sm:h-36 md:h-44 bg-[#020617] overflow-hidden z-10 -mt-px pointer-events-none" aria-hidden>
+        {/* Back Wave Layer (Cyan Glow) */}
+        <motion.svg
+          animate={reduceMotion ? undefined : {
+            x: ['-2%', '2%', '-2%'],
+            y: [0, -3, 0]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+          className="absolute bottom-0 left-0 w-[108%] h-[80%] text-cyan-400/25 select-none"
+          viewBox="0 0 1440 100"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="currentColor"
+            d="M0,60 C360,15 540,95 720,55 C900,15 1080,95 1440,50 L1440,100 L0,100 Z"
+          />
+        </motion.svg>
+
+        {/* Middle Wave Layer (Violet Glow) */}
+        <motion.svg
+          animate={reduceMotion ? undefined : {
+            x: ['2%', '-2%', '2%'],
+            y: [-2, 2, -2]
+          }}
+          transition={{
+            duration: 14,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+          className="absolute bottom-0 left-[-4%] w-[108%] h-[90%] text-violet-400/30 select-none"
+          viewBox="0 0 1440 100"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="currentColor"
+            d="M0,50 C300,5 480,85 720,45 C960,5 1140,85 1440,38 L1440,100 L0,100 Z"
+          />
+        </motion.svg>
+
+        {/* Front Wave Layer (Solid White) */}
+        <svg
+          className="absolute bottom-[-1px] left-0 w-full h-full text-white select-none"
+          viewBox="0 0 1440 100"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="currentColor"
+            d="M0,55 C320,10 520,90 720,50 C920,10 1120,90 1440,42 L1440,100 L0,100 Z"
+          />
+        </svg>
+      </div>
 
       {/* ═══════════════════ SERVICES — luminous white ═══════════════════ */}
       <section className="relative -mt-px overflow-hidden bg-white">
