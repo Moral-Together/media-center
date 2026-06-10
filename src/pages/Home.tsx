@@ -143,6 +143,8 @@ function HeroStat({
       </span>
     </motion.div>
   );
+}
+
 interface ServiceCardProps {
   srv: typeof SERVICES[number];
   index: number;
