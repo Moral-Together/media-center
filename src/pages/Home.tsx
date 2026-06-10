@@ -709,57 +709,65 @@ export default function Home() {
           />
         ))}
 
+        {/* Bottom dissolve — grid and orbs settle into solid dark before the wave */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-36 pointer-events-none z-[5]"
+          style={{
+            background:
+              'linear-gradient(to top, #020617 0%, rgba(2,6,23,0.65) 45%, transparent 100%)',
+          }}
+        />
       </div>
 
-      {/* ─── Diagonal seam: dark hero → services ─── */}
-      <div className="relative z-10 -mt-px pointer-events-none" aria-hidden>
+      {/* ─── Wave bridge: dark hero flows into light services ─── */}
+      <div className="relative -mt-px leading-[0] bg-[#020617] pointer-events-none" aria-hidden>
+        {/* Aurora echo: faint orb glows bleeding over the wave crest */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse 42% 90% at 22% 0%, rgba(139,92,246,0.16), transparent 60%),' +
+              'radial-gradient(ellipse 38% 80% at 75% 0%, rgba(6,182,212,0.13), transparent 55%)',
+          }}
+        />
         <svg
-          viewBox="0 0 1440 180"
+          viewBox="0 0 1440 130"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="block w-full h-24 sm:h-32 md:h-40"
-          style={{ overflow: 'visible' }}
+          className="relative block w-full h-20 sm:h-28 md:h-32"
         >
           <defs>
-            <linearGradient id="seam-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient id="wave-grad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%"   stopColor="#06b6d4" />
               <stop offset="45%"  stopColor="#8b5cf6" />
               <stop offset="80%"  stopColor="#a855f7" />
               <stop offset="100%" stopColor="#ec4899" />
             </linearGradient>
-            {/* Wide soft halo */}
-            <filter id="seam-halo" x="-2%" y="-600%" width="104%" height="1300%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="big" />
-              <feGaussianBlur in="SourceGraphic" stdDeviation="6"  result="mid" />
+            <filter id="wave-halo" x="-5%" y="-300%" width="110%" height="700%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="soft" />
               <feMerge>
-                <feMergeNode in="big" />
-                <feMergeNode in="big" />
-                <feMergeNode in="mid" />
-              </feMerge>
-            </filter>
-            {/* Tight crisp glow */}
-            <filter id="seam-crisp" x="-2%" y="-600%" width="104%" height="1300%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b" />
-              <feMerge>
-                <feMergeNode in="b" />
-                <feMergeNode in="SourceGraphic" />
+                <feMergeNode in="soft" />
+                <feMergeNode in="soft" />
               </feMerge>
             </filter>
           </defs>
 
-          {/* Dark triangle — transparent: aurora bg of parent div shows through */}
-          <polygon points="0,0 1440,0 0,180" fill="transparent" />
-          {/* Light triangle — services */}
-          <polygon points="1440,0 1440,180 0,180" fill="#f5f6ff" />
-
-          {/* Ambient halo first (wide, soft) */}
-          <path d="M 0 180 L 1440 0" fill="none"
-            stroke="url(#seam-grad)" strokeWidth="3" strokeOpacity="0.55"
-            filter="url(#seam-halo)" />
-          {/* Crisp seam line on top */}
-          <path d="M 0 180 L 1440 0" fill="none"
-            stroke="url(#seam-grad)" strokeWidth="1.8"
-            filter="url(#seam-crisp)" />
+          {/* Light wave body — same colour as services section top */}
+          <path
+            fill="#f5f6ff"
+            d="M0,72 C240,108 480,26 720,58 C960,90 1200,34 1440,64 L1440,130 L0,130 Z"
+          />
+          {/* Soft neon halo hugging the crest */}
+          <path
+            d="M0,72 C240,108 480,26 720,58 C960,90 1200,34 1440,64"
+            fill="none" stroke="url(#wave-grad)" strokeWidth="3" strokeOpacity="0.5"
+            filter="url(#wave-halo)"
+          />
+          {/* Crisp gradient crest line */}
+          <path
+            d="M0,72 C240,108 480,26 720,58 C960,90 1200,34 1440,64"
+            fill="none" stroke="url(#wave-grad)" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.85"
+          />
         </svg>
       </div>
       </div>{/* end hero+seam wrapper */}
