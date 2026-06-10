@@ -708,72 +708,53 @@ export default function Home() {
 
       </div>
 
-      {/* Dawn bridge — multi-layered stacked rippling waves from dark hero to white services */}
-      <div className="relative h-28 sm:h-36 md:h-44 bg-[#020617] overflow-hidden z-10 -mt-px pointer-events-none" aria-hidden>
-        {/* Back Wave Layer (Cyan Glow) */}
-        <motion.svg
-          animate={reduceMotion ? undefined : {
-            x: ['-2%', '2%', '-2%'],
-            y: [0, -3, 0]
+      {/* ─── Aurora melt: seamless hero → services transition ─── */}
+      <div className="relative z-10 -mt-px overflow-hidden pointer-events-none" aria-hidden>
+        {/* Gradient column: slate-950 → deep midnight indigo → soft periwinkle */}
+        <div
+          className="h-48 sm:h-60 md:h-72"
+          style={{
+            background: 'linear-gradient(to bottom, #020617 0%, #07042e 28%, #0f0640 52%, #e2e5ff 100%)',
           }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: 'easeInOut'
+        />
+        {/* Mid-bloom — picks up the hero aurora palette */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse 70% 55% at 50% 80%, rgba(99,102,241,0.32) 0%, transparent 65%),' +
+              'radial-gradient(ellipse 50% 45% at 8% 78%, rgba(6,182,212,0.22) 0%, transparent 58%),' +
+              'radial-gradient(ellipse 50% 45% at 92% 78%, rgba(168,85,247,0.22) 0%, transparent 58%)',
           }}
-          className="absolute bottom-0 left-0 w-[108%] h-[80%] text-cyan-400/25 select-none"
-          viewBox="0 0 1440 100"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="currentColor"
-            d="M0,60 C360,15 540,95 720,55 C900,15 1080,95 1440,50 L1440,100 L0,100 Z"
-          />
-        </motion.svg>
-
-        {/* Middle Wave Layer (Violet Glow) */}
-        <motion.svg
-          animate={reduceMotion ? undefined : {
-            x: ['2%', '-2%', '2%'],
-            y: [-2, 2, -2]
-          }}
-          transition={{
-            duration: 14,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
-          className="absolute bottom-0 left-[-4%] w-[108%] h-[90%] text-violet-400/30 select-none"
-          viewBox="0 0 1440 100"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="currentColor"
-            d="M0,50 C300,5 480,85 720,45 C960,5 1140,85 1440,38 L1440,100 L0,100 Z"
-          />
-        </motion.svg>
-
-        {/* Front Wave Layer (Solid White) */}
-        <svg
-          className="absolute bottom-[-1px] left-0 w-full h-full text-white select-none"
-          viewBox="0 0 1440 100"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="currentColor"
-            d="M0,55 C320,10 520,90 720,50 C920,10 1120,90 1440,42 L1440,100 L0,100 Z"
-          />
-        </svg>
+        />
+        {/* Single clean wave — carves into the services section background */}
+        <div className="absolute inset-x-0 bottom-0">
+          <svg
+            viewBox="0 0 1440 80"
+            preserveAspectRatio="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="block w-full h-14 sm:h-[4.5rem] md:h-20"
+          >
+            <path
+              fill="#e2e5ff"
+              d="M0,42 C300,8 520,74 720,40 C920,6 1140,74 1440,28 L1440,80 L0,80 Z"
+            />
+          </svg>
+        </div>
       </div>
 
-      {/* ═══════════════════ SERVICES — luminous white ═══════════════════ */}
-      <section className="relative -mt-px overflow-hidden bg-white">
-        <div className="absolute inset-0 section-dawn-wash pointer-events-none" />
-        <div className="absolute inset-0 section-dot-grid opacity-[0.35] pointer-events-none" />
-        <div className="absolute -top-20 right-0 w-96 h-96 rounded-full bg-violet-200/20 blur-3xl pointer-events-none" />
-        <div className="absolute top-40 -left-24 w-80 h-80 rounded-full bg-cyan-200/25 blur-3xl pointer-events-none" />
+      {/* ═══════════════════ SERVICES ═══════════════════ */}
+      <section className="relative -mt-px overflow-hidden" style={{ backgroundColor: '#e2e5ff' }}>
+        {/* Periwinkle at top (matches transition wave) → white by mid-section */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to bottom, #e2e5ff 0%, #edeeff 10%, #f4f5ff 22%, #f9faff 38%, #ffffff 60%)',
+          }}
+        />
+        <div className="absolute inset-0 section-dot-grid opacity-[0.28] pointer-events-none" />
+        <div className="absolute -top-8 right-0 w-96 h-96 rounded-full bg-violet-300/18 blur-3xl pointer-events-none" />
+        <div className="absolute top-44 -left-24 w-80 h-80 rounded-full bg-cyan-300/15 blur-3xl pointer-events-none" />
 
         {/* Dynamic ambient background mesh matching the active card */}
         {!reduceMotion && (
