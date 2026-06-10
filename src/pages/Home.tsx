@@ -205,17 +205,17 @@ function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps)
 
   const buttonHoverClasses =
     index === 0
-      ? 'group-hover:bg-cyan-500 group-hover:text-white group-hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] group-hover:border-transparent'
+      ? 'group-hover:bg-cyan-50/70 group-hover:text-cyan-600 group-hover:border-cyan-200/60'
       : index === 1
-      ? 'group-hover:bg-violet-500 group-hover:text-white group-hover:shadow-[0_0_15px_rgba(139,92,246,0.4)] group-hover:border-transparent'
-      : 'group-hover:bg-rose-500 group-hover:text-white group-hover:shadow-[0_0_15px_rgba(244,63,94,0.4)] group-hover:border-transparent';
+      ? 'group-hover:bg-violet-50/70 group-hover:text-violet-600 group-hover:border-violet-200/60'
+      : 'group-hover:bg-rose-50/70 group-hover:text-rose-600 group-hover:border-rose-200/60';
 
   const labelColorClasses =
     index === 0
-      ? 'text-cyan-600 group-hover:text-white'
+      ? 'text-cyan-600'
       : index === 1
-      ? 'text-violet-600 group-hover:text-white'
-      : 'text-rose-600 group-hover:text-white';
+      ? 'text-violet-600'
+      : 'text-rose-600';
 
   const spotlightBg = useMotionTemplate`radial-gradient(280px circle at ${springX}px ${springY}px, ${spotlightColor}, transparent 80%)`;
 
@@ -294,14 +294,14 @@ function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps)
         </p>
 
         {/* Redesigned Button Pill */}
-        <div className="relative mt-8 pt-6 border-t border-slate-100/80 flex items-center justify-between z-[3]">
+        <div className="relative mt-8 pt-6 border-t border-slate-100/60 flex items-center justify-between z-[3]">
           <div
-            className={`inline-flex items-center gap-2.5 px-4.5 py-2 rounded-full border border-slate-200 bg-white transition-all duration-300 shadow-sm ${buttonHoverClasses}`}
+            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-200 bg-white transition-all duration-300 shadow-sm text-sm font-bold ${buttonHoverClasses}`}
           >
-            <span className={`text-sm font-bold transition-colors duration-300 ${labelColorClasses}`}>
+            <span className={`transition-colors duration-300 ${labelColorClasses}`}>
               קרא עוד
             </span>
-            <span className="w-5 h-5 rounded-full bg-slate-50 text-slate-500 flex items-center justify-center group-hover:bg-white/10 group-hover:text-white transition-colors duration-300">
+            <span className="w-5 h-5 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:text-inherit">
               <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-300 group-hover:-translate-x-1" />
             </span>
           </div>
@@ -708,20 +708,8 @@ export default function Home() {
 
       </div>
 
-      {/* Dawn bridge — dark hero dissolves into white */}
-      <div className="relative bg-[#020617] leading-[0]" aria-hidden>
-        <svg
-          className="block w-full h-[4.5rem] sm:h-24 md:h-28 text-white"
-          viewBox="0 0 1440 100"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="currentColor"
-            d="M0,52 C320,8 520,92 720,48 C920,4 1120,88 1440,44 L1440,100 L0,100 Z"
-          />
-        </svg>
-      </div>
+      {/* Dawn bridge — smooth gradient transition from dark hero to white services */}
+      <div className="h-32 bg-gradient-to-b from-[#020617] to-white relative z-10 -mt-px pointer-events-none" aria-hidden />
 
       {/* ═══════════════════ SERVICES — luminous white ═══════════════════ */}
       <section className="relative -mt-px overflow-hidden bg-white">
@@ -768,30 +756,11 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="relative mb-14 md:mb-20"
           >
-            {/* Elegant floating outline backdrop number */}
-            <motion.span
-              animate={reduceMotion ? undefined : {
-                y: [-6, 6, -6],
-                rotate: [-0.5, 0.5, -0.5]
-              }}
-              transition={{
-                duration: 7,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
-              className="absolute -top-6 end-0 text-[7rem] md:text-[9.5rem] font-black leading-none select-none pointer-events-none z-[0]"
-              style={{
-                WebkitTextStroke: '1.5px rgba(15, 23, 42, 0.05)',
-                color: 'transparent',
-                fontFamily: 'var(--font-display)',
-              }}
-              aria-hidden
-            >
-              02
-            </motion.span>
-
             <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 z-[1]">
-              <div className="max-w-2xl">
+              <div className="max-w-2xl relative pr-6">
+                {/* Vertical editorial gradient line on the right (RTL start) */}
+                <div className="absolute top-2 right-0 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-cyan-400 via-violet-400 to-rose-400" />
+
                 {/* Glowing Glassmorphic Badge */}
                 <div className="relative inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-slate-200/60 bg-white/70 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.02)] mb-6 overflow-hidden group/badge">
                   <span className="absolute -inset-px rounded-full bg-gradient-to-r from-cyan-400/20 via-violet-400/20 to-rose-400/20 opacity-0 group-hover/badge:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -805,22 +774,22 @@ export default function Home() {
                   ה<span className="text-gradient-tech">התמחויות</span> שלנו<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-violet-500 to-rose-500">.</span>
                 </h2>
                 <p className="text-slate-600 text-lg leading-relaxed max-w-lg">
-                  אנחנו משלבים טכנולוגיה וקריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
+                  אנחנו משלבים טכנולוגיה и קריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
                 </p>
               </div>
 
-              {/* Premium Dark Glass Main CTA */}
+              {/* Luminous White Glass Main CTA */}
               <Link
                 to="/services"
-                className="shrink-0 self-start lg:self-auto relative p-[1px] rounded-full overflow-hidden transition-transform duration-300 active:scale-98 group/btn"
+                className="shrink-0 self-start lg:self-auto relative p-[1.5px] rounded-full overflow-hidden transition-transform duration-300 active:scale-98 shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(6,182,212,0.1)] group/btn"
               >
-                {/* Gradient border ring */}
-                <span className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-violet-500 to-rose-500 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                {/* Animated gradient border */}
+                <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-violet-400 to-rose-400" />
                 {/* Inner container */}
-                <span className="relative flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-slate-950 text-white font-bold text-sm transition-colors duration-300 group-hover/btn:bg-slate-900">
+                <span className="relative flex items-center gap-2.5 px-6 py-3 rounded-full bg-white text-slate-800 font-bold text-sm transition-colors duration-300 group-hover/btn:bg-slate-50/90">
                   צפה בכל השירותים
-                  <span className="relative flex items-center justify-center w-5 h-5 rounded-full bg-white/10 transition-transform duration-300 group-hover/btn:-translate-x-1 group-hover/btn:bg-white/20">
-                    <ArrowLeft className="w-3.5 h-3.5 text-white" />
+                  <span className="relative flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-500 transition-all duration-300 group-hover/btn:-translate-x-1 group-hover/btn:bg-slate-900 group-hover/btn:text-white">
+                    <ArrowLeft className="w-3.5 h-3.5" />
                   </span>
                 </span>
               </Link>
