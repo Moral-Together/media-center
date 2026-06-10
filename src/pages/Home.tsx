@@ -143,6 +143,156 @@ function HeroStat({
       </span>
     </motion.div>
   );
+interface ServiceCardProps {
+  srv: typeof SERVICES[number];
+  index: number;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
+}
+
+function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps) {
+  const reduceMotion = useReducedMotion();
+  const Icon = srv.icon;
+
+  // Mouse coordinates for local spotlight glow
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Smooth movement springs
+  const springX = useSpring(mouseX, { stiffness: 150, damping: 24 });
+  const springY = useSpring(mouseY, { stiffness: 150, damping: 24 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
+
+  const handleMouseLeave = () => {
+    onHoverEnd();
+    if (reduceMotion) return;
+    mouseX.set(-1000);
+    mouseY.set(-1000);
+  };
+
+  const handleMouseEnter = () => {
+    onHoverStart();
+  };
+
+  const spotlightColor =
+    index === 0
+      ? 'rgba(6, 182, 212, 0.15)'
+      : index === 1
+      ? 'rgba(139, 92, 246, 0.15)'
+      : 'rgba(244, 63, 94, 0.12)';
+
+  const ringGlow =
+    index === 0
+      ? 'group-hover:ring-cyan-400/50 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.3)]'
+      : index === 1
+      ? 'group-hover:ring-violet-400/50 group-hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]'
+      : 'group-hover:ring-rose-400/50 group-hover:shadow-[0_0_20px_rgba(244,63,94,0.3)]';
+
+  const outlineGlow =
+    index === 0
+      ? 'group-hover:border-cyan-400/30'
+      : index === 1
+      ? 'group-hover:border-violet-400/30'
+      : 'group-hover:border-rose-400/30';
+
+  const spotlightBg = useMotionTemplate`radial-gradient(280px circle at ${springX}px ${springY}px, ${spotlightColor}, transparent 80%)`;
+
+  return (
+    <motion.div
+      variants={cardVariants}
+      whileHover={cardHover}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="h-full"
+    >
+      <Link
+        to="/services"
+        className={`group relative flex flex-col h-full min-h-[360px] rounded-[2rem] p-8 overflow-hidden bg-white/70 backdrop-blur-md border border-slate-200/60 shadow-[0_4px_20px_rgba(15,23,42,0.02)] transition-colors duration-500 ${outlineGlow} ${srv.hoverGlow}`}
+      >
+        {/* Dynamic top border indicator */}
+        <div
+          className={`absolute inset-x-0 top-0 h-[3px] bg-gradient-to-l ${srv.accentBar} transition-all duration-300 origin-center group-hover:h-[4px]`}
+        />
+
+        {/* Spotlight shine layer */}
+        {!reduceMotion && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none z-[2]"
+            style={{ background: spotlightBg }}
+          />
+        )}
+
+        {/* Decorative corner glow */}
+        <div
+          className={`absolute -bottom-10 -end-10 w-40 h-40 rounded-full bg-gradient-to-br ${srv.accentBar} opacity-[0.04] group-hover:opacity-[0.14] blur-3xl transition-opacity duration-500 pointer-events-none z-[1]`}
+        />
+
+        {/* Top action row */}
+        <div className="relative flex items-start justify-between gap-4 mb-8 z-[3]">
+          {/* Double-nested ring icon wrapper */}
+          <div
+            className={`relative w-16 h-16 rounded-[1.25rem] bg-white ring-1 ring-slate-100 flex items-center justify-center shadow-md transition-all duration-500 ${ringGlow}`}
+          >
+            {/* Inner ambient ring */}
+            <div
+              className={`absolute inset-[-3px] rounded-[1.4rem] bg-gradient-to-br ${srv.accentBar} opacity-0 group-hover:opacity-100 blur-[2px] -z-10 transition-opacity duration-500`}
+            />
+            {/* Main icon */}
+            <motion.div
+              whileHover={reduceMotion ? undefined : { rotate: 8, scale: 1.05 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 12 }}
+            >
+              <Icon strokeWidth={1.8} className={`w-7 h-7 ${srv.iconColor}`} />
+            </motion.div>
+          </div>
+
+          {/* Massive backdrop number */}
+          <span
+            className="text-6xl font-black font-display text-slate-100 select-none leading-none tracking-tight translate-y-[-4px] transition-all duration-500 group-hover:text-slate-200/60 group-hover:scale-110 group-hover:-translate-x-1"
+            style={{
+              fontVariantNumeric: 'tabular-nums',
+              textShadow: '1px 1px 0px rgba(255,255,255,0.8)',
+            }}
+          >
+            {String(index + 1).padStart(2, '0')}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3
+          className={`relative text-2xl font-bold text-slate-900 mb-4 z-[3] group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l ${srv.titleHover} transition-all duration-300`}
+        >
+          {srv.title}
+        </h3>
+
+        {/* Description */}
+        <p className="relative text-slate-600 text-base leading-relaxed flex-1 z-[3]">
+          {srv.desc}
+        </p>
+
+        {/* Redesigned Button Pill */}
+        <div className="relative mt-8 pt-6 border-t border-slate-100/80 flex items-center justify-between z-[3]">
+          <div
+            className="inline-flex items-center gap-2.5 px-4.5 py-2 rounded-full border border-slate-200 bg-white group-hover:bg-slate-950 group-hover:text-white group-hover:border-transparent transition-all duration-300 shadow-sm"
+          >
+            <span className={`text-sm font-bold transition-colors duration-300 group-hover:text-white ${srv.linkColor}`}>
+              קרא עוד
+            </span>
+            <span className="w-5 h-5 rounded-full bg-slate-50 text-slate-500 flex items-center justify-center group-hover:bg-white/10 group-hover:text-white transition-colors duration-300">
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-300 group-hover:-translate-x-1" />
+            </span>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
 }
 
 export default function Home() {
@@ -151,6 +301,7 @@ export default function Home() {
     try { return !sessionStorage.getItem('hero-intro-done'); } catch { return true; }
   });
   const [activeService, setActiveService] = React.useState(0);
+  const [hoveredCard, setHoveredCard] = React.useState<number | null>(null);
   const reduceMotion = useReducedMotion();
 
   React.useEffect(() => {
@@ -563,7 +714,37 @@ export default function Home() {
         <div className="absolute -top-20 right-0 w-96 h-96 rounded-full bg-violet-200/20 blur-3xl pointer-events-none" />
         <div className="absolute top-40 -left-24 w-80 h-80 rounded-full bg-cyan-200/25 blur-3xl pointer-events-none" />
 
-        <div className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        {/* Dynamic ambient background mesh matching the active card */}
+        {!reduceMotion && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden transition-all duration-1000 z-[0]">
+            <motion.div
+              animate={{
+                opacity: hoveredCard === 0 ? 0.35 : 0,
+                scale: hoveredCard === 0 ? 1.1 : 0.9,
+              }}
+              transition={{ duration: 0.6 }}
+              className="absolute -bottom-20 -left-20 w-[500px] h-[500px] rounded-full bg-cyan-300/30 blur-[120px]"
+            />
+            <motion.div
+              animate={{
+                opacity: hoveredCard === 1 ? 0.35 : 0,
+                scale: hoveredCard === 1 ? 1.1 : 0.9,
+              }}
+              transition={{ duration: 0.6 }}
+              className="absolute top-1/4 left-1/3 -translate-x-1/2 w-[550px] h-[550px] rounded-full bg-violet-400/30 blur-[130px]"
+            />
+            <motion.div
+              animate={{
+                opacity: hoveredCard === 2 ? 0.35 : 0,
+                scale: hoveredCard === 2 ? 1.1 : 0.9,
+              }}
+              transition={{ duration: 0.6 }}
+              className="absolute -bottom-20 -right-20 w-[500px] h-[500px] rounded-full bg-rose-400/30 blur-[120px]"
+            />
+          </div>
+        )}
+
+        <div className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-[1]">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -609,51 +790,15 @@ export default function Home() {
             viewport={viewportOnce}
             className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
           >
-            {SERVICES.map((srv, i) => {
-              const Icon = srv.icon;
-              return (
-                <motion.div key={i} variants={cardVariants} whileHover={cardHover}>
-                  <Link
-                    to="/services"
-                    className={`group relative flex flex-col h-full min-h-[320px] rounded-3xl p-8 overflow-hidden bg-gradient-to-b from-white to-slate-50/80 border border-slate-200/80 shadow-[0_2px_16px_rgba(15,23,42,0.04)] transition-all duration-300 ${srv.hoverGlow}`}
-                  >
-                    <div
-                      className={`absolute inset-x-0 top-0 h-[3px] bg-gradient-to-l ${srv.accentBar}`}
-                    />
-                    <div
-                      className={`absolute -bottom-8 -end-8 w-36 h-36 rounded-full bg-gradient-to-br ${srv.accentBar} opacity-[0.06] group-hover:opacity-[0.12] blur-2xl transition-opacity pointer-events-none`}
-                    />
-
-                    <div className="relative flex items-start justify-between gap-4 mb-8">
-                      <div
-                        className={`w-14 h-14 rounded-2xl ${srv.iconBg} ring-1 ${srv.iconRing} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300`}
-                      >
-                        <Icon strokeWidth={2} className={`w-6 h-6 ${srv.iconColor}`} />
-                      </div>
-                      <span className="text-4xl font-bold tabular-nums text-slate-100 leading-none select-none">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                    </div>
-
-                    <h3
-                      className={`relative text-2xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l ${srv.titleHover} transition-all duration-300`}
-                    >
-                      {srv.title}
-                    </h3>
-                    <p className="relative text-slate-600 text-[15px] flex-1 leading-relaxed">
-                      {srv.desc}
-                    </p>
-
-                    <div className="relative mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-                      <span className={`text-sm font-bold ${srv.linkColor}`}>קרא עוד</span>
-                      <span className="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300">
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                      </span>
-                    </div>
-                  </Link>
-                </motion.div>
-              );
-            })}
+            {SERVICES.map((srv, i) => (
+              <ServiceCard
+                key={i}
+                srv={srv}
+                index={i}
+                onHoverStart={() => setHoveredCard(i)}
+                onHoverEnd={() => setHoveredCard(null)}
+              />
+            ))}
           </motion.div>
         </div>
       </section>
