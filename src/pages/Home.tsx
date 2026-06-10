@@ -709,7 +709,20 @@ export default function Home() {
       </div>
 
       {/* ─── Diagonal seam: dark hero → services ─── */}
-      <div className="relative z-10 -mt-px pointer-events-none" aria-hidden>
+      <div
+        className="relative z-10 -mt-px pointer-events-none"
+        aria-hidden
+        style={{
+          background:
+            /* fuchsia — mirrors hero's -bottom-48 left-1/3 orb (centre just above this div) */
+            'radial-gradient(ellipse 65% 160% at 34% -30%, rgba(192,38,211,0.38) 0%, transparent 58%),' +
+            /* violet — mirrors hero's left orb bleeding to bottom */
+            'radial-gradient(ellipse 42% 140% at 1% 5%, rgba(124,58,237,0.28) 0%, transparent 55%),' +
+            /* cyan — mirrors hero's top-right orb tail */
+            'radial-gradient(ellipse 45% 130% at 88% -8%, rgba(6,182,212,0.22) 0%, transparent 57%),' +
+            '#020617',
+        }}
+      >
         <svg
           viewBox="0 0 1440 180"
           preserveAspectRatio="none"
@@ -744,8 +757,8 @@ export default function Home() {
             </filter>
           </defs>
 
-          {/* Dark triangle — hero */}
-          <polygon points="0,0 1440,0 0,180" fill="#020617" />
+          {/* Dark triangle — transparent: aurora bg of parent div shows through */}
+          <polygon points="0,0 1440,0 0,180" fill="transparent" />
           {/* Light triangle — services */}
           <polygon points="1440,0 1440,180 0,180" fill="#f5f6ff" />
 
