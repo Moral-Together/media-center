@@ -721,15 +721,6 @@ export default function Home() {
 
       {/* ─── Wave bridge: dark hero flows into light services ─── */}
       <div className="relative -mt-px leading-[0] bg-[#020617] pointer-events-none" aria-hidden>
-        {/* Aurora echo: faint orb glows bleeding over the wave crest */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 42% 90% at 22% 0%, rgba(139,92,246,0.16), transparent 60%),' +
-              'radial-gradient(ellipse 38% 80% at 75% 0%, rgba(6,182,212,0.13), transparent 55%)',
-          }}
-        />
         <svg
           viewBox="0 0 1440 130"
           preserveAspectRatio="none"
