@@ -543,7 +543,6 @@ export default function Home() {
 
       {/* Dawn bridge — dark hero dissolves into white */}
       <div className="relative bg-[#020617] leading-[0]" aria-hidden>
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent" />
         <svg
           className="block w-full h-[4.5rem] sm:h-24 md:h-28 text-white"
           viewBox="0 0 1440 100"
@@ -558,10 +557,9 @@ export default function Home() {
       </div>
 
       {/* ═══════════════════ SERVICES — luminous white ═══════════════════ */}
-      <section className="relative overflow-hidden bg-white">
+      <section className="relative -mt-px overflow-hidden bg-white">
         <div className="absolute inset-0 section-dawn-wash pointer-events-none" />
         <div className="absolute inset-0 section-dot-grid opacity-[0.35] pointer-events-none" />
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-neon opacity-30" />
         <div className="absolute -top-20 right-0 w-96 h-96 rounded-full bg-violet-200/20 blur-3xl pointer-events-none" />
         <div className="absolute top-40 -left-24 w-80 h-80 rounded-full bg-cyan-200/25 blur-3xl pointer-events-none" />
 
@@ -609,46 +607,49 @@ export default function Home() {
             initial="hidden"
             whileInView="show"
             viewport={viewportOnce}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
           >
             {SERVICES.map((srv, i) => {
               const Icon = srv.icon;
               return (
-                <motion.div
-                  key={i}
-                  variants={cardVariants}
-                  className={i === 1 ? 'md:-translate-y-4' : undefined}
-                >
+                <motion.div key={i} variants={cardVariants} whileHover={cardHover}>
                   <Link
                     to="/services"
-                    className={`group relative flex flex-col h-full rounded-[1.75rem] p-8 overflow-hidden bg-white border border-slate-100 shadow-[0_4px_24px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-2 ${srv.hoverGlow}`}
+                    className={`group relative flex flex-col h-full min-h-[320px] rounded-3xl p-8 overflow-hidden bg-gradient-to-b from-white to-slate-50/80 border border-slate-200/80 shadow-[0_2px_16px_rgba(15,23,42,0.04)] transition-all duration-300 ${srv.hoverGlow}`}
                   >
-                    <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-slate-50/90 to-transparent pointer-events-none" />
-                    <span className="relative text-[10px] font-bold tabular-nums text-slate-300 group-hover:text-slate-400 transition-colors mb-7">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
                     <div
-                      className={`relative w-16 h-16 rounded-2xl ${srv.iconBg} ring-1 ${srv.iconRing} flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300`}
-                    >
-                      <Icon strokeWidth={1.8} className={`w-7 h-7 ${srv.iconColor}`} />
+                      className={`absolute inset-x-0 top-0 h-[3px] bg-gradient-to-l ${srv.accentBar}`}
+                    />
+                    <div
+                      className={`absolute -bottom-8 -end-8 w-36 h-36 rounded-full bg-gradient-to-br ${srv.accentBar} opacity-[0.06] group-hover:opacity-[0.12] blur-2xl transition-opacity pointer-events-none`}
+                    />
+
+                    <div className="relative flex items-start justify-between gap-4 mb-8">
+                      <div
+                        className={`w-14 h-14 rounded-2xl ${srv.iconBg} ring-1 ${srv.iconRing} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300`}
+                      >
+                        <Icon strokeWidth={2} className={`w-6 h-6 ${srv.iconColor}`} />
+                      </div>
+                      <span className="text-4xl font-bold tabular-nums text-slate-100 leading-none select-none">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
                     </div>
+
                     <h3
                       className={`relative text-2xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l ${srv.titleHover} transition-all duration-300`}
                     >
                       {srv.title}
                     </h3>
-                    <p className="relative text-slate-600 text-base flex-1 leading-relaxed mb-7">
+                    <p className="relative text-slate-600 text-[15px] flex-1 leading-relaxed">
                       {srv.desc}
                     </p>
-                    <span
-                      className={`relative inline-flex items-center gap-1.5 text-sm font-bold ${srv.linkColor} transition-colors`}
-                    >
-                      קרא עוד
-                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    </span>
-                    <div
-                      className={`absolute inset-x-0 bottom-0 h-1 bg-gradient-to-l ${srv.accentBar} opacity-70 group-hover:opacity-100 group-hover:h-1.5 transition-all duration-300`}
-                    />
+
+                    <div className="relative mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
+                      <span className={`text-sm font-bold ${srv.linkColor}`}>קרא עוד</span>
+                      <span className="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300">
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                      </span>
+                    </div>
                   </Link>
                 </motion.div>
               );
