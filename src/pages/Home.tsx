@@ -65,28 +65,37 @@ const SERVICES = [
     icon: Code,
     title: 'פיתוח',
     desc: 'שירותי פיתוח וארכיטקטורה, אתרים מתקדמים ואפליקציות מובייל.',
-    colorClass: 'text-blue-600',
-    bgClass: 'bg-gradient-to-br from-blue-50 to-cyan-50',
-    accent: 'from-blue-500 via-cyan-500 to-blue-600',
-    glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(37,99,235,0.22)]',
+    cornerGlow: 'from-cyan-400/35 via-blue-600/15 to-transparent',
+    iconRing: 'from-cyan-400 to-blue-500',
+    iconColor: 'text-cyan-300',
+    titleHover: 'group-hover:from-cyan-200 group-hover:to-blue-400',
+    linkHover: 'group-hover:text-cyan-400',
+    edgeLine: 'from-cyan-400/80 to-blue-500/40',
+    hoverShadow: 'group-hover:shadow-[0_28px_60px_-16px_rgba(6,182,212,0.28)]',
   },
   {
     icon: Shield,
     title: 'אבטחת מידע',
     desc: 'ביקורת אבטחת מידע, יצירת חומות אש ובדיקות חדירות לאתרים ומערכות.',
-    colorClass: 'text-purple-600',
-    bgClass: 'bg-gradient-to-br from-purple-50 to-violet-50',
-    accent: 'from-violet-500 via-purple-500 to-fuchsia-600',
-    glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(124,58,237,0.22)]',
+    cornerGlow: 'from-violet-400/35 via-purple-600/15 to-transparent',
+    iconRing: 'from-violet-400 to-purple-500',
+    iconColor: 'text-violet-300',
+    titleHover: 'group-hover:from-violet-200 group-hover:to-purple-400',
+    linkHover: 'group-hover:text-violet-400',
+    edgeLine: 'from-violet-400/80 to-purple-500/40',
+    hoverShadow: 'group-hover:shadow-[0_28px_60px_-16px_rgba(139,92,246,0.28)]',
   },
   {
     icon: Megaphone,
     title: 'פרסום דיגיטלי',
     desc: 'שיווק איכותי מבוסס ביצועים וקמפיינים עם תוצאות מהירות ואפקטיביות.',
-    colorClass: 'text-pink-600',
-    bgClass: 'bg-gradient-to-br from-pink-50 to-rose-50',
-    accent: 'from-pink-500 via-rose-500 to-orange-500',
-    glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(219,39,119,0.2)]',
+    cornerGlow: 'from-amber-400/30 via-rose-500/15 to-transparent',
+    iconRing: 'from-amber-400 to-rose-500',
+    iconColor: 'text-amber-200',
+    titleHover: 'group-hover:from-amber-200 group-hover:to-rose-400',
+    linkHover: 'group-hover:text-amber-300',
+    edgeLine: 'from-amber-400/80 to-rose-500/40',
+    hoverShadow: 'group-hover:shadow-[0_28px_60px_-16px_rgba(251,191,36,0.22)]',
   },
 ];
 
@@ -530,104 +539,130 @@ export default function Home() {
           />
         ))}
 
-        {/* Soft glow above wave — no heavy blur into white */}
-        <div
-          className="absolute bottom-0 inset-x-0 h-32 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, rgba(15, 23, 42, 0.4) 45%, transparent 100%)',
-          }}
+      </div>
+
+      {/* ═══════════ HORIZON — hero → services transition ═══════════ */}
+      <div
+        className="relative h-20 md:h-28 -mt-px overflow-hidden"
+        style={{
+          background: 'linear-gradient(to bottom, #020617 0%, #0a1020 45%, #0f172a 100%)',
+        }}
+        aria-hidden
+      >
+        <div className="absolute inset-0 section-beams opacity-80" />
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent" />
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-16 bg-gradient-to-r from-transparent via-amber-500/[0.06] to-transparent blur-xl" />
+      </div>
+
+      {/* ═══════════════════ SERVICES — twilight prism ═══════════════════ */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#0c1222]">
+        <div className="absolute inset-0 section-constellation pointer-events-none" />
+        <div className="absolute inset-0 section-beams pointer-events-none opacity-60" />
+
+        {/* Warm accent orb — contrasts hero's cool palette */}
+        <motion.div
+          animate={reduceMotion ? undefined : { scale: [1, 1.15, 0.92, 1], opacity: [0.5, 0.7, 0.45, 0.5] }}
+          transition={reduceMotion ? undefined : { duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -bottom-32 -left-24 w-[420px] h-[420px] rounded-full bg-amber-500/[0.07] blur-[100px] pointer-events-none"
         />
-      </div>
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Wave bridge: dark hero → light services */}
-      <div className="relative z-10 -mt-px leading-[0] text-slate-50" aria-hidden>
-        <svg
-          className="block w-full h-14 sm:h-20 md:h-24"
-          viewBox="0 0 1440 80"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="currentColor"
-            d="M0,48 C360,88 720,8 1080,52 C1260,72 1380,64 1440,56 L1440,80 L0,80 Z"
-          />
-        </svg>
-      </div>
-
-      {/* ═══════════════════ SERVICES — light continuation ═══════════════════ */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100/80 section-light-mesh">
-        <div className="absolute inset-0 section-dot-grid opacity-60 pointer-events-none" />
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-neon opacity-40" />
-        <div className="absolute top-24 -left-32 w-72 h-72 rounded-full bg-cyan-400/10 blur-3xl pointer-events-none" />
-        <div className="absolute top-40 -right-24 w-80 h-80 rounded-full bg-violet-400/10 blur-3xl pointer-events-none" />
-
-        <div className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="relative py-20 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          {/* Header — editorial layout with watermark */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6"
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="relative mb-16 md:mb-20"
           >
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-l from-cyan-600 via-violet-600 to-pink-600 mb-3">
-                מה אנחנו עושים
-              </p>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900">
-                ההתמחויות שלנו
-              </h2>
-              <p className="text-slate-600 max-w-xl text-lg leading-relaxed">
-                אנחנו משלבים טכנולוגיה וקריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
-              </p>
-            </div>
-            <Link
-              to="/services"
-              className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200/80 bg-white/80 text-slate-700 font-bold text-sm shadow-sm hover:border-violet-200 hover:text-violet-700 hover:shadow-md transition-all"
+            <span
+              className="absolute -top-6 end-0 text-[7rem] md:text-[9rem] font-bold leading-none text-white/[0.03] select-none pointer-events-none"
+              aria-hidden
             >
-              צפה בכל השירותים
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
+              02
+            </span>
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] mb-6">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_2px_rgba(52,211,153,0.5)]" />
+                  <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-300/90">
+                    מה אנחנו עושים
+                  </span>
+                </div>
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-5 leading-[1.08]">
+                  ה<span className="text-gradient-tech">התמחויות</span> שלנו
+                </h2>
+                <p className="text-slate-400 text-lg leading-relaxed max-w-lg">
+                  אנחנו משלבים טכנולוגיה וקריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
+                </p>
+              </div>
+              <Link
+                to="/services"
+                className="shrink-0 self-start lg:self-auto inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-white/[0.03] text-slate-300 hover:text-white hover:border-emerald-500/30 hover:bg-emerald-500/[0.06] font-bold text-sm transition-all duration-300"
+              >
+                צפה בכל השירותים
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+            </div>
           </motion.div>
 
+          {/* Cards — staggered prism glass */}
           <motion.div
             variants={containerStagger}
             initial="hidden"
             whileInView="show"
             viewport={viewportOnce}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-7 items-stretch"
           >
             {SERVICES.map((srv, i) => {
               const Icon = srv.icon;
               return (
-                <motion.div key={i} variants={cardVariants} whileHover={cardHover}>
+                <motion.div
+                  key={i}
+                  variants={cardVariants}
+                  className={i === 1 ? 'md:-translate-y-5' : undefined}
+                >
                   <Link
                     to="/services"
-                    className={`group relative flex flex-col h-full rounded-[2rem] p-8 bg-white/90 backdrop-blur-sm border border-slate-200/70 overflow-hidden transition-all duration-300 ${srv.glow} hover:-translate-y-1 hover:border-slate-300/80`}
+                    className={`group relative flex flex-col h-full rounded-[1.75rem] p-8 overflow-hidden bg-white/[0.03] backdrop-blur-xl border border-white/[0.07] transition-all duration-400 hover:-translate-y-1.5 hover:border-white/[0.14] hover:bg-white/[0.05] ${srv.hoverShadow}`}
                   >
+                    {/* Corner light bloom */}
                     <div
-                      className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-l ${srv.accent} opacity-80`}
+                      className={`absolute -top-16 -end-16 w-40 h-40 rounded-full bg-gradient-to-br ${srv.cornerGlow} blur-2xl opacity-50 group-hover:opacity-90 transition-opacity duration-500 pointer-events-none`}
                     />
+                    {/* Leading edge accent */}
                     <div
-                      className={`absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${srv.accent} opacity-[0.07] blur-2xl pointer-events-none group-hover:opacity-[0.12] transition-opacity`}
+                      className={`absolute inset-y-4 start-0 w-[2px] rounded-full bg-gradient-to-b ${srv.edgeLine} opacity-40 group-hover:opacity-100 transition-opacity`}
                     />
-                    <span className="absolute top-6 end-6 text-[10px] font-bold tabular-nums text-slate-300 group-hover:text-slate-400 transition-colors">
+
+                    <span className="relative text-[10px] font-bold tabular-nums text-slate-600 group-hover:text-slate-500 transition-colors mb-8">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <div
-                      className={`relative w-14 h-14 ${srv.bgClass} border border-slate-200/50 rounded-2xl flex items-center justify-center mb-6 shadow-sm ring-1 ring-white group-hover:scale-105 transition-transform duration-300`}
-                    >
-                      <Icon strokeWidth={2} className={`w-6 h-6 ${srv.colorClass}`} />
+
+                    {/* Icon ring */}
+                    <div className="relative mb-7 w-[4.5rem] h-[4.5rem]">
+                      <div
+                        className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${srv.iconRing} opacity-20 group-hover:opacity-35 blur-md transition-opacity`}
+                      />
+                      <div className="relative w-full h-full rounded-2xl border border-white/10 bg-white/[0.04] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                        <Icon strokeWidth={1.6} className={`w-7 h-7 ${srv.iconColor}`} />
+                      </div>
                     </div>
-                    <h3 className="relative text-2xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
+
+                    <h3
+                      className={`relative text-2xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l ${srv.titleHover} transition-all duration-300`}
+                    >
                       {srv.title}
                     </h3>
-                    <p className="relative text-slate-600 text-base flex-1 leading-relaxed mb-6">
+                    <p className="relative text-slate-500 text-base flex-1 leading-relaxed mb-8 group-hover:text-slate-400 transition-colors">
                       {srv.desc}
                     </p>
-                    <span className="relative inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 group-hover:text-violet-600 transition-colors">
+                    <span
+                      className={`relative inline-flex items-center gap-1.5 text-sm font-bold text-slate-600 ${srv.linkHover} transition-colors`}
+                    >
                       קרא עוד
-                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     </span>
                   </Link>
                 </motion.div>
@@ -636,7 +671,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
       </section>
     </div>
   );

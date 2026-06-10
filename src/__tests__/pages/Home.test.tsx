@@ -41,7 +41,7 @@ describe('Home page', () => {
 
   it('renders service preview section heading', () => {
     renderHome();
-    expect(screen.getByText('ההתמחויות שלנו')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: /ההתמחויות שלנו/ })).toBeInTheDocument();
   });
 
   it('renders 3 service preview cards with links to /services', () => {
