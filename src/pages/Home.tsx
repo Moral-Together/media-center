@@ -708,53 +708,70 @@ export default function Home() {
 
       </div>
 
-      {/* ─── Aurora melt: seamless hero → services transition ─── */}
-      <div className="relative z-10 -mt-px overflow-hidden pointer-events-none" aria-hidden>
-        {/* Gradient column: slate-950 → deep midnight indigo → soft periwinkle */}
-        <div
-          className="h-48 sm:h-60 md:h-72"
-          style={{
-            background: 'linear-gradient(to bottom, #020617 0%, #07042e 28%, #0f0640 52%, #e2e5ff 100%)',
-          }}
-        />
-        {/* Mid-bloom — picks up the hero aurora palette */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 70% 55% at 50% 80%, rgba(99,102,241,0.32) 0%, transparent 65%),' +
-              'radial-gradient(ellipse 50% 45% at 8% 78%, rgba(6,182,212,0.22) 0%, transparent 58%),' +
-              'radial-gradient(ellipse 50% 45% at 92% 78%, rgba(168,85,247,0.22) 0%, transparent 58%)',
-          }}
-        />
-        {/* Single clean wave — carves into the services section background */}
-        <div className="absolute inset-x-0 bottom-0">
-          <svg
-            viewBox="0 0 1440 80"
-            preserveAspectRatio="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="block w-full h-14 sm:h-[4.5rem] md:h-20"
-          >
-            <path
-              fill="#e2e5ff"
-              d="M0,42 C300,8 520,74 720,40 C920,6 1140,74 1440,28 L1440,80 L0,80 Z"
-            />
-          </svg>
-        </div>
+      {/* ─── Diagonal seam: dark hero → services ─── */}
+      <div className="relative z-10 -mt-px pointer-events-none" aria-hidden>
+        <svg
+          viewBox="0 0 1440 180"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="block w-full h-24 sm:h-32 md:h-40"
+          style={{ overflow: 'visible' }}
+        >
+          <defs>
+            <linearGradient id="seam-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stopColor="#06b6d4" />
+              <stop offset="45%"  stopColor="#8b5cf6" />
+              <stop offset="80%"  stopColor="#a855f7" />
+              <stop offset="100%" stopColor="#ec4899" />
+            </linearGradient>
+            {/* Wide soft halo */}
+            <filter id="seam-halo" x="-2%" y="-600%" width="104%" height="1300%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="big" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="6"  result="mid" />
+              <feMerge>
+                <feMergeNode in="big" />
+                <feMergeNode in="big" />
+                <feMergeNode in="mid" />
+              </feMerge>
+            </filter>
+            {/* Tight crisp glow */}
+            <filter id="seam-crisp" x="-2%" y="-600%" width="104%" height="1300%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Dark triangle — hero */}
+          <polygon points="0,0 1440,0 0,180" fill="#020617" />
+          {/* Light triangle — services */}
+          <polygon points="1440,0 1440,180 0,180" fill="#f5f6ff" />
+
+          {/* Ambient halo first (wide, soft) */}
+          <path d="M 0 180 L 1440 0" fill="none"
+            stroke="url(#seam-grad)" strokeWidth="3" strokeOpacity="0.55"
+            filter="url(#seam-halo)" />
+          {/* Crisp seam line on top */}
+          <path d="M 0 180 L 1440 0" fill="none"
+            stroke="url(#seam-grad)" strokeWidth="1.8"
+            filter="url(#seam-crisp)" />
+        </svg>
       </div>
 
       {/* ═══════════════════ SERVICES ═══════════════════ */}
-      <section className="relative -mt-px overflow-hidden" style={{ backgroundColor: '#e2e5ff' }}>
-        {/* Periwinkle at top (matches transition wave) → white by mid-section */}
+      <section className="relative -mt-px overflow-hidden bg-[#f5f6ff]">
+        {/* Gradient: matches seam lower triangle → white at cards */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(to bottom, #e2e5ff 0%, #edeeff 10%, #f4f5ff 22%, #f9faff 38%, #ffffff 60%)',
+            background: 'linear-gradient(to bottom, #f5f6ff 0%, #f8f9ff 18%, #fbfcff 36%, #ffffff 60%)',
           }}
         />
-        <div className="absolute inset-0 section-dot-grid opacity-[0.28] pointer-events-none" />
-        <div className="absolute -top-8 right-0 w-96 h-96 rounded-full bg-violet-300/18 blur-3xl pointer-events-none" />
-        <div className="absolute top-44 -left-24 w-80 h-80 rounded-full bg-cyan-300/15 blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 section-dot-grid opacity-[0.25] pointer-events-none" />
+        <div className="absolute -top-4 right-0 w-96 h-96 rounded-full bg-violet-200/12 blur-3xl pointer-events-none" />
+        <div className="absolute top-44 -left-24 w-80 h-80 rounded-full bg-cyan-200/10 blur-3xl pointer-events-none" />
 
         {/* Dynamic ambient background mesh matching the active card */}
         {!reduceMotion && (
