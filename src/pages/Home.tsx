@@ -65,49 +65,28 @@ const SERVICES = [
     icon: Code,
     title: 'פיתוח',
     desc: 'שירותי פיתוח וארכיטקטורה, אתרים מתקדמים ואפליקציות מובייל.',
-    borderStatic: 'rgba(6,182,212,0.12)',
-    conicGrad:
-      'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 268deg, rgba(0,242,254,0.85) 298deg, rgba(56,189,248,1) 326deg, rgba(0,242,254,0.5) 342deg, transparent 360deg)',
-    rotateDuration: 4,
-    iconBg: 'bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/25',
-    iconGlowBg: 'bg-cyan-500/40',
-    iconColor: 'text-cyan-400',
-    iconRotate: -8,
-    titleGrad: 'from-cyan-400 to-blue-400',
-    linkColor: 'text-cyan-600 group-hover:text-cyan-400',
-    accent: 'from-cyan-400 to-blue-500',
+    colorClass: 'text-blue-600',
+    bgClass: 'bg-gradient-to-br from-blue-50 to-cyan-50',
+    accent: 'from-blue-500 via-cyan-500 to-blue-600',
+    glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(37,99,235,0.22)]',
   },
   {
     icon: Shield,
     title: 'אבטחת מידע',
     desc: 'ביקורת אבטחת מידע, יצירת חומות אש ובדיקות חדירות לאתרים ומערכות.',
-    borderStatic: 'rgba(139,92,246,0.12)',
-    conicGrad:
-      'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 268deg, rgba(139,92,246,0.85) 298deg, rgba(167,139,250,1) 326deg, rgba(139,92,246,0.5) 342deg, transparent 360deg)',
-    rotateDuration: 5.5,
-    iconBg: 'bg-gradient-to-br from-violet-500/20 to-purple-600/20 border border-violet-500/25',
-    iconGlowBg: 'bg-violet-500/40',
-    iconColor: 'text-violet-400',
-    iconRotate: 8,
-    titleGrad: 'from-violet-400 to-purple-400',
-    linkColor: 'text-violet-600 group-hover:text-violet-400',
-    accent: 'from-violet-400 to-purple-500',
+    colorClass: 'text-purple-600',
+    bgClass: 'bg-gradient-to-br from-purple-50 to-violet-50',
+    accent: 'from-violet-500 via-purple-500 to-fuchsia-600',
+    glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(124,58,237,0.22)]',
   },
   {
     icon: Megaphone,
     title: 'פרסום דיגיטלי',
     desc: 'שיווק איכותי מבוסס ביצועים וקמפיינים עם תוצאות מהירות ואפקטיביות.',
-    borderStatic: 'rgba(232,121,249,0.12)',
-    conicGrad:
-      'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 268deg, rgba(232,121,249,0.85) 298deg, rgba(240,171,252,1) 326deg, rgba(232,121,249,0.5) 342deg, transparent 360deg)',
-    rotateDuration: 3.5,
-    iconBg: 'bg-gradient-to-br from-fuchsia-500/20 to-pink-600/20 border border-fuchsia-500/25',
-    iconGlowBg: 'bg-fuchsia-500/40',
-    iconColor: 'text-fuchsia-400',
-    iconRotate: -6,
-    titleGrad: 'from-fuchsia-400 to-pink-400',
-    linkColor: 'text-fuchsia-600 group-hover:text-fuchsia-400',
-    accent: 'from-fuchsia-400 to-pink-500',
+    colorClass: 'text-pink-600',
+    bgClass: 'bg-gradient-to-br from-pink-50 to-rose-50',
+    accent: 'from-pink-500 via-rose-500 to-orange-500',
+    glow: 'group-hover:shadow-[0_24px_48px_-12px_rgba(219,39,119,0.2)]',
   },
 ];
 
@@ -561,61 +540,56 @@ export default function Home() {
         />
       </div>
 
-      {/* ═══════════════════ SERVICES SECTION ═══════════════════ */}
-      <section className="relative overflow-hidden bg-[#020617]">
-        {/* Fine grid — mirrors the hero */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),' +
-              'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px)',
-            backgroundSize: '72px 72px',
-          }}
-        />
+      {/* Wave bridge: dark hero → light services */}
+      <div className="relative z-10 -mt-px leading-[0] text-slate-50" aria-hidden>
+        <svg
+          className="block w-full h-14 sm:h-20 md:h-24"
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="currentColor"
+            d="M0,48 C360,88 720,8 1080,52 C1260,72 1380,64 1440,56 L1440,80 L0,80 Z"
+          />
+        </svg>
+      </div>
 
-        {/* Aurora orbs */}
-        <motion.div
-          animate={reduceMotion ? undefined : { scale: [1, 1.2, 0.88, 1] }}
-          transition={reduceMotion ? undefined : { duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-40 -right-40 w-[560px] h-[560px] rounded-full bg-cyan-500/[0.14] blur-[120px] pointer-events-none"
-        />
-        <motion.div
-          animate={reduceMotion ? undefined : { scale: [1, 0.84, 1.24, 1] }}
-          transition={reduceMotion ? undefined : { duration: 26, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-violet-600/[0.14] blur-[100px] pointer-events-none"
-        />
-        <motion.div
-          animate={reduceMotion ? undefined : { scale: [1, 1.16, 0.9, 1] }}
-          transition={reduceMotion ? undefined : { duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full bg-fuchsia-600/[0.10] blur-[90px] pointer-events-none"
-        />
+      {/* ═══════════════════ SERVICES — light continuation ═══════════════════ */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100/80 section-light-mesh">
+        <div className="absolute inset-0 section-dot-grid opacity-60 pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-neon opacity-40" />
+        <div className="absolute top-24 -left-32 w-72 h-72 rounded-full bg-cyan-400/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-40 -right-24 w-80 h-80 rounded-full bg-violet-400/10 blur-3xl pointer-events-none" />
 
-        <div className="relative py-24 md:py-36 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-
-          {/* ── Section header ── */}
+        <div className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center mb-20"
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#00f2fe] shadow-[0_0_6px_2px_rgba(0,242,254,0.6)]" />
-              <span className="text-xs font-bold uppercase tracking-[0.22em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-l from-cyan-600 via-violet-600 to-pink-600 mb-3">
                 מה אנחנו עושים
-              </span>
+              </p>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900">
+                ההתמחויות שלנו
+              </h2>
+              <p className="text-slate-600 max-w-xl text-lg leading-relaxed">
+                אנחנו משלבים טכנולוגיה וקריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
+              </p>
             </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
-              ה<span className="text-gradient-cycling">התמחויות</span> שלנו
-            </h2>
-            <p className="text-slate-400 max-w-xl mx-auto text-lg leading-relaxed">
-              אנחנו משלבים טכנולוגיה וקריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
-            </p>
+            <Link
+              to="/services"
+              className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200/80 bg-white/80 text-slate-700 font-bold text-sm shadow-sm hover:border-violet-200 hover:text-violet-700 hover:shadow-md transition-all"
+            >
+              צפה בכל השירותים
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
           </motion.div>
 
-          {/* ── Cards ── */}
           <motion.div
             variants={containerStagger}
             initial="hidden"
@@ -627,103 +601,42 @@ export default function Home() {
               const Icon = srv.icon;
               return (
                 <motion.div key={i} variants={cardVariants} whileHover={cardHover}>
-                  <div
-                    className="relative rounded-[2rem] overflow-hidden p-[1.5px]"
-                    style={{ background: srv.borderStatic }}
+                  <Link
+                    to="/services"
+                    className={`group relative flex flex-col h-full rounded-[2rem] p-8 bg-white/90 backdrop-blur-sm border border-slate-200/70 overflow-hidden transition-all duration-300 ${srv.glow} hover:-translate-y-1 hover:border-slate-300/80`}
                   >
-                    {/* Rotating conic-gradient border light */}
-                    {!reduceMotion && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          width: 'max(240%, 560px)',
-                          aspectRatio: '1',
-                          transform: 'translate(-50%, -50%)',
-                          pointerEvents: 'none',
-                        }}
-                      >
-                        <motion.div
-                          style={{ width: '100%', height: '100%', background: srv.conicGrad }}
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: srv.rotateDuration, repeat: Infinity, ease: 'linear' }}
-                        />
-                      </div>
-                    )}
-
-                    <Link
-                      to="/services"
-                      className="group relative flex flex-col h-full rounded-[calc(2rem-1.5px)] bg-slate-900 p-8 overflow-hidden transition-colors duration-300 hover:bg-[#0d1526]"
+                    <div
+                      className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-l ${srv.accent} opacity-80`}
+                    />
+                    <div
+                      className={`absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br ${srv.accent} opacity-[0.07] blur-2xl pointer-events-none group-hover:opacity-[0.12] transition-opacity`}
+                    />
+                    <span className="absolute top-6 end-6 text-[10px] font-bold tabular-nums text-slate-300 group-hover:text-slate-400 transition-colors">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <div
+                      className={`relative w-14 h-14 ${srv.bgClass} border border-slate-200/50 rounded-2xl flex items-center justify-center mb-6 shadow-sm ring-1 ring-white group-hover:scale-105 transition-transform duration-300`}
                     >
-                      {/* Number */}
-                      <span className="absolute top-6 end-6 text-[11px] font-bold tabular-nums text-slate-700 group-hover:text-slate-500 transition-colors">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-
-                      {/* Icon with bloom glow */}
-                      <div className="relative mb-8 w-16 h-16">
-                        <div
-                          className={`absolute inset-0 rounded-2xl blur-xl ${srv.iconGlowBg} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                        />
-                        <motion.div
-                          whileHover={{ scale: 1.1, rotate: srv.iconRotate }}
-                          transition={{ type: 'spring', stiffness: 320, damping: 18 }}
-                          className={`relative w-16 h-16 rounded-2xl ${srv.iconBg} flex items-center justify-center`}
-                        >
-                          <Icon strokeWidth={1.7} className={`w-7 h-7 ${srv.iconColor}`} />
-                        </motion.div>
-                      </div>
-
-                      {/* Title */}
-                      <h3
-                        className={`text-2xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l ${srv.titleGrad} transition-all duration-300`}
-                      >
-                        {srv.title}
-                      </h3>
-
-                      {/* Description */}
-                      <p className="text-slate-500 text-base flex-1 leading-relaxed mb-8 group-hover:text-slate-400 transition-colors">
-                        {srv.desc}
-                      </p>
-
-                      {/* CTA */}
-                      <span className={`inline-flex items-center gap-1.5 text-sm font-bold ${srv.linkColor} transition-colors`}>
-                        קרא עוד
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                      </span>
-
-                      {/* Bottom glow strip */}
-                      <div
-                        className={`absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-l ${srv.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                      />
-                    </Link>
-                  </div>
+                      <Icon strokeWidth={2} className={`w-6 h-6 ${srv.colorClass}`} />
+                    </div>
+                    <h3 className="relative text-2xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
+                      {srv.title}
+                    </h3>
+                    <p className="relative text-slate-600 text-base flex-1 leading-relaxed mb-6">
+                      {srv.desc}
+                    </p>
+                    <span className="relative inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 group-hover:text-violet-600 transition-colors">
+                      קרא עוד
+                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                    </span>
+                  </Link>
                 </motion.div>
               );
             })}
           </motion.div>
-
-          {/* ── Bottom CTA ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center mt-16"
-          >
-            <Link
-              to="/services"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:border-white/20 hover:bg-white/[0.07] font-bold text-base transition-all duration-300"
-            >
-              צפה בכל השירותים
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-          </motion.div>
         </div>
 
-        {/* Separator */}
-        <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
       </section>
     </div>
   );
