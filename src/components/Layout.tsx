@@ -24,9 +24,13 @@ function LanguageSwitcher({ layoutSuffix = 'desktop' }: { layoutSuffix?: string 
     ? i18n.language
     : 'he') as LangCode;
 
+  const displayOrder: LangCode[] = current === 'he'
+    ? ['he', 'en', 'el']
+    : ['el', 'en', 'he'];
+
   return (
     <div className="flex items-center gap-0.5 rounded-full p-0.5 bg-slate-100/80 border border-slate-200/60 backdrop-blur-sm">
-      {(Object.keys(LANGUAGES) as LangCode[]).map((code) => {
+      {displayOrder.map((code) => {
         const info = LANGUAGES[code];
         const isActive = current === code;
         return (
@@ -164,11 +168,11 @@ export default function Layout() {
         />
 
         <div className="relative z-10 px-6 lg:px-10">
-          <div className="flex items-center justify-between h-[72px]">
+          <div className="flex items-center justify-between h-[72px] flex-row-reverse rtl:flex-row">
 
             {/* ── Logo ── */}
             <motion.div
-              initial={reduceMotion ? false : { opacity: 0, x: -16 }}
+              initial={reduceMotion ? false : { opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -182,7 +186,7 @@ export default function Layout() {
 
             {/* ── Desktop nav ── */}
             <nav
-              className="hidden md:flex items-center gap-1"
+              className="hidden md:flex items-center gap-1 flex-row-reverse rtl:flex-row"
               onMouseLeave={() => setHoveredNav(null)}
             >
               {links.map((link, i) => {
@@ -242,32 +246,26 @@ export default function Layout() {
               })}
             </nav>
 
-            {/* ── Language switcher ── */}
-            <div className="hidden md:flex">
+            {/* ── CTA + Language switcher (grouped left side) ── */}
+            <div className="hidden md:flex items-center gap-3">
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, scale: 0.88 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.42 }}
+              >
+                <Link
+                  to="/contact"
+                  className="relative px-6 py-2 rounded-full font-bold text-base overflow-hidden group"
+                >
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" />
+                  <span className="absolute inset-[1.5px] rounded-full bg-white group-hover:bg-transparent transition-colors duration-300" />
+                  <span className="relative z-10 font-bold text-base bg-gradient-to-r from-cyan-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent group-hover:text-white transition-colors duration-300">
+                    {t('cta.contact')}
+                  </span>
+                </Link>
+              </motion.div>
               <LanguageSwitcher layoutSuffix="desktop" />
             </div>
-
-            {/* ── CTA — gradient-border pill ── */}
-            <motion.div
-              className="hidden md:flex"
-              initial={reduceMotion ? false : { opacity: 0, scale: 0.88 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.42 }}
-            >
-              <Link
-                to="/contact"
-                className="relative px-6 py-2 rounded-full font-bold text-base overflow-hidden group"
-              >
-                {/* Gradient border — always visible */}
-                <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" />
-                {/* Inner white fill — disappears on hover to reveal gradient */}
-                <span className="absolute inset-[1.5px] rounded-full bg-white group-hover:bg-transparent transition-colors duration-300" />
-                {/* Text — gradient when resting, white on hover */}
-                <span className="relative z-10 font-bold text-base bg-gradient-to-r from-cyan-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent group-hover:text-white transition-colors duration-300">
-                  {t('cta.contact')}
-                </span>
-              </Link>
-            </motion.div>
 
             {/* ── Mobile hamburger ── */}
             <button
