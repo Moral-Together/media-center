@@ -24,9 +24,7 @@ function LanguageSwitcher({ layoutSuffix = 'desktop' }: { layoutSuffix?: string 
     ? i18n.language
     : 'he') as LangCode;
 
-  const displayOrder: LangCode[] = current === 'he'
-    ? ['he', 'en', 'el']
-    : ['el', 'en', 'he'];
+  const displayOrder: LangCode[] = ['he', 'en', 'el'];
 
   return (
     <div className="flex items-center gap-0.5 rounded-full p-0.5 bg-slate-100/80 border border-slate-200/60 backdrop-blur-sm">
@@ -65,7 +63,9 @@ export default function Layout() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const location     = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = (Object.keys(LANGUAGES).includes(i18n.language) ? i18n.language : 'he') as LangCode;
+  const contentDir = lang === 'he' ? 'rtl' : 'ltr';
   const reduceMotion = useReducedMotion();
   const prevPathRef     = React.useRef<string | null>(null);
   const hasNavigatedRef = React.useRef(false);
@@ -168,7 +168,7 @@ export default function Layout() {
         />
 
         <div className="relative z-10 px-6 lg:px-10">
-          <div className="flex items-center justify-between h-[72px] flex-row-reverse rtl:flex-row">
+          <div className="flex items-center justify-between h-[72px] flex-row">
 
             {/* ── Logo ── */}
             <motion.div
@@ -186,7 +186,7 @@ export default function Layout() {
 
             {/* ── Desktop nav ── */}
             <nav
-              className="hidden md:flex items-center gap-1 flex-row-reverse rtl:flex-row"
+              className="hidden md:flex items-center gap-1 flex-row"
               onMouseLeave={() => setHoveredNav(null)}
             >
               {links.map((link, i) => {
@@ -246,8 +246,9 @@ export default function Layout() {
               })}
             </nav>
 
-            {/* ── CTA + Language switcher (grouped left side) ── */}
+            {/* ── Language switcher + CTA (grouped left side) ── */}
             <div className="hidden md:flex items-center gap-3">
+              <LanguageSwitcher layoutSuffix="desktop" />
               <motion.div
                 initial={reduceMotion ? false : { opacity: 0, scale: 0.88 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -264,7 +265,6 @@ export default function Layout() {
                   </span>
                 </Link>
               </motion.div>
-              <LanguageSwitcher layoutSuffix="desktop" />
             </div>
 
             {/* ── Mobile hamburger ── */}
@@ -303,6 +303,7 @@ export default function Layout() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+            dir={contentDir}
             className="fixed inset-0 z-40 bg-white/96 backdrop-blur-2xl flex flex-col pt-[80px] pb-10 px-5 md:hidden"
           >
             <div className="absolute top-[72px] inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
@@ -361,7 +362,7 @@ export default function Layout() {
       </AnimatePresence>
 
       {/* ════════════════════ MAIN ════════════════════ */}
-      <main id="main-content" className="flex-1 pt-[72px] flex flex-col relative pb-10">
+      <main id="main-content" dir={contentDir} className="flex-1 pt-[72px] flex flex-col relative pb-10">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-cyan-100/15 via-white to-violet-100/12" />
         <div className="pointer-events-none absolute inset-0 -z-10 section-dot-grid opacity-30" />
         <AnimatePresence mode="wait">
@@ -387,7 +388,7 @@ export default function Layout() {
       </main>
 
       {/* ════════════════════ FOOTER ════════════════════ */}
-      <footer className="px-6 lg:px-10 py-4 bg-slate-100/50 border-t border-slate-200 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-slate-500 relative z-10 w-full mt-auto">
+      <footer dir={contentDir} className="px-6 lg:px-10 py-4 bg-slate-100/50 border-t border-slate-200 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-slate-500 relative z-10 w-full mt-auto">
         <span>&copy; {new Date().getFullYear()} {t('footer.copyright')}</span>
         <div className="hidden md:flex gap-6">
           <span>{t('footer.status_label')}: <span className="text-emerald-500">{t('footer.status_value')}</span></span>
