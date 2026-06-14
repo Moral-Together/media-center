@@ -11,13 +11,57 @@ import {
   useSpring,
 } from 'motion/react';
 import { Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
 import { ErrorBoundary } from './ErrorBoundary';
+import { useLanguageSync } from '../i18n/useLanguageSync';
+import { LANGUAGES, type LangCode } from '../i18n/index';
+
+function LanguageSwitcher({ layoutSuffix = 'desktop' }: { layoutSuffix?: string }) {
+  const { i18n } = useTranslation();
+  const current = (Object.keys(LANGUAGES).includes(i18n.language)
+    ? i18n.language
+    : 'he') as LangCode;
+
+  return (
+    <div className="flex items-center gap-0.5 rounded-full p-0.5 bg-slate-100/80 border border-slate-200/60 backdrop-blur-sm">
+      {(Object.keys(LANGUAGES) as LangCode[]).map((code) => {
+        const info = LANGUAGES[code];
+        const isActive = current === code;
+        return (
+          <button
+            key={code}
+            onClick={() => i18n.changeLanguage(code)}
+            aria-label={`Switch to ${info.label}`}
+            aria-pressed={isActive}
+            className={cn(
+              'relative flex items-center gap-1 px-2.5 py-[5px] rounded-full text-[11px] font-bold transition-colors duration-150 select-none',
+              isActive ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600',
+            )}
+          >
+            {isActive && (
+              <motion.span
+                layoutId={`lang-pill-${layoutSuffix}`}
+                className="absolute inset-0 rounded-full bg-white shadow-sm"
+                transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+              />
+            )}
+            <span className="relative z-10">{info.flag}</span>
+            <span className="relative z-10">{code.toUpperCase()}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function Layout() {
+  useLanguageSync(); // syncs document.dir + document.lang on every language change
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const location     = useLocation();
+  const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   const prevPathRef     = React.useRef<string | null>(null);
   const hasNavigatedRef = React.useRef(false);
@@ -76,11 +120,11 @@ export default function Layout() {
   const glowBg = useMotionTemplate`radial-gradient(320px circle at ${sgX}px ${sgY}px, rgba(99,102,241,0.07), transparent 75%)`;
 
   const links = [
-    { href: '/',          label: 'ראשי' },
-    { href: '/about',     label: 'מי אנחנו' },
-    { href: '/services',  label: 'שירותים' },
-    { href: '/portfolio', label: 'תיק עבודות' },
-    { href: '/contact',   label: 'צור קשר' },
+    { href: '/',          label: t('nav.home') },
+    { href: '/about',     label: t('nav.about') },
+    { href: '/services',  label: t('nav.services') },
+    { href: '/portfolio', label: t('nav.portfolio') },
+    { href: '/contact',   label: t('nav.contact') },
   ];
 
   return (
@@ -89,7 +133,7 @@ export default function Layout() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:right-4 focus:z-[200] focus:px-5 focus:py-2 focus:bg-slate-900 focus:text-white focus:rounded-full focus:font-bold focus:shadow-lg"
       >
-        דלג לתוכן הראשי
+        {t('a11y.skip_to_content')}
       </a>
 
       {/* ════════════════════ HEADER ════════════════════ */}
@@ -198,6 +242,11 @@ export default function Layout() {
               })}
             </nav>
 
+            {/* ── Language switcher ── */}
+            <div className="hidden md:flex">
+              <LanguageSwitcher layoutSuffix="desktop" />
+            </div>
+
             {/* ── CTA — gradient-border pill ── */}
             <motion.div
               className="hidden md:flex"
@@ -215,7 +264,7 @@ export default function Layout() {
                 <span className="absolute inset-[1.5px] rounded-full bg-white group-hover:bg-transparent transition-colors duration-300" />
                 {/* Text — gradient when resting, white on hover */}
                 <span className="relative z-10 font-bold text-base bg-gradient-to-r from-cyan-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent group-hover:text-white transition-colors duration-300">
-                  צור קשר
+                  {t('cta.contact')}
                 </span>
               </Link>
             </motion.div>
@@ -224,7 +273,7 @@ export default function Layout() {
             <button
               className="md:hidden p-2 text-slate-500 hover:text-slate-900 transition-colors"
               onClick={() => setIsMobileMenuOpen(v => !v)}
-              aria-label={isMobileMenuOpen ? 'סגור תפריט' : 'פתח תפריט'}
+              aria-label={isMobileMenuOpen ? t('a11y.close_menu') : t('a11y.open_menu')}
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
             >
@@ -251,7 +300,7 @@ export default function Layout() {
         {isMobileMenuOpen && (
           <motion.div
             id="mobile-menu" ref={mobileMenuRef}
-            role="dialog" aria-modal="true" aria-label="תפריט ניווט"
+            role="dialog" aria-modal="true" aria-label={t('a11y.nav_menu')}
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
@@ -291,17 +340,22 @@ export default function Layout() {
             </nav>
 
             <motion.div
-              className="mt-auto"
+              className="mt-auto flex flex-col gap-3"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.28 }}
             >
+              {/* Language switcher — mobile */}
+              <div className="flex justify-center">
+                <LanguageSwitcher layoutSuffix="mobile" />
+              </div>
+
               <Link
                 to="/contact"
                 className="block w-full text-center px-6 py-4 rounded-2xl font-bold text-lg relative overflow-hidden group"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-violet-500 to-fuchsia-500" />
-                <span className="relative z-10 text-white">צור קשר</span>
+                <span className="relative z-10 text-white">{t('cta.contact')}</span>
               </Link>
             </motion.div>
           </motion.div>
@@ -336,14 +390,14 @@ export default function Layout() {
 
       {/* ════════════════════ FOOTER ════════════════════ */}
       <footer className="px-6 lg:px-10 py-4 bg-slate-100/50 border-t border-slate-200 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-slate-500 relative z-10 w-full mt-auto">
-        <span>&copy; {new Date().getFullYear()} מרכז המדיה של ישראל</span>
+        <span>&copy; {new Date().getFullYear()} {t('footer.copyright')}</span>
         <div className="hidden md:flex gap-6">
-          <span>סטטוס: <span className="text-emerald-500">פעיל</span></span>
-          <span>שרת: <span className="text-slate-900">Central-01</span></span>
-          <span>זמינות: <span className="text-slate-900">99.99%</span></span>
+          <span>{t('footer.status_label')}: <span className="text-emerald-500">{t('footer.status_value')}</span></span>
+          <span>{t('footer.server_label')}: <span className="text-slate-900">{t('footer.server_value')}</span></span>
+          <span>{t('footer.uptime_label')}: <span className="text-slate-900">{t('footer.uptime_value')}</span></span>
         </div>
         <div className="flex items-center gap-4">
-          <span>v2.0.4 <span className="hidden sm:inline">- אנטרפרייז</span></span>
+          <span>v2.0.4 <span className="hidden sm:inline">- {t('footer.edition')}</span></span>
           <div className="flex gap-[2px]">
             <div className="w-[3px] h-3 bg-slate-300" />
             <div className="w-[3px] h-3 bg-[#0cf574]" />

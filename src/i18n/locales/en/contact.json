@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "title": "Contact Us",
+    "description": "Get in touch with Israel Media Center. We'd love to hear about your project and plan the next step together."
+  },
+  "heading": { "plain": "Ready to Start a ", "highlight": "Project", "suffix": "?" },
+  "subtitle": "Leave your details and we'll get back to you as soon as possible to plan the process.",
+  "email_label": "Email",
+  "phone_label": "Phone",
+  "send_button": "Send Message"
+}

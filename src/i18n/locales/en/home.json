@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "title": "Home",
+    "description": "Israel Media Center – web development, cybersecurity, digital marketing, and more. The complete digital solution for your business."
+  },
+  "hero": {
+    "specializing_in": "We specialize in",
+    "cycling": [
+      "Web & App Development",
+      "Cybersecurity",
+      "Digital Marketing & SEO",
+      "Video Production & Content"
+    ]
+  },
+  "stats": {
+    "clients": "Happy Clients",
+    "projects": "Projects",
+    "experts": "Experts",
+    "years": "Years of Experience"
+  },
+  "services_header": {
+    "badge": "What We Do",
+    "title_plain": "Our ",
+    "title_highlight": "Specialties",
+    "title_end": ".",
+    "subtitle": "We combine technology and creativity to solve the most complex challenges.",
+    "view_all": "View All Services"
+  },
+  "services": {
+    "dev":      { "title": "Development",      "desc": "Development and architecture services, advanced websites and mobile applications." },
+    "security": { "title": "Cybersecurity",    "desc": "Security audits, firewall creation, and penetration testing for websites and systems." },
+    "ads":      { "title": "Digital Marketing","desc": "Quality performance-based marketing and campaigns with fast, effective results." }
+  },
+  "stats_strip": {
+    "eyebrow": "The Numbers Speak for Themselves"
+  },
+  "final_cta": {
+    "eyebrow":         "Let's Work Together",
+    "title":           "Ready to",
+    "title_highlight": "Start?",
+    "subtitle":        "Tell us about your project and we'll get back to you within 24 hours with a clear action plan.",
+    "btn_primary":     "Contact Us Now",
+    "btn_secondary":   "All Services"
+  }
+}

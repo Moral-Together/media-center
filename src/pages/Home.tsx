@@ -12,6 +12,7 @@ import {
 } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Code, Shield, Megaphone } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Logo } from '../components/Logo';
 import { PageMeta } from '../components/PageMeta';
 import {
@@ -22,49 +23,25 @@ import {
   viewportOnce,
 } from '../lib/motion';
 
-const CYCLING_SERVICES = [
-  'פיתוח אתרים ואפליקציות',
-  'אבטחת מידע וסייבר',
-  'פרסום דיגיטלי ו-SEO',
-  'הפקת וידאו ותוכן',
-];
-
 const STATS = [
-  {
-    numeric: 120,
-    prefix: '+',
-    label: 'לקוחות מרוצים',
-    accent: 'from-cyan-300 to-blue-400',
-    glow: 'group-hover:shadow-cyan-500/25',
-  },
-  {
-    numeric: 300,
-    prefix: '+',
-    label: 'פרויקטים',
-    accent: 'from-violet-300 to-purple-400',
-    glow: 'group-hover:shadow-violet-500/25',
-  },
-  {
-    numeric: 25,
-    prefix: '',
-    label: 'מומחים',
-    accent: 'from-fuchsia-300 to-pink-400',
-    glow: 'group-hover:shadow-fuchsia-500/25',
-  },
-  {
-    numeric: 10,
-    prefix: '',
-    label: 'שנות ניסיון',
-    accent: 'from-emerald-300 to-teal-400',
-    glow: 'group-hover:shadow-emerald-500/25',
-  },
+  { numeric: 120, prefix: '+', labelKey: 'stats.clients',  accent: 'from-cyan-300 to-blue-400',     glow: 'group-hover:shadow-cyan-500/25'    },
+  { numeric: 300, prefix: '+', labelKey: 'stats.projects', accent: 'from-violet-300 to-purple-400',  glow: 'group-hover:shadow-violet-500/25'  },
+  { numeric: 25,  prefix: '',  labelKey: 'stats.experts',  accent: 'from-fuchsia-300 to-pink-400',   glow: 'group-hover:shadow-fuchsia-500/25' },
+  { numeric: 10,  prefix: '',  labelKey: 'stats.years',    accent: 'from-emerald-300 to-teal-400',   glow: 'group-hover:shadow-emerald-500/25' },
+] as const;
+
+const REEL_IMAGES = [
+  { src: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', label: 'קמפיין וידאו – השקת מותג רכב', category: 'הפקת וידאו' },
+  { src: 'https://images.unsplash.com/photo-1661956602116-aa6865609028?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', label: 'E-commerce מתקדם לרשת קמעונאות', category: 'פיתוח אתרים' },
+  { src: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', label: 'אפליקציית פינטק לניהול הוצאות', category: 'פיתוח מובייל' },
+  { src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', label: 'קידום אורגני לסטארט-אפ B2B', category: 'שיווק דיגיטלי' },
+  { src: 'https://images.unsplash.com/photo-1583338917451-face2751d8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', label: 'מיתוג ותוכן חזותי לרשת מסעדות', category: 'עיצוב ותוכן' },
 ] as const;
 
 const SERVICES = [
   {
+    key: 'dev',
     icon: Code,
-    title: 'פיתוח',
-    desc: 'שירותי פיתוח וארכיטקטורה, אתרים מתקדמים ואפליקציות מובייל.',
     iconBg: 'bg-gradient-to-br from-cyan-50 to-blue-50',
     iconRing: 'ring-cyan-200/70',
     iconColor: 'text-cyan-600',
@@ -74,9 +51,8 @@ const SERVICES = [
     titleHover: 'group-hover:from-cyan-600 group-hover:to-blue-600',
   },
   {
+    key: 'security',
     icon: Shield,
-    title: 'אבטחת מידע',
-    desc: 'ביקורת אבטחת מידע, יצירת חומות אש ובדיקות חדירות לאתרים ומערכות.',
     iconBg: 'bg-gradient-to-br from-violet-50 to-purple-50',
     iconRing: 'ring-violet-200/70',
     iconColor: 'text-violet-600',
@@ -86,9 +62,8 @@ const SERVICES = [
     titleHover: 'group-hover:from-violet-600 group-hover:to-purple-600',
   },
   {
+    key: 'ads',
     icon: Megaphone,
-    title: 'פרסום דיגיטלי',
-    desc: 'שיווק איכותי מבוסס ביצועים וקמפיינים עם תוצאות מהירות ואפקטיביות.',
     iconBg: 'bg-gradient-to-br from-amber-50 to-rose-50',
     iconRing: 'ring-amber-200/70',
     iconColor: 'text-rose-600',
@@ -116,6 +91,7 @@ function HeroStat({
   playIntro: boolean;
   reduceMotion: boolean | null;
 }) {
+  const { t } = useTranslation('home');
   const ref = React.useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
   const animated = useAnimatedCounter(stat.numeric, inView && !reduceMotion);
@@ -139,7 +115,46 @@ function HeroStat({
         {display}
       </span>
       <span className="text-[11px] sm:text-xs text-slate-400 mt-2 font-medium tracking-wide text-center leading-snug group-hover:text-slate-300 transition-colors">
-        {stat.label}
+        {t(stat.labelKey)}
+      </span>
+    </motion.div>
+  );
+}
+
+function BigStat({
+  stat,
+  index,
+  reduceMotion,
+}: {
+  stat: HeroStatItem;
+  index: number;
+  reduceMotion: boolean | null;
+}) {
+  const { t } = useTranslation('home');
+  const ref = React.useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const animated = useAnimatedCounter(stat.numeric, inView && !reduceMotion);
+  const display = reduceMotion ? stat.numeric : animated;
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      className="relative flex flex-col items-center justify-center text-center px-6 py-12"
+    >
+      <div
+        className={`absolute inset-x-6 top-0 h-[2px] rounded-full bg-gradient-to-l ${stat.accent} opacity-40`}
+      />
+      <span
+        className={`text-6xl sm:text-7xl xl:text-8xl font-black tabular-nums leading-none bg-gradient-to-b ${stat.accent} bg-clip-text text-transparent mb-4`}
+      >
+        {stat.prefix}{display}
+      </span>
+      <span className="text-slate-400 text-sm font-medium tracking-wide">
+        {t(stat.labelKey)}
       </span>
     </motion.div>
   );
@@ -153,8 +168,11 @@ interface ServiceCardProps {
 }
 
 function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps) {
+  const { t } = useTranslation('home');
   const reduceMotion = useReducedMotion();
   const Icon = srv.icon;
+  const title = t(`services.${srv.key}.title`);
+  const desc  = t(`services.${srv.key}.desc`);
 
   // Mouse coordinates for local spotlight glow
   const mouseX = useMotionValue(0);
@@ -285,12 +303,12 @@ function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps)
         <h3
           className={`relative text-2xl font-bold text-slate-900 mb-4 z-[3] group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l ${srv.titleHover} transition-all duration-300`}
         >
-          {srv.title}
+          {title}
         </h3>
 
         {/* Description */}
         <p className="relative text-slate-600 text-base leading-relaxed flex-1 z-[3]">
-          {srv.desc}
+          {desc}
         </p>
 
         {/* Redesigned Button Pill */}
@@ -299,7 +317,7 @@ function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps)
             className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-200 bg-white transition-all duration-300 shadow-sm text-sm font-bold ${buttonHoverClasses}`}
           >
             <span className={`transition-colors duration-300 ${labelColorClasses}`}>
-              קרא עוד
+              {t('common:cta.read_more')}
             </span>
             <span className="w-5 h-5 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:text-inherit">
               <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-300 group-hover:-translate-x-1" />
@@ -308,6 +326,213 @@ function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps)
         </div>
       </Link>
     </motion.div>
+  );
+}
+
+function StatsStrip({ reduceMotion }: { reduceMotion: boolean | null }) {
+  const { t } = useTranslation('home');
+  return (
+    <>
+      {/* Top wave: white services → dark strip */}
+      <div className="relative bg-slate-950 leading-[0] -mt-px" aria-hidden>
+        <svg
+          className="block w-full h-16 sm:h-20 md:h-24 text-white"
+          viewBox="0 0 1440 100"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="currentColor"
+            d="M0,0 L1440,0 L1440,40 C1120,5 920,80 720,44 C520,8 320,85 0,35 Z"
+          />
+        </svg>
+      </div>
+
+      {/* Dark stats section */}
+      <section className="relative bg-slate-950 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.032) 1px, transparent 1px),' +
+              'linear-gradient(to right, rgba(255,255,255,0.032) 1px, transparent 1px)',
+            backgroundSize: '72px 72px',
+          }}
+        />
+        {!reduceMotion && (
+          <>
+            <div
+              className="absolute -top-24 left-1/4 w-80 h-80 rounded-full bg-cyan-500 blur-[100px] pointer-events-none"
+              style={{ opacity: 0.07 }}
+            />
+            <div
+              className="absolute -bottom-24 right-1/4 w-80 h-80 rounded-full bg-violet-500 blur-[100px] pointer-events-none"
+              style={{ opacity: 0.07 }}
+            />
+          </>
+        )}
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center justify-center gap-3 mb-10 md:mb-14"
+          >
+            <div className="h-px flex-1 max-w-20 bg-gradient-to-r from-transparent to-slate-700" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500 whitespace-nowrap">
+              {t('stats_strip.eyebrow')}
+            </span>
+            <div className="h-px flex-1 max-w-20 bg-gradient-to-l from-transparent to-slate-700" />
+          </motion.div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-0">
+            {STATS.map((stat, i) => (
+              <BigStat
+                key={stat.labelKey}
+                stat={stat}
+                index={i}
+                reduceMotion={reduceMotion}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Bottom wave: dark strip → transparent (layout bg) */}
+      <div className="relative bg-transparent leading-[0] -mt-px z-10" aria-hidden>
+        <svg
+          className="block w-full h-16 sm:h-20 md:h-24"
+          viewBox="0 0 1440 100"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="#020617"
+            d="M0,0 L1440,0 L1440,40 C1120,5 920,80 720,44 C520,8 320,85 0,35 Z"
+          />
+        </svg>
+      </div>
+    </>
+  );
+}
+
+function FinalCTA({ reduceMotion }: { reduceMotion: boolean | null }) {
+  const { t } = useTranslation('home');
+  return (
+    <section className="relative overflow-hidden bg-slate-950 py-24 md:py-36 px-4 sm:px-6 lg:px-8">
+      {/* Fine grid */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,0.032) 1px, transparent 1px),' +
+            'linear-gradient(to right, rgba(255,255,255,0.032) 1px, transparent 1px)',
+          backgroundSize: '72px 72px',
+        }}
+      />
+      {/* Gradient bloom */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(109,40,217,0.32) 0%, rgba(79,70,229,0.15) 45%, transparent 75%)',
+        }}
+      />
+      {/* Aurora orbs */}
+      {!reduceMotion && (
+        <>
+          <motion.div
+            animate={{ scale: [1, 1.2, 0.9, 1] }}
+            transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-violet-600 blur-[130px] pointer-events-none"
+            style={{ opacity: 0.18 }}
+          />
+          <motion.div
+            animate={{ scale: [1, 0.85, 1.15, 1] }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-indigo-600 blur-[130px] pointer-events-none"
+            style={{ opacity: 0.15 }}
+          />
+          <motion.div
+            animate={{ scale: [1, 1.18, 0.88, 1], x: [0, 30, -20, 0] }}
+            transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-fuchsia-600 blur-[150px] pointer-events-none"
+            style={{ opacity: 0.07 }}
+          />
+        </>
+      )}
+
+      <div className="relative max-w-4xl mx-auto text-center z-10">
+        {/* Eyebrow */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] backdrop-blur-sm mb-8"
+        >
+          <span className="w-2 h-2 rounded-full bg-gradient-to-r from-violet-400 to-fuchsia-400 animate-pulse" />
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">
+            {t('final_cta.eyebrow')}
+          </span>
+        </motion.div>
+
+        {/* Heading */}
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+          className="text-5xl sm:text-6xl md:text-7xl font-black text-white leading-[1.05] mb-6 tracking-tight"
+        >
+          {t('final_cta.title')}{' '}
+          <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+            {t('final_cta.title_highlight')}
+          </span>
+        </motion.h2>
+
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
+          className="text-lg sm:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed"
+        >
+          {t('final_cta.subtitle')}
+        </motion.p>
+
+        {/* Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.24 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
+          <Link
+            to="/contact"
+            className="group relative w-full sm:w-auto px-8 py-4 rounded-full font-bold text-lg bg-white text-slate-900 overflow-hidden transition-transform duration-200 active:scale-[0.98] hover:shadow-[0_0_40px_rgba(167,139,250,0.45)]"
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="relative z-10 flex items-center justify-center gap-2 group-hover:text-white transition-colors duration-300">
+              {t('final_cta.btn_primary')}
+              <ArrowLeft className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" />
+            </span>
+          </Link>
+
+          <Link
+            to="/services"
+            className="group w-full sm:w-auto px-8 py-4 rounded-full font-bold text-lg text-white/70 hover:text-white border border-white/[0.15] hover:border-white/30 bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            {t('final_cta.btn_secondary')}
+            <ArrowLeft className="w-5 h-5 opacity-60 group-hover:opacity-100 transition-all duration-300 group-hover:-translate-x-1" />
+          </Link>
+        </motion.div>
+      </div>
+    </section>
   );
 }
 
@@ -372,7 +597,7 @@ function makeFilmBand(W: number): Path2D {
   return p;
 }
 
-function drawFilmStrip(canvas: HTMLCanvasElement, animOffset: number, noMotion: boolean) {
+function drawFilmStrip(canvas: HTMLCanvasElement, animOffset: number, noMotion: boolean, imgs: HTMLImageElement[] = []) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const W = canvas.width, H = canvas.height;
@@ -436,6 +661,35 @@ function drawFilmStrip(canvas: HTMLCanvasElement, animOffset: number, noMotion: 
     ctx.fillRect(fx - 4, 0, 8, H);
   ctx.restore();
 
+  // 5b — frame counter numbers (authentic 35mm edge markings)
+  {
+    const frameW  = HSTEP * 4;
+    const fDivOff = noMotion ? 0 : animOffset % frameW;
+    const fShift  = Math.floor(animOffset / frameW);
+    ctx.save();
+    ctx.clip(innerP);
+    ctx.font         = 'bold 9px "Courier New", Courier, monospace';
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'bottom';
+    for (let fi = -2; fi < Math.ceil(W / frameW) + 3; fi++) {
+      const fx  = fi * frameW - fDivOff;
+      if (fx + frameW < 0 || fx > W) continue;
+      const num   = ((fi + fShift) % 100 + 100) % 100;
+      const label = String(num + 1).padStart(2, '0');
+      const cx    = Math.max(0, Math.min(W, fx + frameW / 2));
+      const wy    = filmWaveY(cx, W);
+      // bottom-left corner of frame, dim white
+      ctx.fillStyle = 'rgba(255,255,255,0.22)';
+      ctx.fillText(label, fx + 7, wy + BAND - EDGE - 5);
+      // top-right corner — same number, even dimmer
+      ctx.fillStyle = 'rgba(255,255,255,0.13)';
+      ctx.textAlign = 'right';
+      ctx.fillText(label, fx + frameW - 7, wy + EDGE + 14);
+      ctx.textAlign = 'left';
+    }
+    ctx.restore();
+  }
+
   ctx.restore(); // end film clip
 
   // 6 — sprocket holes: physical cutout illusion
@@ -486,7 +740,20 @@ function FilmStripWave({ reduceMotion }: { reduceMotion: boolean | null }) {
   const offsetRef   = React.useRef(0);
   const lastTRef    = React.useRef<number | null>(null);
   const noMotionRef = React.useRef(!!reduceMotion);
+  const imgsRef     = React.useRef<HTMLImageElement[]>([]);
   noMotionRef.current = !!reduceMotion;
+
+  // Preload portfolio images
+  React.useEffect(() => {
+    const loaded: HTMLImageElement[] = [];
+    REEL_IMAGES.forEach(item => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = item.src;
+      loaded.push(img);
+    });
+    imgsRef.current = loaded;
+  }, []);
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
@@ -495,7 +762,7 @@ function FilmStripWave({ reduceMotion }: { reduceMotion: boolean | null }) {
     const ro = new ResizeObserver(() => {
       canvas.width  = canvas.offsetWidth;
       canvas.height = CH;
-      drawFilmStrip(canvas, offsetRef.current, noMotionRef.current);
+      drawFilmStrip(canvas, offsetRef.current, noMotionRef.current, imgsRef.current);
     });
     ro.observe(canvas);
 
@@ -507,7 +774,7 @@ function FilmStripWave({ reduceMotion }: { reduceMotion: boolean | null }) {
         }
         lastTRef.current = ts;
       }
-      drawFilmStrip(canvas, offsetRef.current, noMotionRef.current);
+      drawFilmStrip(canvas, offsetRef.current, noMotionRef.current, imgsRef.current);
       frameRef.current = requestAnimationFrame(tick);
     };
 
@@ -526,7 +793,11 @@ function FilmStripWave({ reduceMotion }: { reduceMotion: boolean | null }) {
   );
 }
 
+
 export default function Home() {
+  const { t } = useTranslation(['home', 'common']);
+  const cyclingServices = t('hero.cycling', { returnObjects: true }) as string[];
+
   const heroRef   = React.useRef<HTMLElement | null>(null);
   const [playHeroIntro] = React.useState(() => {
     try { return !sessionStorage.getItem('hero-intro-done'); } catch { return true; }
@@ -545,11 +816,11 @@ export default function Home() {
   React.useEffect(() => {
     if (reduceMotion) return;
     const id = setInterval(
-      () => setActiveService(p => (p + 1) % CYCLING_SERVICES.length),
+      () => setActiveService(p => (p + 1) % cyclingServices.length),
       2800,
     );
     return () => clearInterval(id);
-  }, [reduceMotion]);
+  }, [reduceMotion, cyclingServices.length]);
 
   const heroEnter = <T,>(value: T): false | T => (playHeroIntro ? value : false);
 
@@ -636,8 +907,8 @@ export default function Home() {
   return (
     <div className="flex-1 w-full">
       <PageMeta
-        title="ראשי"
-        description="מרכז המדיה של ישראל – פיתוח אתרים, אבטחת מידע, פרסום דיגיטלי ועוד. הפתרון הדיגיטלי המלא לעסק שלך."
+        title={t('meta.title')}
+        description={t('meta.description')}
       />
 
       {/* ═══════════════════════ DARK HERO + SEAM ═══════════════════════ */}
@@ -710,7 +981,6 @@ export default function Home() {
           style={{ opacity: heroOpacity, scale: heroScale }}
           className="relative z-10 pt-8 md:pt-12 pb-28 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col items-center text-center"
         >
-
           {/* Logo */}
           <motion.div
             initial={heroEnter({ opacity: 0, scale: 0.62 })}
@@ -718,12 +988,8 @@ export default function Home() {
             transition={{ duration: 0.7, type: 'spring', bounce: 0.32, delay: 0.1 }}
             className="relative mb-8"
           >
-            {/* Pulsing halo */}
             <motion.div
-              animate={reduceMotion ? undefined : {
-                opacity: [0.3, 0.7, 0.3],
-                scale:   [0.85, 1.15, 0.85],
-              }}
+              animate={reduceMotion ? undefined : { opacity: [0.3, 0.7, 0.3], scale: [0.85, 1.15, 0.85] }}
               transition={reduceMotion ? undefined : { duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               className="absolute inset-0 rounded-full blur-3xl bg-gradient-to-r from-cyan-500/50 via-violet-500/50 to-fuchsia-500/50"
             />
@@ -760,7 +1026,7 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.25 }}
             className="flex flex-col items-center mb-10 gap-1"
           >
-            <p className="text-slate-400 text-base">אנחנו מתמחים ב</p>
+            <p className="text-slate-400 text-base">{t('hero.specializing_in')}</p>
             <div className="h-10 flex items-center justify-center overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.span
@@ -771,7 +1037,7 @@ export default function Home() {
                   transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
                   className="text-2xl md:text-3xl font-bold text-gradient-cycling block"
                 >
-                  {CYCLING_SERVICES[activeService]}
+                  {cyclingServices[activeService]}
                 </motion.span>
               </AnimatePresence>
             </div>
@@ -784,9 +1050,7 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.35 }}
             className="flex flex-row items-center justify-center gap-2 sm:gap-4 mb-14 w-full max-w-lg sm:max-w-none mx-auto"
           >
-            {/* ── Primary CTA ── */}
             <motion.div style={{ x: ctaSX, y: ctaSY }} className="flex-1 sm:flex-initial min-w-0">
-              {/* Color-cycling outer glow */}
               <motion.div
                 className="rounded-full"
                 animate={reduceMotion ? undefined : {
@@ -806,60 +1070,37 @@ export default function Home() {
                   onMouseMove={onCtaMove}
                   onMouseLeave={onCtaLeave}
                 >
-                  {/* Gradient fill on hover */}
                   <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  {/* Periodic iridescent sheen — sweeps even without hover */}
                   {!reduceMotion && (
                     <motion.span
                       className="absolute inset-y-0 w-[55%] pointer-events-none z-[1]"
-                      style={{
-                        background:
-                          'linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0.40) 50%, rgba(255,255,255,0) 75%, transparent 100%)',
-                      }}
+                      style={{ background: 'linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0.40) 50%, rgba(255,255,255,0) 75%, transparent 100%)' }}
                       initial={{ x: '-110%' }}
                       animate={{ x: '290%' }}
                       transition={{ duration: 2.0, repeat: Infinity, ease: 'easeInOut', repeatDelay: 3.0 }}
                     />
                   )}
-                  {/* Radial bloom from centre on hover */}
                   <span
                     className="absolute inset-0 rounded-full opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300"
                     style={{ background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.32) 0%, transparent 65%)' }}
                   />
                   <span className="relative z-10 group-hover:text-white transition-colors flex items-center gap-1.5 sm:gap-2">
-                    גלה את השירותים
+                    {t('common:cta.view_services')}
                     <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
                   </span>
                 </Link>
               </motion.div>
             </motion.div>
 
-            {/* ── Ghost CTA — rotating spotlight border ── */}
             <motion.div
               className="flex-1 sm:flex-initial min-w-0 relative rounded-full overflow-hidden p-[1.5px] bg-white/[0.07]"
               whileHover={reduceMotion ? undefined : { boxShadow: '0 0 26px 6px rgba(0,242,254,0.22)' }}
               transition={{ duration: 0.3 }}
             >
-              {/* Square rotating conic-gradient — creates traveling light on the border */}
               {!reduceMotion && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: 'max(220%, calc(100% + 100px))',
-                    aspectRatio: '1',
-                    transform: 'translate(-50%, -50%)',
-                    pointerEvents: 'none',
-                  }}
-                >
+                <div style={{ position: 'absolute', top: '50%', left: '50%', width: 'max(220%, calc(100% + 100px))', aspectRatio: '1', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }}>
                   <motion.div
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      background:
-                        'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 275deg, rgba(0,242,254,0.85) 308deg, rgba(129,140,248,1) 330deg, rgba(232,121,249,0.85) 348deg, transparent 360deg)',
-                    }}
+                    style={{ width: '100%', height: '100%', background: 'conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 275deg, rgba(0,242,254,0.85) 308deg, rgba(129,140,248,1) 330deg, rgba(232,121,249,0.85) 348deg, transparent 360deg)' }}
                     animate={{ rotate: 360 }}
                     transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
                   />
@@ -869,12 +1110,8 @@ export default function Home() {
                 to="/contact"
                 className="relative block px-3 py-2.5 sm:px-8 sm:py-3.5 rounded-full font-bold text-sm sm:text-lg bg-slate-950 text-white/70 hover:text-white hover:bg-slate-900 transition-colors text-center whitespace-nowrap group"
               >
-                {/* Subtle inner glow on hover */}
-                <span
-                  className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ background: 'radial-gradient(circle at 50% 50%, rgba(0,242,254,0.07) 0%, transparent 70%)' }}
-                />
-                <span className="relative z-10">צור קשר</span>
+                <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(0,242,254,0.07) 0%, transparent 70%)' }} />
+                <span className="relative z-10">{t('common:cta.contact')}</span>
               </Link>
             </motion.div>
           </motion.div>
@@ -886,19 +1123,10 @@ export default function Home() {
             transition={{ duration: 0.55, delay: 0.42 }}
             className="relative w-full max-w-2xl"
           >
-            <div
-              className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-r from-cyan-500/20 via-violet-500/15 to-fuchsia-500/20 blur-lg opacity-70 pointer-events-none"
-              aria-hidden
-            />
+            <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-r from-cyan-500/20 via-violet-500/15 to-fuchsia-500/20 blur-lg opacity-70 pointer-events-none" aria-hidden />
             <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-2 sm:p-3 rounded-[1.5rem] bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
               {STATS.map((stat, i) => (
-                <HeroStat
-                  key={stat.label}
-                  stat={stat}
-                  index={i}
-                  playIntro={playHeroIntro}
-                  reduceMotion={reduceMotion}
-                />
+                <HeroStat key={stat.labelKey} stat={stat} index={i} playIntro={playHeroIntro} reduceMotion={reduceMotion} />
               ))}
             </div>
           </motion.div>
@@ -999,15 +1227,15 @@ export default function Home() {
                   <span className="absolute -inset-px rounded-full bg-gradient-to-r from-cyan-400/20 via-violet-400/20 to-rose-400/20 opacity-0 group-hover/badge:opacity-100 transition-opacity duration-500 pointer-events-none" />
                   <span className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-500 via-violet-500 to-rose-500 shadow-[0_0_8px_rgba(139,92,246,0.5)] animate-pulse" />
                   <span className="text-xs font-black uppercase tracking-[0.18em] text-transparent bg-clip-text bg-gradient-to-l from-cyan-600 via-violet-600 to-rose-500">
-                    מה אנחנו עושים
+                    {t('services_header.badge')}
                   </span>
                 </div>
 
                 <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 mb-5 leading-[1.08] tracking-tight">
-                  ה<span className="text-gradient-tech">התמחויות</span> שלנו<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-violet-500 to-rose-500">.</span>
+                  {t('services_header.title_plain')}<span className="text-gradient-tech">{t('services_header.title_highlight')}</span>{t('services_header.title_end')}
                 </h2>
                 <p className="text-slate-600 text-lg leading-relaxed max-w-lg">
-                  אנחנו משלבים טכנולוגיה и קריאייטיב כדי לפתור את האתגרים המורכבים ביותר.
+                  {t('services_header.subtitle')}
                 </p>
               </div>
 
@@ -1020,7 +1248,7 @@ export default function Home() {
                 <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-violet-400 to-rose-400" />
                 {/* Inner container */}
                 <span className="relative flex items-center gap-2.5 px-6 py-3 rounded-full bg-white text-slate-800 font-bold text-sm transition-colors duration-300 group-hover/btn:bg-slate-50/90">
-                  צפה בכל השירותים
+                  {t('services_header.view_all')}
                   <span className="relative flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-500 transition-all duration-300 group-hover/btn:-translate-x-1 group-hover/btn:bg-slate-900 group-hover/btn:text-white">
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </span>
@@ -1049,20 +1277,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bottom transition wave — dissolves white back into Layout's slate-50/gradient background */}
-      <div className="relative bg-transparent leading-[0] -mt-px z-10" aria-hidden>
-        <svg
-          className="block w-full h-16 sm:h-20 md:h-24 text-white"
-          viewBox="0 0 1440 100"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="currentColor"
-            d="M0,0 L1440,0 L1440,40 C1120,5 920,80 720,44 C520,8 320,85 0,35 Z"
-          />
-        </svg>
-      </div>
+      <StatsStrip reduceMotion={reduceMotion} />
+      <FinalCTA reduceMotion={reduceMotion} />
     </div>
   );
 }

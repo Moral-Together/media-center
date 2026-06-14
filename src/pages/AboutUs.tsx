@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { motion, useInView } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import { Award, Target } from 'lucide-react';
 import { PageMeta } from '../components/PageMeta';
 import {
@@ -14,14 +15,20 @@ import {
   viewportOnce,
 } from '../lib/motion';
 
-const stats = [
-  { label: 'לקוחות מרוצים', value: '+120', numeric: 120, prefix: '+' },
-  { label: 'פרויקטים שהושלמו', value: '+300', numeric: 300, prefix: '+' },
-  { label: 'מומחים בצוות', value: '25', numeric: 25, prefix: '' },
-  { label: 'שנות ניסיון', value: '10', numeric: 10, prefix: '' },
+const STATS = [
+  { labelKey: 'stats.clients',  numeric: 120, prefix: '+' },
+  { labelKey: 'stats.projects', numeric: 300, prefix: '+' },
+  { labelKey: 'stats.experts',  numeric: 25,  prefix: '' },
+  { labelKey: 'stats.years',    numeric: 10,  prefix: '' },
 ];
 
-function AnimatedStat({ stat }: { stat: (typeof stats)[0] }) {
+const VALUES = [
+  { key: 'goal',  icon: Target, color: '#2563eb', variants: slideInLeft  },
+  { key: 'ethos', icon: Award,  color: '#7c3aed', variants: slideInRight },
+];
+
+function AnimatedStat({ stat }: { stat: typeof STATS[number] }) {
+  const { t } = useTranslation('about');
   const ref = React.useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-50px' });
   const display = useAnimatedCounter(stat.numeric, inView);
@@ -39,39 +46,24 @@ function AnimatedStat({ stat }: { stat: (typeof stats)[0] }) {
       >
         {stat.prefix}{display}
       </motion.span>
-      <span className="text-sm font-medium text-slate-500">{stat.label}</span>
+      <span className="text-sm font-medium text-slate-500">{t(stat.labelKey)}</span>
     </motion.div>
   );
 }
 
-const values = [
-  {
-    icon: Target,
-    title: 'המטרה שלנו',
-    desc: 'להוביל את שוק הדיגיטל הישראלי עם פתרונות טכנולוגיים חכמים ומותאמים אישית שמייצרים ערך אמיתי.',
-    color: '#2563eb',
-    variants: slideInLeft,
-  },
-  {
-    icon: Award,
-    title: 'הערכים שלנו',
-    desc: 'שקיפות מלאה, חדשנות ללא מעצורים, ומחויבות טוטאלית להצלחת הפרויקטים של הלקוחות שלנו.',
-    color: '#7c3aed',
-    variants: slideInRight,
-  },
-];
-
 export default function AboutUs() {
+  const { t } = useTranslation('about');
+
   return (
     <div className="flex-1 w-full relative overflow-hidden pt-12 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <PageMeta
-        title="מי אנחנו"
-        description="הכירו את הצוות מאחורי מרכז המדיה של ישראל – מפתחים, מעצבים ואנשי שיווק עם ניסיון של יותר מ-10 שנים בדיגיטל."
+        title={t('meta.title')}
+        description={t('meta.description')}
       />
       <div className="absolute top-[10%] left-[10%] w-72 h-72 bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
-        {/* Story text — slides in from left */}
+        {/* Story */}
         <motion.div
           className="max-w-2xl"
           variants={slideInLeft}
@@ -84,20 +76,16 @@ export default function AboutUs() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm"
           >
             <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-            הסיפור שלנו
+            {t('badge')}
           </motion.div>
           <h1 className="text-5xl md:text-6xl font-bold leading-[1.1] mb-6 text-slate-900">
-            מי <span className="text-gradient">אנחנו</span>
+            {t('heading.plain')}<span className="text-gradient">{t('heading.highlight')}</span>
           </h1>
-          <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-            מרכז המדיה של ישראל הוקם במטרה לספק מענה טכנולוגי ודיגיטלי מקיף תחת קורת גג אחת. אנחנו קבוצה של מפתחים, מעצבים, ואנשי שיווק שחיים ונושמים דיגיטל.
-          </p>
-          <p className="text-lg text-slate-600 leading-relaxed">
-            החזון שלנו הוא לחבר בין יצירתיות ואנליטיקה, ולהעניק ללקוחותינו יתרון תחרותי אמיתי בזירה הדיגיטלית. אנחנו מתחייבים לאיכות ללא פשרות, מקצוענות וחדשנות מתמדת.
-          </p>
+          <p className="text-lg text-slate-600 mb-6 leading-relaxed">{t('story.p1')}</p>
+          <p className="text-lg text-slate-600 leading-relaxed">{t('story.p2')}</p>
         </motion.div>
 
-        {/* Stats grid with stagger — slides in from right */}
+        {/* Stats */}
         <motion.div
           className="grid grid-cols-2 gap-4"
           variants={containerStagger}
@@ -105,15 +93,15 @@ export default function AboutUs() {
           whileInView="show"
           viewport={viewportOnce}
         >
-          {stats.map((stat) => (
-            <Fragment key={stat.label}>
+          {STATS.map((stat) => (
+            <Fragment key={stat.labelKey}>
               <AnimatedStat stat={stat} />
             </Fragment>
           ))}
         </motion.div>
       </div>
 
-      {/* Mission / Values — alternating slide directions */}
+      {/* Mission / Values */}
       <motion.div
         className="mb-4"
         variants={sectionVariants}
@@ -122,14 +110,14 @@ export default function AboutUs() {
         viewport={viewportOnce}
       >
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-10">
-          מה מניע <span className="text-gradient-tech">אותנו</span>
+          {t('mission.heading_plain')}<span className="text-gradient-tech">{t('mission.heading_highlight')}</span>
         </h2>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {values.map((item) => (
+        {VALUES.map((item) => (
           <motion.div
-            key={item.title}
+            key={item.key}
             variants={item.variants}
             initial="hidden"
             whileInView="show"
@@ -144,8 +132,8 @@ export default function AboutUs() {
             >
               <item.icon className="w-6 h-6" style={{ color: item.color }} />
             </motion.div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-4">{item.title}</h3>
-            <p className="text-slate-600 leading-relaxed">{item.desc}</p>
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">{t(`values.${item.key}.title`)}</h3>
+            <p className="text-slate-600 leading-relaxed">{t(`values.${item.key}.desc`)}</p>
           </motion.div>
         ))}
       </div>

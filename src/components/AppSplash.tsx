@@ -1,4 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import { Logo } from './Logo';
 
 type AppSplashProps = {
@@ -8,6 +9,7 @@ type AppSplashProps = {
 
 export function AppSplash({ visible, onExitComplete }: AppSplashProps) {
   const reduceMotion = useReducedMotion();
+  const { t } = useTranslation('common');
 
   return (
     <AnimatePresence onExitComplete={onExitComplete}>
@@ -16,7 +18,7 @@ export function AppSplash({ visible, onExitComplete }: AppSplashProps) {
           key="app-splash"
           role="status"
           aria-busy="true"
-          aria-label="טוען את האתר"
+          aria-label={t('a11y.loading_site')}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: reduceMotion ? 0.15 : 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -45,7 +47,7 @@ export function AppSplash({ visible, onExitComplete }: AppSplashProps) {
               />
             </motion.div>
           </div>
-          <p className="text-slate-400 text-sm tracking-widest">טוען…</p>
+          <p className="text-slate-400 text-sm tracking-widest">{t('loading')}</p>
         </motion.div>
       )}
     </AnimatePresence>

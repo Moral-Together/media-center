@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "contact": "Contact"
+  },
+  "cta": {
+    "contact": "Contact Us",
+    "contact_now": "Contact Us Now",
+    "all_services": "All Services",
+    "view_services": "Explore Services",
+    "view_all_services": "View All Services",
+    "view_portfolio": "View Portfolio",
+    "read_more": "Read More"
+  },
+  "footer": {
+    "copyright": "Israel Media Center",
+    "status_label": "Status",
+    "status_value": "Active",
+    "server_label": "Server",
+    "server_value": "Central-01",
+    "uptime_label": "Uptime",
+    "uptime_value": "99.99%",
+    "edition": "Enterprise"
+  },
+  "a11y": {
+    "skip_to_content": "Skip to main content",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "nav_menu": "Navigation menu",
+    "loading_site": "Loading the website"
+  },
+  "not_found": {
+    "description": "The page you were looking for was not found.",
+    "heading": "Page Not Found",
+    "subtitle": "The page you were looking for doesn't exist or has been moved.",
+    "back_home": "Back to Home"
+  },
+  "loading": "Loading…",
+  "error": {
+    "heading": "Something went wrong",
+    "subtitle": "An error occurred while loading the page. Try refreshing.",
+    "retry": "Try Again"
+  }
+}

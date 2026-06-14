@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "title": "Services",
+    "description": "Web development, cybersecurity, SEO, digital advertising, video production and content creation – all digital services in one place."
+  },
+  "heading": { "prefix": "All Services in ", "highlight": "One Place" },
+  "subtitle": "We're not just a contractor — we're the technological partner that will help your business grow and realize its full digital media potential.",
+  "items": {
+    "dev":      { "title": "Web & App Development",          "description": "We build advanced systems, web applications and mobile apps tailored to your requirements and target audience.",                                  "tags": ["React", "Node.js", "React Native", "AWS"] },
+    "security": { "title": "Cyber & Data Security",          "description": "We provide strong data protection, including penetration testing and security audits, as an integral part of our network solutions.",           "tags": ["Security Audit", "Penetration Testing", "DevSecOps"] },
+    "seo":      { "title": "Organic Growth (SEO)",           "description": "Getting your website to the top positions on Google. Content strategy development, professional optimization, and local market link-building.", "tags": ["Technical SEO", "Link Building", "Organic Traffic"] },
+    "ads":      { "title": "Digital Advertising (PPC)",      "description": "Managing sponsored campaigns on Google, Facebook, and TikTok with a pay-per-results method and maximizing ROI.",                               "tags": ["PPC", "Data Targeting", "Analytics"] },
+    "video":    { "title": "Video Production",               "description": "Creating professional commercials, high-speed video editing and 3D animation for campaigns and commercial channels.",                             "tags": ["Filming", "Editing", "Animation", "YouTube"] },
+    "content":  { "title": "Digital Visual Content Creation","description": "We write sales copy, create original graphics, and manage social networks to expand brand awareness and public relations.",                     "tags": ["SMM", "Copywriting", "PR"] }
+  }
+}

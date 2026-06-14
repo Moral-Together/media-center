@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "home": "Αρχική",
+    "about": "Ποιοι Είμαστε",
+    "services": "Υπηρεσίες",
+    "portfolio": "Χαρτοφυλάκιο",
+    "contact": "Επικοινωνία"
+  },
+  "cta": {
+    "contact": "Επικοινωνία",
+    "contact_now": "Επικοινωνήστε Τώρα",
+    "all_services": "Όλες οι Υπηρεσίες",
+    "view_services": "Εξερευνήστε",
+    "view_all_services": "Δείτε Όλες τις Υπηρεσίες",
+    "view_portfolio": "Δείτε το Portfolio",
+    "read_more": "Διαβάστε Περισσότερα"
+  },
+  "footer": {
+    "copyright": "Israel Media Center",
+    "status_label": "Κατάσταση",
+    "status_value": "Ενεργό",
+    "server_label": "Διακομιστής",
+    "server_value": "Central-01",
+    "uptime_label": "Διαθεσιμότητα",
+    "uptime_value": "99.99%",
+    "edition": "Enterprise"
+  },
+  "a11y": {
+    "skip_to_content": "Μετάβαση στο κύριο περιεχόμενο",
+    "open_menu": "Άνοιγμα μενού",
+    "close_menu": "Κλείσιμο μενού",
+    "nav_menu": "Μενού πλοήγησης",
+    "loading_site": "Φόρτωση ιστοσελίδας"
+  },
+  "not_found": {
+    "description": "Η σελίδα που αναζητάτε δεν βρέθηκε.",
+    "heading": "Η Σελίδα Δεν Βρέθηκε",
+    "subtitle": "Η σελίδα που αναζητάτε δεν υπάρχει ή έχει μετακινηθεί.",
+    "back_home": "Επιστροφή στην Αρχική"
+  },
+  "loading": "Φόρτωση…",
+  "error": {
+    "heading": "Κάτι πήγε στραβά",
+    "subtitle": "Παρουσιάστηκε σφάλμα κατά τη φόρτωση της σελίδας. Δοκιμάστε να ανανεώσετε.",
+    "retry": "Δοκιμάστε Ξανά"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "home": "ראשי",
+    "about": "מי אנחנו",
+    "services": "שירותים",
+    "portfolio": "תיק עבודות",
+    "contact": "צור קשר"
+  },
+  "cta": {
+    "contact": "צור קשר",
+    "contact_now": "צור קשר עכשיו",
+    "all_services": "לכל השירותים",
+    "view_services": "גלה את השירותים",
+    "view_all_services": "צפה בכל השירותים",
+    "view_portfolio": "לתיק העבודות",
+    "read_more": "קרא עוד"
+  },
+  "footer": {
+    "copyright": "מרכז המדיה של ישראל",
+    "status_label": "סטטוס",
+    "status_value": "פעיל",
+    "server_label": "שרת",
+    "server_value": "Central-01",
+    "uptime_label": "זמינות",
+    "uptime_value": "99.99%",
+    "edition": "אנטרפרייז"
+  },
+  "a11y": {
+    "skip_to_content": "דלג לתוכן הראשי",
+    "open_menu": "פתח תפריט",
+    "close_menu": "סגור תפריט",
+    "nav_menu": "תפריט ניווט",
+    "loading_site": "טוען את האתר"
+  },
+  "not_found": {
+    "description": "הדף שחיפשת לא נמצא.",
+    "heading": "הדף לא נמצא",
+    "subtitle": "הדף שחיפשת לא קיים או הועבר למקום אחר.",
+    "back_home": "חזרה לדף הראשי"
+  },
+  "loading": "טוען…",
+  "error": {
+    "heading": "משהו השתבש",
+    "subtitle": "אירעה שגיאה בטעינת הדף. נסה לרענן את הדף.",
+    "retry": "נסה שוב"
+  }
+}

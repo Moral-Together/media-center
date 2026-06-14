@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "title": "About Us",
+    "description": "Meet the team behind Israel Media Center – developers, designers, and marketers with over 10 years of digital experience."
+  },
+  "badge": "Our Story",
+  "heading": { "plain": "Who ", "highlight": "We Are" },
+  "story": {
+    "p1": "Israel Media Center was founded with the goal of providing comprehensive technological and digital solutions under one roof. We are a group of developers, designers, and marketers who live and breathe digital.",
+    "p2": "Our vision is to bridge creativity and analytics, giving our clients a real competitive advantage in the digital arena. We are committed to uncompromising quality, professionalism, and constant innovation."
+  },
+  "stats": {
+    "clients": "Happy Clients",
+    "projects": "Completed Projects",
+    "experts": "Team Experts",
+    "years": "Years of Experience"
+  },
+  "mission": {
+    "heading_plain": "What ",
+    "heading_highlight": "Drives Us"
+  },
+  "values": {
+    "goal":  { "title": "Our Mission", "desc": "To lead the Israeli digital market with smart, personalized technological solutions that generate real value." },
+    "ethos": { "title": "Our Values",  "desc": "Full transparency, boundless innovation, and total commitment to the success of our clients' projects." }
+  }
+}

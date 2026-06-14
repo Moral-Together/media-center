@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "title": "Portfolio",
+    "description": "Selected projects by Israel Media Center – from complex software solutions to creative marketing campaigns."
+  },
+  "heading": { "plain": "Our ", "highlight": "Portfolio", "suffix": "" },
+  "subtitle": "A look at the selected projects we led. From complex software solutions to creative marketing campaigns.",
+  "view_project": "View Project",
+  "items": {
+    "1": { "title": "Advanced E-commerce for a Retail Chain",          "category": "Web Development"   },
+    "2": { "title": "Video Campaign – Car Brand Launch",               "category": "Video Production"  },
+    "3": { "title": "Fintech App for Expense Management",              "category": "Mobile Development"},
+    "4": { "title": "Defense System & Penetration Tests for Healthcare","category": "Cybersecurity"     },
+    "5": { "title": "Organic Growth (SEO) for a B2B Start-up",        "category": "Digital Marketing" },
+    "6": { "title": "Branding & Visual Content for a Restaurant Chain","category": "Design & Content"  }
+  }
+}

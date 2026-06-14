@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   DEFAULT_OG_IMAGE,
   OG_IMAGE_ALT,
@@ -8,6 +9,7 @@ import {
   SITE_NAME,
   SITE_URL,
 } from '../lib/seo';
+import type { LangCode } from '../i18n';
 
 interface PageMetaProps {
   title: string;
@@ -15,6 +17,14 @@ interface PageMetaProps {
   image?: string;
   noIndex?: boolean;
 }
+
+const OG_LOCALES: Record<LangCode, string> = {
+  he: 'he_IL',
+  en: 'en_US',
+  el: 'el_GR',
+};
+
+const SUPPORTED_LANGS: LangCode[] = ['he', 'en', 'el'];
 
 function setMeta(attr: 'name' | 'property', key: string, content: string) {
   let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
@@ -61,6 +71,10 @@ function setJsonLd(id: string, data: object) {
 
 export function PageMeta({ title, description, image, noIndex = false }: PageMetaProps) {
   const { pathname } = useLocation();
+  const { i18n } = useTranslation();
+  const lang = (i18n.language in OG_LOCALES ? i18n.language : 'he') as LangCode;
+  const ogLocale = OG_LOCALES[lang];
+
   const fullTitle = `${title} | ${SITE_NAME}`;
   const canonical = `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
   const ogImage = image ?? DEFAULT_OG_IMAGE;
@@ -77,7 +91,7 @@ export function PageMeta({ title, description, image, noIndex = false }: PageMet
     setMeta('property', 'og:site_name', SITE_NAME);
     setMeta('property', 'og:type', 'website');
     setMeta('property', 'og:url', canonical);
-    setMeta('property', 'og:locale', 'he_IL');
+    setMeta('property', 'og:locale', ogLocale);
     setMeta('property', 'og:image', ogImage);
     setMeta('property', 'og:image:secure_url', ogImage);
     setMeta('property', 'og:image:alt', OG_IMAGE_ALT);
@@ -91,11 +105,9 @@ export function PageMeta({ title, description, image, noIndex = false }: PageMet
 
     setCanonical(canonical);
 
-    // hreflang for Hebrew and x-default
-    setHreflang('he', canonical);
+    SUPPORTED_LANGS.forEach((code) => setHreflang(code, canonical));
     setHreflang('x-default', `${SITE_URL}/`);
 
-    // WebPage structured data
     if (!noIndex) {
       setJsonLd('webpage', {
         '@context': 'https://schema.org',
@@ -103,7 +115,7 @@ export function PageMeta({ title, description, image, noIndex = false }: PageMet
         name: fullTitle,
         description,
         url: canonical,
-        inLanguage: 'he',
+        inLanguage: lang,
         isPartOf: {
           '@type': 'WebSite',
           name: SITE_NAME,
@@ -111,7 +123,7 @@ export function PageMeta({ title, description, image, noIndex = false }: PageMet
         },
       });
     }
-  }, [fullTitle, description, canonical, ogImage, robots, noIndex]);
+  }, [fullTitle, description, canonical, ogImage, robots, noIndex, lang, ogLocale]);
 
   return null;
 }

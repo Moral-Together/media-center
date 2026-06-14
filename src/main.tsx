@@ -1,3 +1,4 @@
+import './i18n'; // must be first — initialises i18next before any component renders
 import { preloadLogoPlay } from './lib/preloadLogo';
 
 preloadLogoPlay();
