@@ -1218,9 +1218,9 @@ export default function Home() {
             className="relative mb-14 md:mb-20"
           >
             <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 z-[1]">
-              <div className="max-w-2xl relative pr-6">
-                {/* Vertical editorial gradient line on the right (RTL start) */}
-                <div className="absolute top-2 right-0 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-cyan-400 via-violet-400 to-rose-400" />
+              <div className="max-w-2xl relative ps-6">
+                {/* Vertical editorial gradient line — always at reading start */}
+                <div className="absolute top-2 start-0 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-cyan-400 via-violet-400 to-rose-400" />
 
                 {/* Glowing Glassmorphic Badge */}
                 <div className="relative inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-slate-200/60 bg-white/70 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.02)] mb-6 overflow-hidden group/badge">
