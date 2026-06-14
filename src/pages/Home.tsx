@@ -311,6 +311,221 @@ function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps)
   );
 }
 
+// ─── Canvas-based film strip ─────────────────────────────────────────────────
+// Pixel-perfect: no SVG stretching, holes always correct proportions.
+
+function rrect(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number, r: number,
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// Wave y-values. X control points are linearly spaced → t = x/segW is exact.
+// Canvas is 200px tall. Film sits in the middle third.
+// Wave y-values tuned for 280px canvas + 130px band.
+// Control x-coords are linearly spaced → t = x/segW is exact (no inversion needed).
+// Verified: max(cy1,y0)+BAND = 148+130 = 278 < 280 ✓
+const WY = { y0: 100, cy1: 148, cy2: 44, y3: 74, cy4: 112, cy5: 46, y6: 84 } as const;
+const CH    = 280; // canvas height px
+const BAND  = 130; // film strip total thickness px
+const EDGE  = 28;  // dark edge strip (top & bottom) px
+const HW    = 10;  // hole width px
+const HH    = 10;  // hole height px (square, ~36% of EDGE)
+const HSTEP = 40;  // hole centre-to-centre spacing → 4 holes = 1 frame (160px)
+const SPEED = 40;  // px/sec — film belt movement speed
+
+function filmWaveY(x: number, W: number): number {
+  const half = W * 0.5;
+  const t = x <= half ? x / half : (x - half) / half;
+  const mt = 1 - t;
+  if (x <= half)
+    return mt*mt*mt*WY.y0 + 3*mt*mt*t*WY.cy1 + 3*mt*t*t*WY.cy2 + t*t*t*WY.y3;
+  return mt*mt*mt*WY.y3 + 3*mt*mt*t*WY.cy4 + 3*mt*t*t*WY.cy5 + t*t*t*WY.y6;
+}
+
+function makeCrest(W: number, oy = 0): Path2D {
+  const p = new Path2D(), h = W * 0.5;
+  p.moveTo(0, WY.y0 + oy);
+  p.bezierCurveTo(h*0.333, WY.cy1+oy, h*0.667, WY.cy2+oy, h, WY.y3+oy);
+  p.bezierCurveTo(h+h*0.333, WY.cy4+oy, h+h*0.667, WY.cy5+oy, W, WY.y6+oy);
+  return p;
+}
+
+function makeFilmBand(W: number): Path2D {
+  const p = makeCrest(W, 0);
+  const h = W * 0.5, oy = BAND;
+  p.lineTo(W, WY.y6 + oy);
+  p.bezierCurveTo(h+h*0.667, WY.cy5+oy, h+h*0.333, WY.cy4+oy, h, WY.y3+oy);
+  p.bezierCurveTo(h*0.667, WY.cy2+oy, h*0.333, WY.cy1+oy, 0, WY.y0+oy);
+  p.closePath();
+  return p;
+}
+
+function drawFilmStrip(canvas: HTMLCanvasElement, animOffset: number, noMotion: boolean) {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const h   = W * 0.5;
+  const oy  = BAND;
+  const band = makeFilmBand(W);
+
+  // 1 — dark hero background (entire canvas as base)
+  ctx.fillStyle = '#020617';
+  ctx.fillRect(0, 0, W, H);
+
+  // 2 — light services background below the film
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(W, WY.y6 + oy);
+  ctx.bezierCurveTo(h+h*0.667, WY.cy5+oy, h+h*0.333, WY.cy4+oy, h, WY.y3+oy);
+  ctx.bezierCurveTo(h*0.667, WY.cy2+oy, h*0.333, WY.cy1+oy, 0, WY.y0+oy);
+  ctx.lineTo(0, H); ctx.lineTo(W, H); ctx.closePath();
+  ctx.fillStyle = '#f5f6ff';
+  ctx.fill();
+  ctx.restore();
+
+  // 3 — full film band clipped, dark base (becomes the edge strips)
+  ctx.save();
+  ctx.clip(band);
+  const edgeGrad = ctx.createLinearGradient(0, 0, W, 0);
+  edgeGrad.addColorStop(0,   '#080115');
+  edgeGrad.addColorStop(0.5, '#110228');
+  edgeGrad.addColorStop(1,   '#1a0535');
+  ctx.fillStyle = edgeGrad;
+  ctx.fill(band);
+
+  // 4 — inner gradient body (overwrites center, edge strips remain dark)
+  const innerP = new Path2D();
+  const N = 120;
+  for (let i = 0; i <= N; i++) {
+    const x = (i / N) * W;
+    const y = filmWaveY(x, W) + EDGE;
+    i === 0 ? innerP.moveTo(x, y) : innerP.lineTo(x, y);
+  }
+  for (let i = N; i >= 0; i--)
+    innerP.lineTo((i / N) * W, filmWaveY((i / N) * W, W) + BAND - EDGE);
+  innerP.closePath();
+  const bodyGrad = ctx.createLinearGradient(0, 0, W, 0);
+  bodyGrad.addColorStop(0,    '#4c1d95');
+  bodyGrad.addColorStop(0.28, '#6d28d9');
+  bodyGrad.addColorStop(0.62, '#7c3aed');
+  bodyGrad.addColorStop(1,    '#a855f7');
+  ctx.fillStyle = bodyGrad;
+  ctx.fill(innerP);
+
+  // 5 — frame dividers (1 frame = 4 holes = 160px), scroll with animation
+  ctx.save();
+  ctx.clip(innerP);
+  ctx.fillStyle = 'rgba(6, 1, 16, 0.80)';
+  const divStep = HSTEP * 4;
+  const divOff  = noMotion ? 0 : animOffset % divStep;
+  for (let fx = divStep - divOff; fx < W + divStep; fx += divStep)
+    ctx.fillRect(fx - 4, 0, 8, H);
+  ctx.restore();
+
+  ctx.restore(); // end film clip
+
+  // 6 — sprocket holes: physical cutout illusion
+  //   top holes → dark interior (see-through to dark hero behind film)
+  //   bottom holes → light interior (see-through to light services behind film)
+  //   both get: lavender glow outline → dark shadow ring → interior fill
+  const offset = noMotion ? 0 : animOffset % HSTEP;
+  const startX = -HSTEP * 2 - offset;
+  const count  = Math.ceil(W / HSTEP) + 5;
+  ctx.save();
+  ctx.clip(makeFilmBand(W));
+
+  function drawHole(c: CanvasRenderingContext2D, x: number, y: number, dark: boolean) {
+    // 1 — lavender outer glow
+    c.fillStyle = 'rgba(210, 185, 255, 0.50)';
+    rrect(c, x - HW / 2 - 2, y - 2, HW + 4, HH + 4, 4); c.fill();
+    // 2 — dark shadow ring (depth illusion — film thickness)
+    c.fillStyle = 'rgba(0, 0, 0, 0.82)';
+    rrect(c, x - HW / 2 - 0.5, y - 0.5, HW + 1, HH + 1, 2.5); c.fill();
+    // 3 — interior: dark = hero bg visible, light = services bg visible
+    c.fillStyle = dark ? '#010d1a' : '#eef0ff';
+    rrect(c, x - HW / 2, y, HW, HH, 2); c.fill();
+  }
+
+  for (let i = 0; i < count; i++) {
+    const hx = startX + i * HSTEP;
+    const cx = Math.max(0, Math.min(W, hx));
+    const wy = filmWaveY(cx, W);
+    drawHole(ctx, hx, wy + (EDGE - HH) / 2,              false);  // top → light
+    drawHole(ctx, hx, wy + BAND - EDGE + (EDGE - HH) / 2, false);  // bottom → light
+  }
+  ctx.restore();
+
+  // 7 — glowing crest lines (top + bottom edges of film)
+  ctx.save();
+  ctx.shadowColor = '#a78bfa'; ctx.shadowBlur = 12;
+  ctx.strokeStyle = '#ddd6fe'; ctx.lineWidth = 2;
+  ctx.stroke(makeCrest(W, 0));
+  ctx.shadowColor = '#7c3aed'; ctx.shadowBlur = 6;
+  ctx.strokeStyle = '#9d7fea'; ctx.lineWidth = 1.5;
+  ctx.stroke(makeCrest(W, BAND));
+  ctx.restore();
+}
+
+function FilmStripWave({ reduceMotion }: { reduceMotion: boolean | null }) {
+  const canvasRef   = React.useRef<HTMLCanvasElement>(null);
+  const frameRef    = React.useRef(0);
+  const offsetRef   = React.useRef(0);
+  const lastTRef    = React.useRef<number | null>(null);
+  const noMotionRef = React.useRef(!!reduceMotion);
+  noMotionRef.current = !!reduceMotion;
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ro = new ResizeObserver(() => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = CH;
+      drawFilmStrip(canvas, offsetRef.current, noMotionRef.current);
+    });
+    ro.observe(canvas);
+
+    const tick = (ts: number) => {
+      if (!noMotionRef.current) {
+        if (lastTRef.current !== null) {
+          const dt = ts - lastTRef.current;
+          offsetRef.current = (offsetRef.current + SPEED * dt / 1000) % (HSTEP * 4);
+        }
+        lastTRef.current = ts;
+      }
+      drawFilmStrip(canvas, offsetRef.current, noMotionRef.current);
+      frameRef.current = requestAnimationFrame(tick);
+    };
+
+    frameRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
+
+  return (
+    <div className="relative -mt-px w-full leading-[0]" style={{ height: CH }} aria-hidden>
+      <canvas ref={canvasRef} className="block w-full" style={{ height: CH }} />
+    </div>
+  );
+}
+
 export default function Home() {
   const heroRef   = React.useRef<HTMLElement | null>(null);
   const [playHeroIntro] = React.useState(() => {
@@ -719,48 +934,8 @@ export default function Home() {
         />
       </div>
 
-      {/* ─── Wave bridge: dark hero flows into light services ─── */}
-      <div className="relative -mt-px leading-[0] bg-[#020617] pointer-events-none" aria-hidden>
-        <svg
-          viewBox="0 0 1440 130"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="relative block w-full h-20 sm:h-28 md:h-32"
-        >
-          <defs>
-            <linearGradient id="wave-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%"   stopColor="#06b6d4" />
-              <stop offset="45%"  stopColor="#8b5cf6" />
-              <stop offset="80%"  stopColor="#a855f7" />
-              <stop offset="100%" stopColor="#ec4899" />
-            </linearGradient>
-            <filter id="wave-halo" x="-5%" y="-300%" width="110%" height="700%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="soft" />
-              <feMerge>
-                <feMergeNode in="soft" />
-                <feMergeNode in="soft" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* Light wave body — same colour as services section top */}
-          <path
-            fill="#f5f6ff"
-            d="M0,72 C240,108 480,26 720,58 C960,90 1200,34 1440,64 L1440,130 L0,130 Z"
-          />
-          {/* Soft neon halo hugging the crest */}
-          <path
-            d="M0,72 C240,108 480,26 720,58 C960,90 1200,34 1440,64"
-            fill="none" stroke="url(#wave-grad)" strokeWidth="3" strokeOpacity="0.5"
-            filter="url(#wave-halo)"
-          />
-          {/* Crisp gradient crest line */}
-          <path
-            d="M0,72 C240,108 480,26 720,58 C960,90 1200,34 1440,64"
-            fill="none" stroke="url(#wave-grad)" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.85"
-          />
-        </svg>
-      </div>
+      {/* ─── Film-strip wave bridge: dark hero → light services ─── */}
+      <FilmStripWave reduceMotion={reduceMotion} />
       </div>{/* end hero+seam wrapper */}
 
       {/* ═══════════════════ SERVICES ═══════════════════ */}
