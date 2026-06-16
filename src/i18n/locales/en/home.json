@@ -31,8 +31,8 @@
     "security": { "title": "Cybersecurity",    "desc": "Security audits, firewall creation, and penetration testing for websites and systems." },
     "ads":      { "title": "Digital Marketing","desc": "Quality performance-based marketing and campaigns with fast, effective results." }
   },
-  "stats_strip": {
-    "eyebrow": "The Numbers Speak for Themselves"
+  "partners": {
+    "eyebrow": "Trusted by Leading Companies"
   },
   "final_cta": {
     "eyebrow":         "Let's Work Together",

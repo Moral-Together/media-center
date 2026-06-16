@@ -15,6 +15,16 @@
     "experts": "מומחים בצוות",
     "years": "שנות ניסיון"
   },
+  "team_badge": "הצוות שלנו",
+  "team_heading": { "plain": "האנשים ", "highlight": "שמאחורינו" },
+  "team_roles": {
+    "ceo":       "מנכ\"ל ומייסד",
+    "design":    "מנהלת עיצוב",
+    "dev":       "ראש פיתוח",
+    "marketing": "מנהלת שיווק"
+  },
+  "stats_eyebrow": "המספרים מדברים בעד עצמם",
+  "mission_badge": "הערכים שלנו",
   "mission": {
     "heading_plain": "מה מניע ",
     "heading_highlight": "אותנו"

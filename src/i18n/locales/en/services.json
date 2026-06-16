@@ -3,8 +3,15 @@
     "title": "Services",
     "description": "Web development, cybersecurity, SEO, digital advertising, video production and content creation – all digital services in one place."
   },
+  "badge": "What We Do",
   "heading": { "prefix": "All Services in ", "highlight": "One Place" },
   "subtitle": "We're not just a contractor — we're the technological partner that will help your business grow and realize its full digital media potential.",
+  "cta": {
+    "eyebrow": "Ready to grow?",
+    "title_plain": "Let's ",
+    "title_highlight": "Talk",
+    "button": "Contact Us Now"
+  },
   "items": {
     "dev":      { "title": "Web & App Development",          "description": "We build advanced systems, web applications and mobile apps tailored to your requirements and target audience.",                                  "tags": ["React", "Node.js", "React Native", "AWS"] },
     "security": { "title": "Cyber & Data Security",          "description": "We provide strong data protection, including penetration testing and security audits, as an integral part of our network solutions.",           "tags": ["Security Audit", "Penetration Testing", "DevSecOps"] },

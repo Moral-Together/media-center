@@ -15,6 +15,16 @@
     "experts": "Ειδικοί στην Ομάδα",
     "years": "Χρόνια Εμπειρίας"
   },
+  "team_badge": "Η Ομάδα μας",
+  "team_heading": { "plain": "Οι άνθρωποι ", "highlight": "πίσω μας" },
+  "team_roles": {
+    "ceo":       "Διευθύνων Σύμβουλος",
+    "design":    "Διευθύντρια Σχεδιασμού",
+    "dev":       "Επικεφαλής Ανάπτυξης",
+    "marketing": "Διευθύντρια Μάρκετινγκ"
+  },
+  "stats_eyebrow": "Οι αριθμοί μιλούν από μόνοι τους",
+  "mission_badge": "Οι Αξίες μας",
   "mission": {
     "heading_plain": "Τι μας ",
     "heading_highlight": "Κινεί"

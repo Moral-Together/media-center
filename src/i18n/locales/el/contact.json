@@ -3,9 +3,31 @@
     "title": "Επικοινωνία",
     "description": "Επικοινωνήστε με το Israel Media Center. Θα χαρούμε να ακούσουμε για το project σας και να σχεδιάσουμε μαζί το επόμενο βήμα."
   },
-  "heading": { "plain": "Έτοιμοι να Ξεκινήσουμε ένα ", "highlight": "Project", "suffix": ";" },
-  "subtitle": "Αφήστε τα στοιχεία σας και θα επικοινωνήσουμε μαζί σας το συντομότερο δυνατό.",
-  "email_label": "Email",
-  "phone_label": "Τηλέφωνο",
-  "send_button": "Αποστολή Μηνύματος"
+  "badge": "Θα χαρούμε να ακούσουμε",
+  "heading": { "plain": "Έτοιμοι να Ξεκινήσετε ένα ", "highlight": "Project", "suffix": ";" },
+  "subtitle": "Αφήστε τα στοιχεία σας και θα επικοινωνήσουμε μαζί σας σύντομα. Κάθε project ξεκινά με μία συζήτηση.",
+  "form": {
+    "name":        "Ονοματεπώνυμο",
+    "name_ph":     "Γιάννης Παπαδόπουλος",
+    "email":       "Email",
+    "email_ph":    "your@email.com",
+    "phone":       "Τηλέφωνο",
+    "phone_ph":    "+30 000 000 0000",
+    "subject":     "Θέμα",
+    "subject_ph":  "Πώς μπορούμε να βοηθήσουμε;",
+    "message":     "Μήνυμα",
+    "message_ph":  "Πείτε μας για το project σας...",
+    "submit":      "Αποστολή Μηνύματος",
+    "submitting":  "Αποστολή...",
+    "success":     "Το μήνυμα στάλθηκε επιτυχώς! Θα επικοινωνήσουμε μαζί σας σύντομα."
+  },
+  "info": {
+    "email_label": "Email",
+    "email_val":   "hello@mediaisrael.co.il",
+    "phone_label": "Τηλέφωνο",
+    "phone_val":   "+972 50 000 0000",
+    "hours_label": "Ώρες Λειτουργίας",
+    "hours_val":   "Κυρ–Πέμ, 09:00–18:00"
+  },
+  "social_label": "Ακολουθήστε μας"
 }

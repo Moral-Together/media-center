@@ -15,6 +15,16 @@
     "experts": "Team Experts",
     "years": "Years of Experience"
   },
+  "team_badge": "Our Team",
+  "team_heading": { "plain": "The people ", "highlight": "behind us" },
+  "team_roles": {
+    "ceo":       "CEO & Founder",
+    "design":    "Design Director",
+    "dev":       "Head of Development",
+    "marketing": "Marketing Manager"
+  },
+  "stats_eyebrow": "The numbers speak for themselves",
+  "mission_badge": "Our Values",
   "mission": {
     "heading_plain": "What ",
     "heading_highlight": "Drives Us"

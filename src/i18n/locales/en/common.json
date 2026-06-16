@@ -17,13 +17,14 @@
   },
   "footer": {
     "copyright": "Israel Media Center",
-    "status_label": "Status",
-    "status_value": "Active",
-    "server_label": "Server",
-    "server_value": "Central-01",
-    "uptime_label": "Uptime",
-    "uptime_value": "99.99%",
-    "edition": "Enterprise"
+    "rights": "All rights reserved",
+    "tagline": "Israel's leading digital agency — development, media, marketing and security under one roof.",
+    "nav_title": "Navigation",
+    "contact_title": "Contact",
+    "email": "hello@mediaisrael.co.il",
+    "phone": "+972 50 000 0000",
+    "hours": "Sun–Thu, 09:00–18:00",
+    "social_title": "Follow Us"
   },
   "a11y": {
     "skip_to_content": "Skip to main content",

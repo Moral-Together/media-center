@@ -3,9 +3,31 @@
     "title": "Contact Us",
     "description": "Get in touch with Israel Media Center. We'd love to hear about your project and plan the next step together."
   },
+  "badge": "We'd love to hear from you",
   "heading": { "plain": "Ready to Start a ", "highlight": "Project", "suffix": "?" },
-  "subtitle": "Leave your details and we'll get back to you as soon as possible to plan the process.",
-  "email_label": "Email",
-  "phone_label": "Phone",
-  "send_button": "Send Message"
+  "subtitle": "Leave your details and we'll get back to you shortly. Every project starts with one conversation.",
+  "form": {
+    "name":        "Full Name",
+    "name_ph":     "John Smith",
+    "email":       "Email",
+    "email_ph":    "your@email.com",
+    "phone":       "Phone",
+    "phone_ph":    "+1 000 000 0000",
+    "subject":     "Subject",
+    "subject_ph":  "How can we help?",
+    "message":     "Message",
+    "message_ph":  "Tell us about your project...",
+    "submit":      "Send Message",
+    "submitting":  "Sending...",
+    "success":     "Message sent successfully! We'll get back to you soon."
+  },
+  "info": {
+    "email_label": "Email",
+    "email_val":   "hello@mediaisrael.co.il",
+    "phone_label": "Phone",
+    "phone_val":   "+972 50 000 0000",
+    "hours_label": "Working Hours",
+    "hours_val":   "Sun–Thu, 09:00–18:00"
+  },
+  "social_label": "Follow Us"
 }

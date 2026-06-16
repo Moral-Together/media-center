@@ -76,6 +76,19 @@ const SERVICES = [
 
 const SPARKLE_COLORS = ['#00f2fe', '#818cf8', '#e879f9', '#0cf574', '#fce803'];
 
+const PARTNER_LOGOS = [
+  { name: 'Wix',         color: '#0C6EFD' },
+  { name: 'monday.com',  color: '#F62B54' },
+  { name: 'Check Point', color: '#E3001B' },
+  { name: 'Mobileye',    color: '#0A5CBF' },
+  { name: 'CyberArk',    color: '#5C2D9B' },
+  { name: 'ironSource',  color: '#FF6B35' },
+  { name: 'Amdocs',      color: '#00A1E0' },
+  { name: 'Fiverr',      color: '#1DBF73' },
+  { name: 'NICE',        color: '#004B87' },
+  { name: 'AudioCodes',  color: '#0078BE' },
+] as const;
+
 interface Sparkle { id: number; x: number; y: number; size: number; color: string; }
 
 type HeroStatItem = (typeof STATS)[number];
@@ -121,42 +134,64 @@ function HeroStat({
   );
 }
 
-function BigStat({
-  stat,
-  index,
-  reduceMotion,
-}: {
-  stat: HeroStatItem;
-  index: number;
-  reduceMotion: boolean | null;
-}) {
+function LogoMarquee() {
   const { t } = useTranslation('home');
-  const ref = React.useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
-  const animated = useAnimatedCounter(stat.numeric, inView && !reduceMotion);
-  const display = reduceMotion ? stat.numeric : animated;
+  const reduceMotion = useReducedMotion();
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="relative flex flex-col items-center justify-center text-center px-6 py-12"
-    >
-      <div
-        className={`absolute inset-x-6 top-0 h-[2px] rounded-full bg-gradient-to-l ${stat.accent} opacity-40`}
-      />
-      <span
-        className={`text-6xl sm:text-7xl xl:text-8xl font-black tabular-nums leading-none bg-gradient-to-b ${stat.accent} bg-clip-text text-transparent mb-4`}
+    <section className="relative bg-white py-14 overflow-hidden border-y border-slate-100/80">
+      <style>{`@keyframes logo-marquee { to { transform: translateX(-50%); } }`}</style>
+      <div className="absolute inset-0 section-dot-grid opacity-[0.12] pointer-events-none" />
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center justify-center gap-3 mb-10 px-4"
       >
-        {stat.prefix}{display}
-      </span>
-      <span className="text-slate-400 text-sm font-medium tracking-wide">
-        {t(stat.labelKey)}
-      </span>
-    </motion.div>
+        <div className="h-px flex-1 max-w-16 bg-gradient-to-r from-transparent to-slate-200" />
+        <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400 whitespace-nowrap">
+          {t('partners.eyebrow')}
+        </span>
+        <div className="h-px flex-1 max-w-16 bg-gradient-to-l from-transparent to-slate-200" />
+      </motion.div>
+
+      {reduceMotion ? (
+        <div className="flex flex-wrap items-center justify-center gap-6 px-8">
+          {PARTNER_LOGOS.map((logo) => (
+            <div key={logo.name} className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: logo.color }} />
+              <span className="text-slate-500 font-bold text-lg">{logo.name}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-y-0 left-0 w-28 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          <div
+            className="flex items-center"
+            style={{ width: 'max-content', animation: 'logo-marquee 32s linear infinite' }}
+          >
+            {[...PARTNER_LOGOS, ...PARTNER_LOGOS].map((logo, i) => (
+              <div key={i} className="flex items-center shrink-0 select-none">
+                <div className="flex items-center gap-3 px-10 py-1 group cursor-default">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0 transition-transform duration-300 group-hover:scale-125"
+                    style={{ backgroundColor: logo.color }}
+                  />
+                  <span className="text-slate-400 font-bold text-xl tracking-tight whitespace-nowrap transition-colors duration-200 group-hover:text-slate-700">
+                    {logo.name}
+                  </span>
+                </div>
+                <div className="w-px h-5 bg-slate-100 shrink-0" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -329,94 +364,6 @@ function ServiceCard({ srv, index, onHoverStart, onHoverEnd }: ServiceCardProps)
   );
 }
 
-function StatsStrip({ reduceMotion }: { reduceMotion: boolean | null }) {
-  const { t } = useTranslation('home');
-  return (
-    <>
-      {/* Top wave: white services → dark strip */}
-      <div className="relative bg-slate-950 leading-[0] -mt-px" aria-hidden>
-        <svg
-          className="block w-full h-16 sm:h-20 md:h-24 text-white"
-          viewBox="0 0 1440 100"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="currentColor"
-            d="M0,0 L1440,0 L1440,40 C1120,5 920,80 720,44 C520,8 320,85 0,35 Z"
-          />
-        </svg>
-      </div>
-
-      {/* Dark stats section */}
-      <section className="relative bg-slate-950 overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.032) 1px, transparent 1px),' +
-              'linear-gradient(to right, rgba(255,255,255,0.032) 1px, transparent 1px)',
-            backgroundSize: '72px 72px',
-          }}
-        />
-        {!reduceMotion && (
-          <>
-            <div
-              className="absolute -top-24 left-1/4 w-80 h-80 rounded-full bg-cyan-500 blur-[100px] pointer-events-none"
-              style={{ opacity: 0.07 }}
-            />
-            <div
-              className="absolute -bottom-24 right-1/4 w-80 h-80 rounded-full bg-violet-500 blur-[100px] pointer-events-none"
-              style={{ opacity: 0.07 }}
-            />
-          </>
-        )}
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center justify-center gap-3 mb-10 md:mb-14"
-          >
-            <div className="h-px flex-1 max-w-20 bg-gradient-to-r from-transparent to-slate-700" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500 whitespace-nowrap">
-              {t('stats_strip.eyebrow')}
-            </span>
-            <div className="h-px flex-1 max-w-20 bg-gradient-to-l from-transparent to-slate-700" />
-          </motion.div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-0">
-            {STATS.map((stat, i) => (
-              <BigStat
-                key={stat.labelKey}
-                stat={stat}
-                index={i}
-                reduceMotion={reduceMotion}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Bottom wave: dark strip → transparent (layout bg) */}
-      <div className="relative bg-transparent leading-[0] -mt-px z-10" aria-hidden>
-        <svg
-          className="block w-full h-16 sm:h-20 md:h-24"
-          viewBox="0 0 1440 100"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill="#020617"
-            d="M0,0 L1440,0 L1440,40 C1120,5 920,80 720,44 C520,8 320,85 0,35 Z"
-          />
-        </svg>
-      </div>
-    </>
-  );
-}
 
 function FinalCTA({ reduceMotion }: { reduceMotion: boolean | null }) {
   const { t } = useTranslation('home');
@@ -1277,7 +1224,7 @@ export default function Home() {
         </div>
       </section>
 
-      <StatsStrip reduceMotion={reduceMotion} />
+      <LogoMarquee />
       <FinalCTA reduceMotion={reduceMotion} />
     </div>
   );

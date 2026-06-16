@@ -10,7 +10,7 @@ import {
   useScroll,
   useSpring,
 } from 'motion/react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Instagram, Facebook, Linkedin, Mail, Phone, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
@@ -18,7 +18,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { useLanguageSync } from '../i18n/useLanguageSync';
 import { LANGUAGES, type LangCode } from '../i18n/index';
 
-function LanguageSwitcher({ layoutSuffix = 'desktop' }: { layoutSuffix?: string }) {
+function LanguageSwitcher({ layoutSuffix = 'desktop', variant = 'light' }: { layoutSuffix?: string; variant?: 'light' | 'dark' }) {
   const { i18n } = useTranslation();
   const current = (Object.keys(LANGUAGES).includes(i18n.language)
     ? i18n.language
@@ -26,8 +26,15 @@ function LanguageSwitcher({ layoutSuffix = 'desktop' }: { layoutSuffix?: string 
 
   const displayOrder: LangCode[] = ['he', 'en', 'el'];
 
+  const isDark = variant === 'dark';
+
   return (
-    <div className="flex items-center gap-0.5 rounded-full p-0.5 bg-slate-100/80 border border-slate-200/60 backdrop-blur-sm">
+    <div className={cn(
+      'flex items-center gap-0.5 rounded-full p-0.5 backdrop-blur-sm',
+      isDark
+        ? 'bg-white/[0.06] border border-white/[0.10]'
+        : 'bg-slate-100/80 border border-slate-200/60',
+    )}>
       {displayOrder.map((code) => {
         const info = LANGUAGES[code];
         const isActive = current === code;
@@ -39,13 +46,18 @@ function LanguageSwitcher({ layoutSuffix = 'desktop' }: { layoutSuffix?: string 
             aria-pressed={isActive}
             className={cn(
               'relative flex items-center gap-1 px-2.5 py-[5px] rounded-full text-[11px] font-bold transition-colors duration-150 select-none',
-              isActive ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600',
+              isDark
+                ? isActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                : isActive ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600',
             )}
           >
             {isActive && (
               <motion.span
                 layoutId={`lang-pill-${layoutSuffix}`}
-                className="absolute inset-0 rounded-full bg-white shadow-sm"
+                className={isDark
+                  ? 'absolute inset-0 rounded-full bg-white/[0.15]'
+                  : 'absolute inset-0 rounded-full bg-white shadow-sm'
+                }
                 transition={{ type: 'spring', stiffness: 500, damping: 38 }}
               />
             )}
@@ -362,7 +374,7 @@ export default function Layout() {
       </AnimatePresence>
 
       {/* ════════════════════ MAIN ════════════════════ */}
-      <main id="main-content" dir={contentDir} className="flex-1 pt-[72px] flex flex-col relative pb-10">
+      <main id="main-content" dir={contentDir} className="flex-1 pt-[72px] flex flex-col relative">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-cyan-100/15 via-white to-violet-100/12" />
         <div className="pointer-events-none absolute inset-0 -z-10 section-dot-grid opacity-30" />
         <AnimatePresence mode="wait">
@@ -388,20 +400,96 @@ export default function Layout() {
       </main>
 
       {/* ════════════════════ FOOTER ════════════════════ */}
-      <footer dir={contentDir} className="px-6 lg:px-10 py-4 bg-slate-100/50 border-t border-slate-200 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-slate-500 relative z-10 w-full mt-auto">
-        <span>&copy; {new Date().getFullYear()} {t('footer.copyright')}</span>
-        <div className="hidden md:flex gap-6">
-          <span>{t('footer.status_label')}: <span className="text-emerald-500">{t('footer.status_value')}</span></span>
-          <span>{t('footer.server_label')}: <span className="text-slate-900">{t('footer.server_value')}</span></span>
-          <span>{t('footer.uptime_label')}: <span className="text-slate-900">{t('footer.uptime_value')}</span></span>
+      <footer className="relative bg-slate-950 text-white overflow-hidden">
+        {/* subtle aurora */}
+        <div className="absolute top-0 start-[10%] w-96 h-96 rounded-full bg-violet-600/10 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 end-[10%] w-80 h-80 rounded-full bg-cyan-600/10 blur-[100px] pointer-events-none" />
+        {/* grid */}
+        <div className="absolute inset-0 opacity-[0.025] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(to right,rgba(255,255,255,1) 1px,transparent 1px)', backgroundSize: '72px 72px' }} />
+
+        {/* ── Main columns ── */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+
+            {/* Brand */}
+            <div>
+              <Link to="/" className="inline-flex items-center gap-3 mb-5">
+                <Logo className="w-10 h-10" />
+                <span className="font-bold text-lg text-white tracking-tight">
+                  מרכז ה<span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">מדיה</span>
+                </span>
+              </Link>
+              <p dir={contentDir} className="text-slate-400 text-sm leading-relaxed mb-7 max-w-xs">
+                {t('footer.tagline')}
+              </p>
+              <div className="flex items-center gap-3">
+                {([
+                  { icon: Instagram, label: 'Instagram' },
+                  { icon: Facebook,  label: 'Facebook'  },
+                  { icon: Linkedin,  label: 'LinkedIn'  },
+                ] as const).map(({ icon: Icon, label }) => (
+                  <a
+                    key={label}
+                    href="#"
+                    aria-label={label}
+                    className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.12] hover:border-white/20 transition-all duration-200"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <div>
+              <h3 dir={contentDir} className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-6">
+                {t('footer.nav_title')}
+              </h3>
+              <nav dir={contentDir} className="flex flex-col gap-3">
+                {links.map(link => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    className="text-slate-400 hover:text-white text-sm transition-colors duration-200 w-fit"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
+            {/* Contact info */}
+            <div>
+              <h3 dir={contentDir} className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-6">
+                {t('footer.contact_title')}
+              </h3>
+              <div dir={contentDir} className="flex flex-col gap-4">
+                {([
+                  { icon: Mail,  href: `mailto:${t('footer.email')}`, text: t('footer.email')  },
+                  { icon: Phone, href: `tel:${t('footer.phone').replace(/\s/g,'')}`, text: t('footer.phone') },
+                  { icon: Clock, href: null, text: t('footer.hours') },
+                ] as const).map(({ icon: Icon, href, text }) => (
+                  <div key={text} className="flex items-center gap-3 text-sm text-slate-400">
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] flex items-center justify-center shrink-0">
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
+                    {href
+                      ? <a href={href} className="hover:text-white transition-colors">{text}</a>
+                      : <span>{text}</span>
+                    }
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <span>v2.0.4 <span className="hidden sm:inline">- {t('footer.edition')}</span></span>
-          <div className="flex gap-[2px]">
-            <div className="w-[3px] h-3 bg-slate-300" />
-            <div className="w-[3px] h-3 bg-[#0cf574]" />
-            <div className="w-[3px] h-3 bg-[#00f2fe]" />
-            <div className="w-[3px] h-3 bg-slate-300" />
+
+        {/* ── Bottom bar ── */}
+        <div className="relative z-10 border-t border-white/[0.06]">
+          <div className="max-w-7xl mx-auto px-6 lg:px-10 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span dir={contentDir} className="text-xs text-slate-500">
+              © 2025 {t('footer.copyright')} · {t('footer.rights')}
+            </span>
           </div>
         </div>
       </footer>
